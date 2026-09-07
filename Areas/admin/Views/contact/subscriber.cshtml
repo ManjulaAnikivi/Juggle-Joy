@@ -1,0 +1,94 @@
+﻿
+@model IEnumerable<juggle_joy.Models.tbl_subscriber>
+@{
+	ViewBag.Title = "Subscribers | " + MvcApplication.project_name;
+}
+<ul class="breadcrumb">
+	<li><a href="~/admin/dashboard">Home</a></li>
+	<li class="active">Subscribers</li>
+</ul>
+<div class="page-title">
+	<h2><span class="fa fa-phone"></span> Subscribers</h2>
+</div>
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			@using (Html.BeginForm("delete_subscriber", "contact", FormMethod.Post))
+			{
+				<div class="panel panel-default">
+					<p id="lbl_msg" class="panel-title msg">@ViewBag.msg</p>
+					<div class="panel-body table-responsive">
+						<table id="tblcontactlist" class="table dataTable table-hover table-striped">
+							<thead>
+								<tr>
+									<th style="background-position: center left;">Email-ID</th>
+									<th style="background-position: center left;">Rec. Date</th>
+									<th style="background-image:none;text-align:center" align="center"><input type="checkbox" id="chkall" />
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									<tr>
+										<td>@item.EmailId</td>
+
+										<td>@juggle_joy.Models.GlobalMethods.ConvertToDate(item.SubscribedDate)</td>
+										<td align="center"><input type="checkbox" name="IdsToDelete" value='@item.SubscriberId' /></td>
+									</tr>
+								}
+							</tbody>
+							<tr>
+								<td align="right" colspan="6" style="padding-right:12px;">
+									<input type="submit" id="btndelete" value="Delete" class="btn btn-danger" />
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+    $('#lnk_subscriber').addClass("active");
+
+    if ('@ViewBag.msg' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+    $(document).ready(function (e) {
+        $('#btndelete').click(function () {
+            if ($("input[name='IdsToDelete']:checked").length == 0) {
+                alert("Please select record to delete.");
+                return false;
+            }
+            else {
+                var count = $("input[name='IdsToDelete']:checked").length;
+                return confirm("Are you sure want to delete " + count + " record(s).");
+            }
+        });
+    });
+    $("#chkall").change(function () {
+        $("input[name='IdsToDelete']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='IdsToDelete']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='IdsToDelete']:checked").length == $("input[name='IdsToDelete']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+    $('#tblcontactlist').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        "ordering": false,
+    });
+</script>

@@ -1,0 +1,229 @@
+﻿@model juggle_joy.Models.CancelReasonValidationcs
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    var userid = Convert.ToInt32(Session["UserID"]);
+
+    var tbluser = ctx.tbl_user.Where(x => x.UserID == userid).FirstOrDefault();
+    Model.subscriptionId = tbluser.SubscriptionId;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    @Html.Partial("dashboard_css")
+    <style>
+
+        .btn_pause {
+            min-width: 80px;
+            min-height: 30px;
+            border-radius: 20px;
+            color: white;
+            background: #00c1ab;
+            padding: 3px 12px;
+            border: none;
+        }
+
+        .btn_cancel {
+            min-width: 80px;
+            min-height: 30px;
+            border-radius: 20px;
+            color: #00c1ab;
+            border: 1px solid #00c1ab;
+            padding: 3px 12px;
+            background: white;
+        }
+
+        .crossBtn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 20px;
+            height: 20px;
+            float: right;
+            margin-top: -13px;
+        }
+
+        .textarea {
+            width: 78%;
+            min-height: 94px;
+            border: 1px solid #D1CEC6;
+            border-radius: 20px;
+            color: var(--primary-text);
+            padding: 10px 20px;
+            resize: none;
+            outline: none;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 18.23px;
+            margin: auto 50px;
+        }
+
+        @@media(max-width: 492px) {
+            .btn_pause {
+                font-size: 12px;
+            }
+
+            .btn_cancel {
+                font-size: 12px;
+            }
+
+            .textarea {
+                margin: auto 40px;
+            }
+        }
+
+        @@media(max-width: 382px) {
+            .btn_pause {
+                font-size: 10px;
+            }
+
+            .btn_cancel {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body class="body-my-profile-page">
+    @Html.Partial("dashboard-header")
+
+    <main class="main my-profile-page">
+        <div class="dashboard-background">
+
+            <section class="my-profile">
+                <div class="my-profile-main">
+                    <div class="container">
+                        <div class="content-wrapper">
+                            <div class="row">
+                                @Html.Partial("sidebar")
+                                <div class="col-xl-9 col-lg-9 col-md-12 col-12 main-content" style="margin: auto;  background: #f5f3f0; padding: 20px; border-radius: 5px; ">
+                                    <div style="margin: auto; background: white; max-width: 487px !important; padding: 26px;">
+                                        <div class="crossBtn">
+                                            <a href="/subscription" style=" color: #d1cec6;"><i class="fa-solid fa-circle-xmark"></i></a>
+                                        </div>
+                                        <h3>Before you go... </h3>
+                                        <p style="font-weight: bold; font-size: 13px;">
+                                            We genuinely value your input on your reason to unsubscribe.Your
+                                            feedback is immensely valuable in guiding our efforts to enhance
+                                            our service and ensure we cater to your needs and those of others
+                                            with utmost care going forward.
+                                        </p>
+                                        @using (Html.BeginForm("CancelSubscription", "Home", FormMethod.Post))
+                                        {
+                                            <div class="new-task-input-box input_field" style=" max-width: 267px; margin:10px auto; ">
+
+                                                @Html.DropDownListFor(x => x.CancelCatID, null, "The main reason for leaving us?", new { @onchange = "hidedivtextbox();" })
+                                                @Html.ValidationMessageFor(x => x.CancelCatID, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="new-task-input-box input_field" style=" max-width: 267px; margin:10px auto; ">
+
+                                                @Html.DropDownListFor(x => x.CancelID, null, "Specific reason for unsubscribing", new { @onchange = "getmainreason();" })
+                                                @Html.ValidationMessageFor(x => x.CancelID, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="col-md-12" style="display:none;" id="textbox">
+                                                <textarea name="OtherReason"
+                                                          class="textarea"
+                                                          placeholder="please, specify" style="min-height:auto"></textarea>
+                                            </div>
+
+                                            @Html.HiddenFor(x => x.subscriptionId)
+                                            <div style="display: flex; justify-content: space-around; margin-top: 15px; margin-bottom: 5px; ">
+                                                <a href="/subscription" class="btn_pause">Changed my mind</a>
+                                                <button class="btn_cancel" type="submit">Cancel Subscription</button>
+                                            </div>
+                                        }
+
+                                        <div style="margin-bottom: 20px; height: 20px;">
+                                            <p style="font-weight: bold; width: 50%; float: right; color: #bcb7ac; font-size: 10px;">
+                                                If cancel now,you can still access your subscription until next renewel date
+                                            </p>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    @Html.Partial("dashboard-footer")
+
+    @Html.Partial("js")
+
+
+
+</body>
+
+</html>
+<script>
+    $("#subscription").addClass("active");
+
+
+</script>
+
+<script>
+    $("#CancelCatID").change(function () {
+        debugger
+        var CancelCatID = $(this).val();
+        var cancelid = '<option value="">Specific reason for unsubscribing</option>';
+        $('#CancelID').html(cancelid);
+        $.ajax({
+            type: "post",
+            url: "/Home/GetCancelReasonlist",
+            data: { id: CancelCatID },
+            datatype: "json",
+            traditional: true,
+            success: function (data) {
+                debugger
+                var cancelid = '<option value="">Specific reason for unsubscribing</option>';
+                for (var i = 0; i < data.length; i++) {
+                    cancelid = cancelid + '<option value=' + data[i].Value + '>' + data[i].Text + '</option>';
+                }
+                $('#CancelID').html('');
+                $('#CancelID').html(cancelid);
+            }
+        });
+    });
+</script>
+<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+
+<script>
+    function getmainreason() {
+        debugger
+        var CancelID = $('#CancelID').val();
+        $.ajax({
+            type: "post",
+            url: "/Home/FindCancelReasontextbox",
+            data: { CancelID: CancelID },
+            datatype: "json",
+            traditional: true,
+            success: function (data) {
+                debugger
+                if (data.textbox) {
+                    $('#textbox').css('display', 'block');
+                }
+                else {
+                    $('#textbox').css('display', 'none');
+                }
+            }
+        });
+    };
+
+
+    function hidedivtextbox() {
+        $('#textbox').css('display', 'none');
+    }
+</script>

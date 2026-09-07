@@ -1,0 +1,150 @@
+﻿@model juggle_joy.Models.FaqValidation
+@{
+    ViewBag.Title = "FAQ | " + MvcApplication.project_name;
+}
+
+<ul class="breadcrumb">
+    <li><a href="~/admin/account/dashboard">Home</a></li>
+    <li class="active">FAQ</li>
+</ul>
+
+<div class="page-title">
+
+</div>
+
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="page-title">
+				@if (Model.FaqID > 0)
+				{
+					<h2><span class="fa fa-question-circle"></span> Update FAQ</h2>
+				}
+				else
+				{
+					<h2><span class="fa fa-question-circle"></span> Add FAQ</h2>
+				}
+			</div>
+
+            @using (Html.BeginForm("manage_faq", "cms", FormMethod.Post, new { id = "addfaq" }))
+            {
+
+
+                @Html.HiddenFor(x => x.FaqID)
+                <div class="panel panel-default">
+                    <div class="panel-body">
+
+						<div class="row">
+							<div class="col-xs-12 col-sm-12 col-md-10 col-lg-6">
+								<div class="form-group">
+									<label for="FaqQuestion" class="control-label">FAQ Category</label>
+									@Html.DropDownListFor(x => x.Faq_Cat_id, null, "Select Category", new { @class = "form-control flat", maxlength = "200" })
+									@Html.ValidationMessageFor(x => x.Faq_Cat_id)
+								</div>
+							</div>
+							<div class="col-xs-12 col-sm-12 col-md-10 col-lg-6">
+								<div class="form-group">
+									<label for="FaqQuestion" class="control-label">FAQ Question</label>
+									@Html.TextBoxFor(x => x.FaqQuestion, new { @class = "form-control flat", maxlength = "200" })
+									@Html.ValidationMessageFor(x => x.FaqQuestion)
+								</div>
+							</div>
+						</div>
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    <label for="FaqAnswer" class="control-label">FAQ Answer</label>
+                                    @Html.TextAreaFor(x => x.FaqAnswer, new { @id = "pagecontent", @class = "form-control" })
+                                    @Html.ValidationMessageFor(x => x.FaqAnswer)
+                                    <span id="pagemenuerror" style="color:#e80c4d"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+					<div class="panel-footer">
+						@Html.HiddenFor(x => x.FaqID)
+
+						@if (Model.FaqID == 0)
+						{
+							<input type="submit" id="btnaddbanner" class="btn btn-primary pull-right" value="Add FAQ" />
+							<a href="~/admin/add-faq" type="button" id="cancelblog" class="btn btn-primary btn-flat">Cancel</a>
+						}
+						else
+						{
+							<input type="submit" id="btnupdate" class="btn btn-primary pull-right" value="Update FAQ" />
+							<input type="button" id="cancelblog" class="btn btn-default" value="Cancel" />
+						}
+
+					</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script src="~/admin_assets/tinymce/tinymce.min.js"></script>
+
+<script type="text/javascript">
+    tinymce.init({
+        selector: "textarea#pagecontent",
+        convert_fonts_to_spans: false,
+        plugins: ["advlist autolink lists link charmap print preview anchor textcolor ", "searchreplace visualblocks code fullscreen", "image", "table"],
+        toolbar: "image | insertfile undo redo | fontselect | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | forecolor backcolor|table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol",
+        //font_formats: "Andale Mono=andale mono,DM Sans,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
+        menubar: false,
+        height: "300",
+        statusbar: false,
+        setup: function (ed) {
+            ed.on('init', function () {
+                //this.getDoc().body.style.fontSize = '12';
+                this.getDoc().body.style.fontFamily = 'DM Sans';
+            });
+        },
+    });
+</script>
+
+<script type="text/javascript">
+    $("#addfaq").submit(function () {
+        var editorblogtinfo = tinyMCE.get('pagecontent').getContent();
+        if (editorblogtinfo == '') {
+            $("#pagemenuerror").html("Please enter Answer");
+            $('#pagemenuerror').focus();
+            $("#pagemenuerror").fadeIn(500).fadeOut(3000);
+            return false;
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#lblmsg3").fadeOut(3000);
+    });
+    $(document).ready(function () {
+        $("#lblmsg4").fadeOut(3000);
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#lnk_manage_faq,#manage_faq').addClass("active");
+    });
+
+    $('.note-editable').find('p').remove();
+    $('.note-editable p').remove();
+    $(".dmessage").fadeIn().fadeOut(5000);
+    $(".message").fadeIn().fadeOut(5000);
+    $('#cancelblog').click(function () {
+        window.location.href = "/admin/faq-list";
+    });
+</script>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,317 @@
+﻿
+@using juggle_joy.Models
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    var userid = Convert.ToInt32(Session["UserID"]);
+    //var notification = ctx.tbl_notification.Where(x => x.ReadStatus == "0" && x.ToID == userid).OrderByDescending(x => x.NotificationID).ToList();
+    //var note5 = notification.Take(5);
+}
+<style>
+    .admin-header-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        position: relative;
+    }
+
+
+    .admin-header-notification {
+        box-sizing: inherit;
+        margin-left: 182px;
+    }
+
+    .notification-count {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 400;
+        border-radius: 50%;
+        color: var(--white-color);
+        background-color: var(--fade-red);
+        position: absolute;
+    }
+
+    .admin-header-notification-wrapper {
+        display: inline-block;
+        position: relative;
+    }
+
+        .admin-header-notification-wrapper .notification-count {
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            line-height: 18px;
+            right: -5px;
+            top: -5px;
+        }
+
+
+
+    .header-notification-btn {
+        border: none;
+        outline: none;
+        padding: 0;
+        background: none;
+        color: var(--primary-color);
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--secondary-color);
+        border-radius: 50%;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+
+
+
+    .admin-header-notification .admin-header-notification-notifications {
+        /* display: none;
+        max-width: 400px;
+        position: absolute;
+        top: 90%;
+        right: 0;
+        z-index: 9999999999;
+        padding: 10px 0 10px;*/
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 9999999999;
+        margin-top: 10px;
+    }
+
+        .admin-header-notification .admin-header-notification-notifications ul {
+            background: var(--white-color);
+            padding: 10px 0 10px;
+            border-radius: 10px;
+            box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        }
+
+
+
+            .admin-header-notification .admin-header-notification-notifications ul li > * {
+                display: block;
+                font-size: 14px;
+                line-height: 18px;
+                padding: 5px 10px;
+            }
+
+    a {
+        text-decoration: none;
+        display: inline-block;
+        color: var(--primary-color);
+    }
+
+    .admin-header-notification:hover .admin-header-notification-notifications {
+        display: block;
+    }
+
+    .admin-header-notification-notifications ul li a:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    @@media (max-width: 575px) {
+
+        .admin-header-notification {
+            margin-left: 80px;
+        }
+    }
+
+    @@media (max-width: 320px) {
+        /* .admin-header-notification {
+            margin-left: 50px;
+        }*/
+        .admin-header-wrapper {
+            gap: 10px;
+        }
+
+        .admin-header-notification .header-notification-btn {
+            width: 30px;
+            height: 30px;
+        }
+
+        .admin-header-notification-wrapper .notification-count {
+            width: 16px;
+            height: 16px;
+            font-size: 12px;
+            line-height: 16px;
+        }
+    }
+
+    .msgNotification {
+        color: white;
+        font-size: 16px !important;
+        display: block;
+        background: rgb(0, 193, 171);
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        border: 1px solid var(--secondary-color);
+        border-radius: 10px;
+        padding: 14px 20px;
+        margin: auto;
+        max-width: 466px;
+    }
+
+
+ 
+   
+</style>
+
+
+<header class="secondary-header admin-header" style="background-color:white">
+    <div class="header-main">
+        <div class="container-fluid">
+            <div class="header-wrapper">
+                <div class="logo">
+                    <a href="/">
+                        <img src="~/Assets/images/logo.png" alt="Jugglejoy-logo">
+                    </a>
+                </div>
+
+             
+
+                <div class="admin-header-wrapper">
+                    <div class="chat" style=" width: 36px !important;">
+
+                    </div>
+                    <div class="admin-header-notification" @*style="margin-left:182px"*@>
+
+
+
+                    </div>
+
+
+                    <div class="avatar-main">
+                        <div class="avatar-logo">
+                            <a href="javascript:void(0)">
+
+                                @if (Session["UserID"] != null)
+                                {
+                                    <span>@Session["FirstName"]@Session["LastName"] </span>
+                                }
+                            </a>
+
+                            <div class="submenu">
+
+                                <ul>
+                                    <li><a href="/dashboard">Dashboard</a></li>
+                                    <li><a href="/my-profile">Settings</a></li>
+                                    <li><a href="/Home/logout">Logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <p class="msgNotification" id="lbl_userNotification" style="display:none" >
+            <i class="fa fa-check-circle-o" style="color: white;"></i> You have received new notification 
+            <span id='pop-off' style=" position: relative; left: 32%; cursor: pointer "> <i class='fa-solid fa-circle-xmark' style="color:white;"></i></span>
+        </p>
+    </div>
+</header>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        //submenu open/close
+        $(".avatar-logo a").click(function () {
+            $(".submenu").toggleClass("submenu-visible");
+        });
+        // $(".submenu .popup-cross-btn button").click(function () {
+        //     $(".submenu").removeClass("submenu-visible");
+        // });
+        $(document).click(function (event) {
+            if (!$(event.target).closest(".submenu,.avatar-logo a").length) {
+                $("body").find(".submenu").removeClass("submenu-visible");
+            }
+        });
+
+       
+
+    });
+
+    function readstatus(id, url) {
+        debugger
+        $.ajax({
+            type: "Post",
+            url: "/Task/notification",
+            data: { id: id },
+            dataType: "html",
+            success: function (data) {
+
+                window.location.href = url;
+
+
+            },
+
+        });
+    };
+</script>
+<script>
+
+    $("#pop-off").on("click", function () {
+        debugger
+        $("#lbl_userNotification").css("display", "none");
+    })
+</script>
+
+
+<script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+<script src="/signalr/hubs"></script>
+
+
+<script>
+    $(".admin-header-notification").load("/Task/notifications", function () { });
+    $(".chat").load("/Task/chatnotification", function () { });
+
+    jQuery.noConflict();
+    // JavaScript to connect to SignalR Hub and handle notifications
+    jQuery(document).ready(function ($) {
+        $(function () {
+            debugger
+            var notificationHub = $.connection.myHub;
+            if (typeof notificationHub.client != 'undefined') {
+                // Assign function to OrderCreatedNotification
+                notificationHub.client.SendNotification = function (message,name,id) {
+                    //alert(message);
+                    //alert(name);
+                    if (name == "user" && id=='@userid') {
+                        $(".admin-header-notification").load("/Task/notifications", function () { });
+
+                        $(".chat").load("/Task/chatnotification", function () { });
+
+                        $("#lbl_userNotification").css("display", "block");
+                       
+                        setTimeout(function () {
+                            $("#lbl_userNotification").fadeOut(5000);
+                        }, 5000);
+
+                    }
+                  
+                };
+            } else {
+                console.error('notificationHub.client is not defined');
+            }
+
+            $.connection.hub.start().done(function () {
+                console.log("SignalR connected");
+            }).fail(function () {
+                console.error("SignalR connection failed");
+            });
+        });
+    });
+</script>
+

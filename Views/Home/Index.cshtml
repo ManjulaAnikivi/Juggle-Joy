@@ -1,0 +1,711 @@
+﻿@model juggle_joy.Models.tbl_faq
+@using juggle_joy.Models
+@{
+    //Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    //var Faqlist = ctx.tbl_faq.OrderBy(x => Guid.NewGuid()).Take(5);
+    var Faqlist = ctx.tbl_faq.ToList();
+    ViewBag.Title = "Home";
+    var bnrlist = ctx.tbl_banner.OrderBy(x => Guid.NewGuid()).Take(1).FirstOrDefault();
+}
+
+<style>
+    #install-prompt-container {
+        display: none;
+    }
+    #install-instructions-container {
+        display: none;
+    }
+</style>
+<style>
+
+    .verification-popup {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        z-index: 999999;
+        top: 0;
+        left: 0;
+        background: #d1cec680;
+    }
+
+    .verification-popup-main {
+        width: 450px;
+        height: 415px;
+        background: #ffffff;
+        border-radius: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .verification-popup-container {
+        padding: 40px 30px 30px;
+        position: relative;
+    }
+
+
+
+        .verification-popup-container > * {
+            /* display: flex; */
+            /* flex-direction: column; */
+            /* align-items: center; */
+            text-align: center;
+        }
+
+            .verification-popup-container > * > *:not(.verification-bottom-btns) {
+                max-width: 320px;
+                margin: 0 auto;
+            }
+
+
+
+
+    .verification-bottom-btns {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-top: 36px;
+    }
+
+
+
+    .popup-cross-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+    }
+
+        .popup-cross-btn > * {
+            border: none;
+            background: none;
+            padding: 0;
+            color: var(--primary-text);
+            border-radius: 50%;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+    .primary-btn {
+        min-width: 118px;
+        height:48px;
+        border: none;
+        border-radius: 7px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--white-color);
+        background: var(--primary-color);
+        /* text-transform: uppercase; */
+        text-decoration: none;
+        text-underline-offset: 3px;
+        display: inline-flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 9px 11px;
+        outline: none;
+    }
+
+
+    @@media(max-width: 767px) {
+        .verification-popup-main {
+            /* width: 66%;
+             height: 50%;*/
+            width: 450px;
+            height: 415px;
+        }
+    }
+
+    @@media(max-width: 684px) {
+        .primary-btn {
+            min-width: 90px;
+        }
+    }
+
+    @@media(max-width: 578px) {
+        .verification-popup-main {
+            width: 85%;
+        }
+
+
+      /*  .primary-btn {
+            min-width: 80px;
+        }*/
+    }
+
+    @@media(max-width: 530px) {
+        h4 {
+            font-size: 15px;
+        }
+
+        .verification-bottom-btns {
+            flex-direction: column;
+        }
+    }
+
+
+
+    @@media(max-width: 374px) {
+        h4 {
+            font-size: 15px;
+        }
+            .verification-bottom-btns {
+            flex-direction: column;
+        }
+    }
+</style>
+<div class="main home-page">
+    <Section class="home banner">
+        <!-- <div class="banner-main home-page-banner" style="background: url('./assets/images/banner.png') no-repeat center center / cover;"> -->
+        <div class="banner-main home-page-banner">
+            @*<video autoplay muted loop poster="~/Assets/images/banner" id="bgvid"
+                   style="background: url('/Assets/images/banner.png') no-repeat center center / cover;">
+                <source src=" ~/Assets/images/sample-video.mp4" type="video/webm">
+                <source src="~/Assets/images/sample-video.mp4" type="video/mp4">
+            </video>*@
+
+            <video autoplay muted loop poster="~/Assets/images/banner" id="bgvid"
+        style="background: url('/Assets/images/banner.png') no-repeat center center / cover;">
+            
+            @if (bnrlist != null)
+        {
+            <source src="@Url.Content("~/Assets/Videofiles/"+bnrlist.BannerVideo)" />
+        }
+        else
+        {
+            <source src="~/Assets/images/sample-video.mp4" type="video/webm">
+            <source src="~/Assets/images/sample-video.mp4" type="video/mp4">
+        }
+
+    </video>
+            <div class="play-pause-btn">
+                <button class="play-pause bg-video-playing">
+                    <svg class="play" width="24" height="28" viewBox="0 0 24 28" fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24 14L-1.30507e-06 27.8564L-9.36995e-08 0.143593L24 14Z" fill="white" />
+                    </svg>
+                    <svg class="pause" width="24" height="28" viewBox="0 0 29 40" fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <line x1="1.5" x2="1.5" y2="40" stroke="white" stroke-width="8" />
+                        <line x1="27.5" x2="27.5" y2="40" stroke="white" stroke-width="8" />
+                    </svg>
+                </button>
+            </div>
+            <!--<div class="container banner-container">
+    <div class="banner-content">
+        <div class="wow fadeInUp">
+            <h2 class="font-caveat font-size-caveat-main">
+                <span>
+                    Coming Soon, to Simplify Your Family
+                    Life!
+                </span>
+            </h2>
+        </div>
+        <div class="wow fadeInUp" data-wow-delay=".2s">
+            <h3>
+                Because Every Family Deserves More Quality Time Together. Where Time is Yours, Tasks are
+                Ours!
+            </h3>
+        </div>-->
+            <!-- <p>Secure Your Spot: Sign Up Below to be Notified at the Launch!</p> -->
+            <!-- <div class="banner-subscribe">
+        <input type="text" name="home-subscribe-input" id="home-subscribe-input"
+            placeholder="Enter your email...">
+        <button type="submit" name="home-subscribe-btn" id="home-subscribe-btn">Supercharge My
+            Family Time!</button>
+    </div> -->
+            <!--</div>
+    </div>-->
+
+            <div class="container banner-container">
+                <div class="banner-content">
+                    <div class="wow fadeInUp">
+                        <h2 class="font-caveat font-size-caveat-main">
+                            <span>
+                                Get ready to reclaim your family time!
+                            </span>
+                        </h2>
+                    </div>
+                    <div class="wow fadeInUp" data-wow-delay=".2s">
+                        <h3>
+                            Because every family deserves more quality time together.
+                            Time in your hands, means tasks in our care!
+                        </h3>
+                    </div>
+                    <p>Coming soon! Sign up below to secure your place and be notified when we launch!</p>
+                    <p id="lbl_msg" style="font-size:18px"></p>
+                    <div class="banner-subscribe">
+                        <input type="text" name="home-subscribe-input" id="home-subscribe-input"
+                               placeholder="Enter your email...">
+                        <button type="submit" name="home-subscribe-btn" id="home-subscribe-btn" class="primary-btn" onclick="notifyMe()">
+                            Notify
+                            Me!
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Section>
+
+    @*<section class="delegate-chaos section-position">
+            <div class="container banner-container">
+                <p class="wow fadeInUp" data-wow-delay=".3s">
+                    Coming soon! Sign up below to secure your place and be notified when we launch!
+                </p>
+                <div class="banner-subscribe">
+                    <input type="text" name="home-subscribe-input" id="home-subscribe-input"
+                           placeholder="Enter your email...">
+                    <button type="submit" name="home-subscribe-btn" id="home-subscribe-btn" class="primary-btn">
+                        Notify
+                        Me!
+                    </button>
+                </div>
+            </div>
+            <div class="delegate-chaos-main background-logo">
+                <div class="container">
+
+                    <div class="content row">
+                        <div class="col-lg-4 col-md-5 col-12">
+                            <div class="wow fadeInUp">
+                                <h1>Delegate the chaos, embrace the calm</h1>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 col-md-7 col-12">
+                            <p class="wow fadeInUp">
+                                At JuggleJoy, we understand that being a parent is a full-time job. That's why we've created a digital platform where you can delegate all those tedious tasks to our real-life local trusted assistants, leaving you with more time for the things that truly matter - like spontaneous solo bathroom breaks. (You're welcome!)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="image-btn-wrapper row">
+                        <div class="col-lg-4 col-md-4 col-12 image-wrapper">
+                            <img src="~/Assets/images/home-section-2.png" alt="delegate-chaos" class="wow fadeInLeft">
+                            <img src="~/Assets/images/home-section-2-1.png" alt="delegate-chaos-1" class="wow fadeIn" data-wow-duration="2s">
+                        </div>
+                        <div class="col-lg-8 col-md-8 col-12 text-center">
+                            <a href="#" class="primary-btn wow fadeInUp">Supercharge my family time!</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-icon" style="width: 138px;">
+                    <a href="#">
+                        <img src="~/Assets/images/chat-icon-1.png" alt="chat-icon">
+                    </a>
+                    <p class="py-1">
+                        Got a question?
+                        Chat to us!
+                    </p>
+                </div>
+            </div>
+        </section>*@
+
+    <section class="delegate-chaos section-position">
+        <div class="delegate-chaos-main background-logo">
+            <div class="container">
+
+                <div class="content row">
+                    <div class="col-lg-4 col-md-5 col-12">
+                        <div class="wow fadeInUp">
+                            <h1>Delegate the chaos, embrace the calm</h1>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-7 col-12">
+                        <p class="wow fadeInUp pt-3">
+                            At JuggleJoy, we understand that being a parent is a full-time job. That's why we've created a digital platform where you can delegate all those tedious tasks to our real-life local trusted assistants, leaving you with more time for the things that truly matter - like spontaneous solo bathroom breaks. (You're welcome!)
+
+                        </p>
+                    </div>
+                </div>
+
+                <div class="image-btn-wrapper row">
+                    <div class="col-lg-4 col-md-4 col-12 image-wrapper">
+                        <img src="~/Assets/images/home-section-2.png" alt="delegate-chaos" class="wow fadeInLeft">
+                        <img src="~/Assets/images/home-section-2-1.png" alt="delegate-chaos-1" class="wow fadeIn" data-wow-duration="2s">
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-12 text-center">
+                        <a href="/register" class="primary-btn wow fadeInUp">Supercharge my family time!</a>
+                    </div>
+                </div>
+            </div>
+            @*<div class="chat-icon"  >
+                    <a href="#">
+                        <img src="~/Assets/images/chat-icon-1.png" alt="chat-icon">
+                    </a>
+                    <p class="py-1">
+                        Got a question?
+                        Chat to us!
+                    </p>
+                </div>*@
+        </div>
+    </section>
+
+    <section class="home-steps">
+        <div class="home-steps-main secondary-background-color">
+            <div class="container">
+                <h2 class="text-center">It’s easy as 1-2-3!</h2>
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-12">
+                        <div class="content-wrapper wow fadeInLeft" data-wow-duration="2s">
+                            <span class="font-foxgrab">1</span>
+                            <h4>Assign your to-dos</h4>
+                            <p>Offload your task(s) on the portal.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-12">
+                        <div class="content-wrapper wow fadeInUp" data-wow-duration="2s">
+                            <span class="font-foxgrab">2</span>
+                            <h4>Tasks taken care of</h4>
+                            <p>
+                                Your assistant tackles your chores, keeping you informed with
+                                real-time updates.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-12">
+                        <div class="content-wrapper wow fadeInRight" data-wow-duration="2s">
+                            <span class="font-foxgrab">3</span>
+                            <h4>Reclaim your time</h4>
+                            <p>Relax and enjoy the moments that matter as your to-do list dwindles. </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="home-steps-btn">
+                    <a href="/register" class="primary-btn wow fadeInUp">Start enjoying more family time!</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-examples">
+        <div class="home-examples-main background-logo">
+            <div class="container">
+                <h2 class="text-center">Examples of tasks you can delegate</h2>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="content-wrapper wow fadeInDown">
+                            <img src="~/Assets/images/home-examples/appointments.png" alt="appointments">
+                            <h5>Appointments</h5>
+                            <p>
+                                Let JuggleJoy schedule doctor and dentist appointments, meaning less time on the phone.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="content-wrapper wow fadeInDown" data-wow-delay=".1s">
+                            <img src="~/Assets/images/home-examples/gifts.png" alt="gifts">
+                            <h5>GIFTs</h5>
+                            <p>
+                                Our assistants will find that perfect gift - whether it’s for a birthday, anniversary or other special occasion.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="content-wrapper wow fadeInDown" data-wow-delay=".2s">
+                            <img src="~/Assets/images/home-examples/meal-planning.png" alt="meal-planning">
+                            <h5>Meal Planning</h5>
+                            <p>
+                                Tuck into stress-free, family-approved dinners. Plan your meal times effortlessly, minimising waste and savouring taste!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="content-wrapper wow fadeInUp" data-wow-delay=".3s">
+                            <img src="~/Assets/images/home-examples/events.png" alt="events">
+                            <h5>Events</h5>
+                            <p>
+                                From your child’s seventh birthday party to a hen party, we've got all the organising and fine details covered.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="content-wrapper wow fadeInUp" data-wow-delay=".4s">
+                            <img src="~/Assets/images/home-examples/holidays.png" alt="holidays">
+                            <h5>holidays</h5>
+                            <p>
+                                Get away from it all with ease as our assistants help you research and plan your dream trip – with flights, accommodation and itinerary sorted.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="content-wrapper wow fadeInUp" data-wow-delay=".5s">
+                            <img src="~/Assets/images/home-examples/home-maintenance.png" alt="home-maintenance">
+                            <h5>Home maintenance</h5>
+                            <p>
+                                Delegate home repairs and maintenance tasks, ensuring your sanctuary stays in top shape.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <a href="/register" class="primary-btn wow fadeInUp">Sign up for JuggleJoy!</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-faq accordions">
+        <div class="home-faq-main">
+            <div class="container inner-container background-logo">
+                @if (@Faqlist.Count() > 0)
+                {
+                    <h2 class="text-center">FAQ</h2>
+                }
+
+                @if (@Faqlist.Count() > 0)
+                {
+                    foreach (var items in Faqlist)
+                    {
+                        if (items.FaqID == 5008 || items.FaqID == 5028 || items.FaqID == 5040 || items.FaqID == 5063 || items.FaqID == 5064)
+                        {
+                            <div class="accordion faq-wrapper">
+                                <div class="faq_row">
+                                    <div class="faq_title">
+                                        <span class="faq_title-text">@items.FaqQuestion</span>
+                                    </div>
+                                    <div class="faq_description">
+                                        <p>
+                                            @Html.Raw(items.FaqAnswer)
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        }
+                    }
+
+
+                }
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="verification-popup" id="install-prompt-container">
+        <div class="verification-popup-main">
+            <div class="verification-popup-container">
+                <div class="popup-cross-btn">
+                    <button onclick="$('#install-prompt-container').css('display', 'none');"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <form method="post">
+
+                    <h4>Add your JuggleJoy portal to your Home Screen for quick access and better experience!</h4>
+                    <br />
+
+
+                    <div class="verification-bottom-btns">
+                        <button type="button" id="install-button" class="verify-btn primary-btn">Add to Home Screen</button>
+                        <button type="button" id="maybe-later" class="verify-btn primary-btn">Maybe Later</button>
+                        <button type="button" id="dont-show-again" class="verify-btn primary-btn">Don't Show Again</button>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </section>
+
+    <section class="verification-popup" id="install-instructions-container" >
+        <div class="verification-popup-main" style="height:280px">
+            <div class="verification-popup-container">
+                <div class="popup-cross-btn">
+                    <button onclick="$('#install-instructions-container').css('display', 'none');"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <form method="post">
+
+                    <h5>To install this app, tap the share icon and select "Add to Home Screen"</h5>
+                    <br />
+
+
+                    <div class="verification-bottom-btns" style="justify-content:center">
+                        <button type="button" id="dismiss-instructions" class="verify-btn primary-btn">Got it</button>
+                       
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </section>
+</div>
+
+<script type="text/javascript">
+
+    if ('serviceWorker' in navigator) {
+        console.log("Will the service worker register?");
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(function (reg) {
+                console.log("Yes, it did.");
+            }).catch(function (err) {
+                console.log("No it didn't. This happened:", err)
+            });
+    }
+</script>
+
+<script>
+
+
+
+
+    // Function to detect iOS devices
+    function isIOS() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
+
+    //// Function to check if the prompt should be shown
+    function checkPrompt() {
+        if ( !localStorage.getItem('dontShowInstallPrompt')) {
+            if (isIOS() && window.innerWidth <= 1300) {
+                // Show instructions for iOS users instead of an install prompt
+                document.getElementById('install-instructions-container').style.display = 'block';
+            } else if (deferredPrompt && window.innerWidth <= 768) {
+                // Handle Android and other devices
+                installPromptContainer.style.display = 'block';
+            }
+        }
+    }
+
+
+
+    //function checkPrompt() {
+    //    // Check if it's a mobile device and if the user has chosen not to show the prompt again
+    //    if (window.innerWidth <= 768 && !localStorage.getItem('dontShowInstallPrompt')) {
+    //        document.getElementById('install-prompt-container').style.display = 'block';
+    //    }
+    //}
+
+    // Event listener for the "Don't Show Again" button
+    document.getElementById('dont-show-again').addEventListener('click', function () {
+        localStorage.setItem('dontShowInstallPrompt', 'true');
+        document.getElementById('install-prompt-container').style.display = 'none';
+    });
+
+    // Event listener for the "Maybe Later" button
+    document.getElementById('maybe-later').addEventListener('click', function () {
+        document.getElementById('install-prompt-container').style.display = 'none';
+    });
+
+
+    document.getElementById('dismiss-instructions').addEventListener('click', () => {
+        // Hide the install instructions container
+        document.getElementById('install-instructions-container').style.display = 'none';
+        // Set a flag to not show instructions again
+        localStorage.setItem('dontShowInstallPrompt', 'true');
+    });
+
+    // Call the function to check if the prompt should be shown
+   /* checkPrompt();*/
+</script>
+
+<script>
+    let deferredPrompt;
+    const installButton = document.getElementById('install-button');
+    const installPromptContainer = document.getElementById('install-prompt-container');
+
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('beforeinstallprompt event fired');
+        e.preventDefault();
+        deferredPrompt = e;
+        console.log('deferredPrompt set:', deferredPrompt);
+
+        //if once installed then it will not show pop up
+        checkPrompt();
+    });
+
+
+
+    installButton.addEventListener('click', () => {
+        installPromptContainer.style.display = 'none';
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                } else {
+                    console.log('User dismissed the A2HS prompt');
+                }
+                deferredPrompt = null;
+            });
+        }
+    });
+
+
+
+</script>
+<script>
+    function notifyMe() {
+        debugger
+        var notifyEmail = $('#home-subscribe-input').val();
+        var regExp = /^([a-zA-Z0-9_\.\-\+])+\@@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+        if (notifyEmail == "" || !regExp.test(notifyEmail)) {
+            if (notifyEmail == "") {
+                $("#lbl_msg").css("display", "block");
+                $("#lbl_msg").css("color", "#E5756F");
+                $("#lbl_msg").html("Please enter email");
+                $("#lbl_msg").fadeOut(5000);
+                $("#home-subscribe-input").val("");
+                $('#home-subscribe-input').focus();
+            }
+            else if (!regExp.test(notifyEmail)) {
+                $("#lbl_msg").css("display", "block");
+                $("#lbl_msg").css("color", "#E5756F");
+                $("#lbl_msg").html("Please enter valid email");
+                $("#lbl_msg").fadeOut(5000);
+                $("#home-subscribe-input").val("");
+                $('#home-subscribe-input').focus();
+            }
+            return false;
+        }
+        else {
+            $.ajax({
+                type: "post",
+                /* url: "/Home/notify_Me/",*/
+                url: "/Subscriber/subscriber/",
+                data: { id: notifyEmail },
+                datatype: "json",
+                success: function (data) {
+                    if (data.success) {
+                        $("#lbl_msg").css("display", "block");
+                        $("#lbl_msg").css("color", "#00c1ab");
+                        $("#lbl_msg").html("Received notification successfully");
+                        $("#lbl_msg").fadeOut(5000);
+                        $("#home-subscribe-input").val("");
+                    }
+                    else if (data.error) {
+                        $("#lbl_msg").css("display", "block");
+                        $("#lbl_msg").css("color", "#E5756F");
+                        $("#lbl_msg").html("Email already subscribed");
+                        $("#lbl_msg").fadeOut(5000);
+                        $("#home-subscribe-input").val("");
+                    }
+                    else {
+                        $("#lbl_msg").css("display", "block");
+                        $("#lbl_msg").css("color", "#E5756F");
+                        $("#lbl_msg").html("Notification failed");
+                        $("#lbl_msg").fadeOut(5000);
+                        $("#home-subscribe-input").val("");
+                    }
+                },
+            });
+            return true;
+        }
+    }
+</script>
+
+
+
+

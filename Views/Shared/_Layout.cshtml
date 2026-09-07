@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <link rel="manifest" href="/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @*facebook able to access both title and description but linkedin only accepts title*@
+    @*<meta property="og:title" content="Juggle Joy" />*@
+    <meta property="og:title" content="Just finished my to-do list effortlessly using JuggleJoy!Their amazing specialists took care of everything, so I could focus on what matters most.If you're juggling a million things, JuggleJoy is a game-changer!#LifeSimplified #JuggleJoyMagic #StressFree #Parenthack" />
+    @*<meta property="og:description" content="Just finished my to-do list effortlessly using JuggleJoy!Their amazing specialists took care of everything, so I could focus on what matters most.If you're juggling a million things, JuggleJoy is a game-changer!#LifeSimplified #JuggleJoyMagic #StressFree #Parenthack" />*@
+
+    <title>@ViewBag.Title - @MvcApplication.project_name</title>
+
+
+    @Html.Partial("css")
+</head>
+
+
+<body class="body-home-page background-banner-video">
+	@Html.Partial("header")
+    <div>
+       
+        @RenderBody()
+    </div>
+
+	@Html.Partial("footer")
+
+	@Html.Partial("js")
+
+</body>
+</html>

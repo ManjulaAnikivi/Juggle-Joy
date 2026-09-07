@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+    //ViewBag.Title = "Register Success";
+   
+
+}
+@Html.Partial("css")
+
+<title>Register Success - @MvcApplication.project_name</title>
+<style>
+    .forms_max_width .banner_items {
+        width: 646px !important;
+    }
+</style>
+@Html.Partial("header")
+<div class="main register-page">
+    <section class="banner_section forms_section">
+        <div class="container-fluid half-fluid">
+            <div class="container-none">
+                <div class="row">
+
+                    <div class="col-12 col-md-12 banner_content forms_max_width">
+                        <div class="banner_items">
+                            <span class="logo-small"
+                                  style="background: url(/Assets/images/logo-100x100.png) no-repeat center center / contain;"></span>
+                            <div id="carouselExampleIndicators" class="page-form carousel slide"
+                                 data-interval="false">
+
+
+                                <div class="form_steps form_step_1 carousel-item active">
+
+                                    @if (ViewBag.msg == "Registered successfully")
+                                    {
+                                        <div class="banner_items" style="width: 425px !important;margin:auto">
+                                            <h2>Registration Successful</h2>
+                                            @*<i class="fa fa-check-circle" style="font-size: 35px;"></i>*@
+                                        </div>
+
+                                        <p style="text-align:center;font-weight:bold;">Welcome to Juggle joy.</p>
+                                        <p style="text-align:center;font-weight:bold;">Registration success email is sent to your registered email id.</p>
+                                        <br />
+                                        @*<a href="/login" class="primary-btn" style=" margin-left: 160px;">Home</a>*@
+                                        <div style="display: flex; justify-content: space-around;">
+
+                                            <a href="/" class="primary-btn" style="border: 2px solid #00C1AB; background: white; color: #00C1AB;">Skip to Dashboard</a>
+
+                                            <a href="/book-a-call" class="primary-btn" style="">Book a call</a>
+                                        </div>
+                                        <p style="margin-left: 359px; width: 287px; text-align: center; font-weight: bold; font-size: 13px; margin-top: 13px;">Book a call with one of our founders to get personalised onboarding assistant and make the most of our services from one day.  </p>
+                                    }
+                                    else
+                                    {
+                                        <div class="banner_items">
+                                            <h4 style="text-align:center">Looks like you're new here</h4>
+                                        </div>
+                                        <p style="text-align:center">Register with your details to get started</p>
+                                        <br />
+                                        <a href="/register" class="primary-btn" style=" margin-left: 160px;">Home</a>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="col-12 col-md-6 banner_image">
+                        <div class="right-half"
+                             style="background: url('/Assets/images/login/register-banner.png') no-repeat center center / cover;">
+                        </div>
+                    </div>*@
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+@Html.Partial("footer")
+<script src="~/Assets/js/bootstrap.bundle.min.js"></script>
+@Html.Partial("js")
+
+
+
+
+

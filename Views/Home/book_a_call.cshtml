@@ -1,0 +1,78 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Call- @MvcApplication.project_name</title>
+    @Html.Partial("css")
+    <style>
+        .book-a-call-main .calendar-embed {
+            border: 2px solid var(--another-color);
+            border-radius: 10px;
+            padding: 0px 0px 10px 50px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+    </style>
+</head>
+
+<body class="body-book-a-call-page">
+    @Html.Partial("header")
+    <div class="main book-a-call-page">
+        <section class="book-a-call">
+            <div class="book-a-call-main">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-5 col-md-12 col-12 background-logo">
+                            <div class="content">
+                                <p class="medium-p-2">
+                                    Build a strong foundation for your journey with JuggleJoy.
+                                    <br><br>
+                                    We would like to extend an invitation for you to schedule a 10-minute conversation
+                                    with one of our founders.
+                                    <br><br>
+                                    They will personally walk you through our platform and
+                                    gladly assist with any inquiries you might have.
+                                    <br><br>
+                                    We truly value your input and appreciate your valuable insights.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-lg-7 col-md-12 col-12 background-logo">
+                            <div class="calendar-embed">
+                               
+                                    <div class="left-side">
+                                        <img src="~/Assets/images/logo-100x100.png" alt="logo-100x100" class="logo-70x70">
+                                        <h5 class="person_name">Alec Whitten</h5>
+                                        <img src="~/Assets/images/discovery-call.png" alt="discovery-call"
+                                             class="discovery-call">
+                                    </div>
+                                    <div class="right-side">
+                                        <div class="calendly-inline-widget" data-url="https://calendly.com/welcometojugglejoy" style="min-width: 430px; height:600px;"></div>
+                                        @*<img src="~/Assets/images/calendar.png" alt="calendar" class="demo-calendar">*@
+                                        <div style=" margin-left: 30px;">
+                                            <a href="/Home/Index" class="primary-btn" @*style=" margin-left: 160px;"*@>Skip to Home</a>
+                                        </div>
+                                    </div>
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+    @Html.Partial("js")
+    <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js"></script>
+    @Html.Partial("footer")
+</body>
+</html>

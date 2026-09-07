@@ -1,0 +1,129 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_note>
+@using juggle_joy.Models
+@{
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	Layout = null;
+	var tbl_user = ctx.tbl_user.ToList();
+	var taskid = ViewBag.taskid;
+
+}
+
+@if (Model.Count() > 0)
+{
+	foreach (var item in Model)
+	{
+		var HandlerName = tbl_user.Where(x => x.UserID == item.HandlerID).FirstOrDefault();
+		<div class="task-journal-message-view-box-container">
+			<div class="task-journal-message-view-box-container">
+				<div class="task-journal-message-view-box-wrapper">
+					<div class="task-journal-message-view-box">
+						<span class="task-journal-avatar">@HandlerName.FirstName[0].ToString().ToUpper()@HandlerName.LastName[0].ToString().ToUpper()</span>
+						<div class="task-journal-message-view-box-message">
+							<p class="task-journal-message-meta-info">
+								<span class="task-journal-avatar-name">
+									@HandlerName.FirstName
+								</span>
+                                <span class="task-journal-message-date-time">
+                                    @item.Date.Value.ToString("MMM dd,  yyyy") @item.Date.Value.ToString("h:mm tt") 
+                                    
+                                </span>
+							</p>
+
+							<p class="task-journal-message-message">
+								@item.Note
+							</p>
+
+							<div class="task-journal-message-edit-delete">
+								<button class="task-journal-message-edit" onclick="EditNote(@item.NoteID)">
+									<i class="fa-solid fa-pen-to-square"></i>
+								</button>
+								<button class="task-journal-message-delete" onclick="DeleteNote(@item.NoteID)">
+									<i class="fa-solid fa-trash-can"></i>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+			}
+			}
+
+			<script>
+
+	//$(".task-journal-message-view-box-container").css("display", "none");
+	function EditNote(id) {
+
+		$('html, body').animate({
+			scrollTop: $(".popup-container").offset().top
+		}, 'fast');
+
+		$.ajax({
+			url: '/Handlers/Edit',
+			type: 'POST',
+			data: {id:id}, // Send form data directly
+			success: function (response) {
+				debugger
+				var note = response.Note;
+				var file = response.Filepath
+				$("#notes").find(".note").val(note);
+				//$("#filenameDisplay").html(file);
+				//var file_download = "/Assets/Notes/" + file;
+				//$("#filenameDisplay").append("<a href = '" + file_download + " ' download>" + file + "</a> ");
+				if (file != null) {
+					var file_download = "/Assets/Notes/" + file;
+					//$("#filenameDisplay").append("<a href = '" + file_download + " ' download>" + file + "</a> ");
+					$("#filenameDisplay").attr("download", "download");
+					$("#filenameDisplay").attr("href", file_download);
+					$("#filenameDisplay").html(file);
+				}
+				else {
+					$("#filenameDisplay").removeAttr("download", "");
+					$("#filenameDisplay").attr("href", "");
+					$("#filenameDisplay").html(file);
+				}
+				$(".NoteID").val(response.NoteID);
+				//$("#notelist").load("/Handlers/notelist");
+			},
+			error: function (xhr, status, error) {
+				// Handle error
+				console.error(xhr.responseText);
+			}
+		});
+	}
+
+
+	function DeleteNote(id) {
+		$.ajax({
+			url: '/Handlers/DeleteNote',
+			type: 'POST',
+			data: { id: id }, // Send form data directly
+			success: function (response) {
+				debugger
+				$('html, body').animate({
+					scrollTop: $(".popup-container").offset().top
+				}, 'fast');
+				$("#lbl_msg").html("");
+				$("#lbl_msg").css("display", "block");
+				$("#lbl_msg").css("color", "rgb(220 53 69)");
+				$("#lbl_msg").html("Note deleted successfully");
+				$("#lbl_msg").fadeOut(5000);
+				$(".task-journal-message-view-box-container").css("display", "block");
+				$("#notelist").load("/Handlers/notelist",{taskid:'@taskid'});
+			},
+			error: function (xhr, status, error) {
+				$('html, body').animate({
+					scrollTop: $(".popup-container").offset().top
+				}, 'fast');
+				$("#lbl_msg").html("");
+				$("#lbl_msg").css("display", "block");
+				$("#lbl_msg").css("color", "rgb(220 53 69)");
+				$("#lbl_msg").html("Failed to delete note");
+				$("#lbl_msg").fadeOut(5000);
+			}
+		});
+	}
+
+			</script>
+
+

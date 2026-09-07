@@ -1,0 +1,210 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_blogs>
+@using juggle_joy.Models;
+@{
+    ViewBag.Title = "List of Blogs | " + MvcApplication.project_name;
+}
+<style>
+    .switch span {
+        width: 44px;
+        height: 20px;
+        border-radius: 0px;
+    }
+
+        .switch span:after {
+            width: 20px;
+            border-radius: 0px;
+        }
+
+    .list-group .list-group-item {
+        height: 48px;
+    }
+</style>
+<ul class="breadcrumb">
+    <li><a href="~/admin/account/dashboard">Home</a></li>
+    <li class="active">Manage Blog List</li>
+</ul>
+<div class="page-title">
+    <h2><span class="fa fa-edit"></span> Manage Blog List</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            @using (Html.BeginForm("delete_blog_list", "Blogs", FormMethod.Post))
+            {
+                <div class="panel panel-default">
+                    <p id="lbl_msg" class="panel-title msg">@ViewBag.msgforblog @ViewBag.msgforbloglist @ViewBag.msgforbloglists</p>
+                    <p id="lbl_msg1" class="panel-title msg">
+                        @ViewBag.deletemsg
+                    </p>
+                    <div class="panel-body table-responsive">
+                        @if (Model.Count() > 0)
+                        {
+
+                            <table id="tblbloglist" class="table dataTable table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th style="background-position: center left;">Blog Title</th>
+                                        <th style="background-position: center left;">Blog Category</th>
+                                        <th style="background-position: center left;">Posted Date</th>
+                                        <th style="background-position: center left;text-align: center;">View</th>
+                                        <th style="background-position: center left;text-align: center;">Edit</th>
+                                        <th style="background-image:none;text-align:center" align="center"><input type="checkbox" id="chkall" style="margin-left: 8px;" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+
+                                        <tr>
+                                            <td>@item.BlogTitle</td>
+                                            <td>@item.tbl_blogcategory.Category</td>
+                                            <td>  @GlobalMethods.ConvertToDate(item.Date)</td>
+
+                                            <td style="text-align: center;"><a onclick="blogdetails(@item.BlogID)"><i class="fa fa-eye" style="cursor:pointer"></i></a></td>
+                                            <td style="text-align: center;"><a href="/Admin/Blogs/addblog/@item.BlogID"><i class="fa fa-edit"></i></a></td>
+
+                                            <td align="center"><input type="checkbox" name="IdsToDelete" value='@item.BlogID' style="margin-left: 8px;" /></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tr>
+                                    <td align="right" colspan="9" style="padding-right:12px;">
+
+                                        <input type="submit" id="btndelete" value="Delete" class="btn btn-danger" />
+                                    </td>
+                                </tr>
+                            </table>
+                        }
+                        else
+                        {
+                            <label>No Records Found</label>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal" style=" display:none;background: rgba(128, 128, 128, 0.72);" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modal_content">
+            <div class="modal-header">
+                <span style="font-size:20px;">
+                    Blog Details
+                </span>
+                <button type="button" id="mclose1" class="close" data-dismiss="modal" style="color:white;opacity:initial">
+                    <span aria-hidden="true" style="color:black">×</span><span class="sr-only">Close</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <center>
+                    <span id="Loader">
+                        <img src="~/admin_assets/img/loaders/default.gif" alt="Loading" />&nbsp;Loading..
+                    </span>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#lnk_manage_Blogs,#manage_Blogslist').addClass("active");
+    });
+
+
+    if ('@ViewBag.msgforblog' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+
+    if ('@ViewBag.msgforbloglist' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+
+    if ('@ViewBag.msgforbloglists' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+
+
+    if ('@ViewBag.deletemsg' != "") {
+        $("#lbl_msg1").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg1").fadeOut();
+    }
+
+
+    function blogdetails(id) {
+
+        id = "/admin/Blogs/blog_details/" + id;
+        $('html, body').css({
+            'overflow': 'auto',
+            'height': '100%'
+        });
+        $("#myModal").css("display", "block")
+        $("#Loader").css("display", "block");
+
+        $("#modal-body").load(id, null, function (responseTxt, statusTxt, xhr) {
+            if (statusTxt == "success") {
+                $("#Loader").hide();
+                $("#modal-body").show();
+                $("#myModal").css("overflow-y", "scroll");
+                $("#myModal").slideDown(500);
+            }
+        });
+    }
+    $('#mclose1').click(function () {
+        $("#myModal").css("display", "none")
+    });
+
+    $(document).ready(function (e) {
+        $('#btndelete').click(function () {
+            if ($("input[name='IdsToDelete']:checked").length == 0) {
+                alert("Please select record to delete.");
+                return false;
+            }
+            else {
+                var count = $("input[name='IdsToDelete']:checked").length;
+                return confirm("Are you sure want to delete " + count + " record(s).");
+            }
+        });
+    });
+    $("#chkall").change(function () {
+        $("input[name='IdsToDelete']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='IdsToDelete']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='IdsToDelete']:checked").length == $("input[name='IdsToDelete']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+
+    $('#tblbloglist').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        "ordering": false,
+    });
+
+</script>

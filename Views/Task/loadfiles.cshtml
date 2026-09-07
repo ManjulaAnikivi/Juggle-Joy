@@ -1,0 +1,59 @@
+﻿
+@model  IEnumerable<juggle_joy.Models.tbl_taskattachment>
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var i = Model.Count();
+    string ext = "";
+}
+<div class="task-attachment-file-container">
+
+    @foreach (var files in Model)
+    {
+        var user = ctx.tbl_user.Where(x => x.UserID == files.UserID).FirstOrDefault();
+        <div class="task-attachment-file">
+            <a href="~/Assets/TaskFiles/@files.FileName" target="_blank" download>
+                <div class="file-preview file-thumbnail">
+                    @if (files.FileName != null)
+                    {
+                        ext = Path.GetExtension(files.FileName);
+                    }
+
+                    @if (ext.ToLower() == ".pdf" && files != null)
+                    {
+                        <img src="~/Assets/images/pdficon.png">
+                    }
+                    else if (ext.ToLower() == ".doc" || ext.ToLower() == ".docx" && files != null)
+                    {
+                        <img src="~/Assets/images/wordicon.png">
+                    }
+                    else if (files != null)
+                    {
+                        <img src="~/Assets/images/fileicon.png">
+
+                    }
+                </div>
+                &nbsp;<i class="fa fa-download"></i>
+                <div class="file-text">
+                    <div class="file-title-main">
+                        @files.FileName
+                    </div>
+                    <div class="file-title-placeholder" id="fileusername">
+                        Uploaded
+                        by
+                        @user.FirstName on
+                        @files.Date.Value.ToString("MMM dd,yyyy")
+                    </div>
+                </div>
+            </a>
+   
+            <button class="file-delete-btn" onclick="deletefiles(@files.TaskAttachmentID)">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+    }
+
+    <div id="loadfiles"></div>
+
+</div>

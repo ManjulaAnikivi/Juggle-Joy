@@ -1,0 +1,52 @@
+﻿
+@using juggle_joy.Models
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    var userid = Convert.ToInt32(Session["UserID"]);
+    var notification = ctx.tbl_notification.Where(x => x.ReadStatus == "0" && x.ToID == userid).OrderByDescending(x => x.NotificationID).ToList();
+    var note5 = notification.Take(5);
+}
+
+
+<div>
+    <div class="admin-header-notification-wrapper">
+        @if (@notification.Count() > 0)
+        {
+            <span class="notification-count">@notification.Count()</span>
+        }
+
+        <button class="header-notification-btn"><i class="fa-solid fa-bell"></i></button>
+    </div>
+
+    <div class="admin-header-notification-notifications" style="margin-top: 1px; margin-right: 50px ">
+        <ul>
+            @if (note5.Count() > 0)
+            {
+                foreach (var item in note5)
+                {
+                    <li>
+                        <a href="" onclick="readstatus('@item.NotificationID','@item.Url')">
+                            @item.Notification
+                        </a>
+                    </li>
+                }
+
+
+
+            }
+            @*else
+                {
+                    <li>
+                        <a href="#">
+                            No new notification
+                        </a>
+                    </li>
+                }*@
+
+
+        </ul>
+    </div>
+</div>
+
+

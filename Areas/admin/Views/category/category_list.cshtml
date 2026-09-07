@@ -1,0 +1,132 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_category>
+@using juggle_joy.Models;
+@{ 
+    Layout = null;
+}
+<style>
+    .switch span {
+        width: 44px;
+        height: 20px;
+        border-radius: 0px;
+    }
+
+        .switch span:after {
+            width: 20px;
+            border-radius: 0px;
+        }
+
+    .list-group .list-group-item {
+        height: 48px;
+    }
+</style>
+
+<div class="page-title">
+    <h2><span class="fa fa-edit"></span> List of Categories</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            @using (Html.BeginForm("delete_category_list", "category", FormMethod.Post))
+            {
+                <div class="panel panel-default">
+                    <p id="lblmsg" class="panel-title msg" style="color: #006400 !important">@ViewBag.delete_inuse</p>
+                    <p id="lblmsg1" class="panel-title msg">@ViewBag.delete_notinuse</p>
+
+                    <div class="panel-body table-responsive">
+                        @if (Model.Count() > 0)
+                        {
+
+                            <table id="tblbloglist" class="table dataTable table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th style="background-position: center left;">Category</th>
+                                        <th style="background-position: center left;text-align: center;">Edit</th>
+                                        <th style="background-image:none;text-align:center" align="center"><input type="checkbox" id="chkall" style="margin-left: 8px;" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+
+                                        <tr>
+                                            <td>@item.Category</td>
+                                            <td style="text-align: center;"><a href="/admin/add-category/@item.CategoryID"><i class="fa fa-edit"></i></a></td>
+
+                                            <td align="center"><input type="checkbox" name="IdsToDelete" value='@item.CategoryID' style="margin-left: 8px;" /></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tr>
+                                    <td align="right" colspan="9" style="padding-right:12px;">
+
+                                        <input type="submit" id="btndelete" value="Delete" class="btn btn-danger" />
+                                    </td>
+                                </tr>
+                            </table>
+                        }
+                        else
+                        {
+                            <label>No Records Found</label>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    if ('@ViewBag.delete_inuse' != "") {
+        $("#lblmsg").fadeOut(15000);
+    }
+    else {
+        $("#lblmsg").fadeOut();
+    }
+
+     if ('@ViewBag.delete_notinuse' != "") {
+        $("#lblmsg1").fadeOut(15000);
+    }
+    else {
+        $("#lblmsg1").fadeOut();
+    }
+
+
+
+    $(document).ready(function (e) {
+        $('#btndelete').click(function () {
+            if ($("input[name='IdsToDelete']:checked").length == 0) {
+                alert("Please select record to delete.");
+                return false;
+            }
+            else {
+                var count = $("input[name='IdsToDelete']:checked").length;
+                return confirm("Are you sure want to delete " + count + " record(s).");
+            }
+        });
+    });
+    $("#chkall").change(function () {
+        $("input[name='IdsToDelete']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='IdsToDelete']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='IdsToDelete']:checked").length == $("input[name='IdsToDelete']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+
+    $('#tblbloglist').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        "ordering": false,
+    });
+
+</script>

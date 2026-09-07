@@ -1,0 +1,76 @@
+﻿
+@using juggle_joy.Models
+@{
+	Layout = null;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	int handlerid = Convert.ToInt32(Session["HandlerID"]);
+	var tbl_user = ctx.tbl_user.ToList();
+	var handler = tbl_user.Where(x => x.Status == (int)UserStatus.Active && x.HandlerID == handlerid).ToList();
+	var handlerName = tbl_user.Where(x => x.UserID == handlerid).FirstOrDefault();
+
+}
+<div class="admin-page-sidebar-row">
+	<h3 class="handler">@handlerName.FirstName </h3>
+	<ul class="listing">
+		@if (handler.Count() > 0)
+		{
+			foreach (var item in handler)
+			{
+				var assistants = ctx.tbl_user.Where(x => x.UserID == item.UserID && x.UserType == "A" && x.Status == (int)UserStatus.Active).ToList();
+				foreach (var items in assistants)
+				{
+					var totalTask = ctx.tbl_task.Where(x => x.AssistantID == items.UserID && x.Status == (int)TaskStatus.Received).ToList().Count();
+					<li class="">
+						<a href="/task-pending/@item.UserID">@items.FirstName</a>
+
+						@if (totalTask > 0)
+						{
+							<span class="sidebar-notification-count">
+
+								@totalTask
+							</span>
+						}
+
+					</li>
+				}
+			}
+		}
+		else
+		{
+			<li class="">
+				<a href="#">No assistants available</a>
+			</li>
+		}
+
+
+	</ul>
+</div>
+<script>
+	$(document).ready(function () {
+
+		$(".admin-page-sidebar-row").addClass("active__row");
+		$(".handler").addClass("toggle-active");
+		$(".listing").css("display", "block");
+
+		//admin header search bar
+		$(".search-box-mobile-btn button").click(function () {
+			$(".header-search-box").slideToggle("fast");
+		});
+
+		// admin handler accordion
+		$(".admin-page-sidebar .handler").on("click", function (e) {
+			e.preventDefault();
+			var $this = $(this);
+			if (!$this.hasClass("toggle-active")) {
+				$(".admin-page-sidebar .listing").slideUp(400);
+				$(".admin-page-sidebar .handler").removeClass("toggle-active");
+				$(".admin-page-sidebar .handler").removeClass("active");
+				$(".admin-page-sidebar .handler").parent().removeClass("active__row");
+			}
+			$this.toggleClass("toggle-active");
+			$this.parent().toggleClass("active__row");
+			$this.next().slideToggle();
+		});
+
+	});
+</script>

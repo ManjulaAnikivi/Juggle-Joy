@@ -1,0 +1,76 @@
+﻿@model juggle_joy.Models.tbl_question
+@using juggle_joy.Models;
+@{
+	Layout = null;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	var subcatid = Model.SubCategoryID.Split(',').Select(int.Parse).ToList();
+	var subcategory = ctx.tbl_subcategory.Where(x => subcatid.Contains(x.SubCategoryID)).Select(x => x.SubCategory).ToList();
+	string consubcat = string.Join(", ", subcategory);
+	var options = ctx.tbl_options.Where(x => x.QuestionID == Model.QuestionID).ToList();
+	var i = 1;
+
+}
+<style>
+	.font_size {
+		font-size: 14px;
+	}
+</style>
+<div class="row">
+	<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+		<div class="row font_size">
+			<div class="form-group">
+				<div class="col-xs-6 col-sm-8 col-md-12 col-lg-12">
+					<label class="bold"> Question:</label>
+					@Model.Question
+				</div>
+			</div>
+		</div>
+		<br />
+		@if (subcategory != null)
+		{
+			<div class="row font_size">
+				<div class="form-group">
+					<div class="col-xs-6 col-sm-8 col-md-12 col-lg-12">
+						<label class="bold">Sub Category:</label>
+						@consubcat
+					</div>
+				</div>
+			</div>
+			<br />
+		}
+
+		<div class="row font_size">
+			<div class="form-group">
+				<div class="col-xs-6 col-sm-8 col-md-12 col-lg-12">
+					<label class="bold"> Options:</label>
+					<br />
+					@if (options.Count > 0)
+					{
+						foreach (var item in options)
+						{
+							if (item.Question != null)
+							{
+								<span>@i: &nbsp;</span>@item.Question
+								<br />
+								i++;
+							}
+
+						}
+					}
+					else
+					{
+						<span style="color: #006400">No options available</span>
+
+					}
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<br />
+<script src="~/js/moment.js"></script>
+<script src="~/csjss/select2.min.js"></script>
+<script type="text/javascript">
+</script>
+

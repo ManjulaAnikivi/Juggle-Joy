@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="1b9bff02b9a3457bb066e6cec4f875c8" Name="Diagram1" ZoomLevel="90">
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_admin" Width="1.5" PointX="0.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_blogs" Width="1.5" PointX="2.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_category" Width="1.5" PointX="2.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_contact" Width="1.5" PointX="4.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_faq" Width="1.5" PointX="6.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_options" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_question" Width="1.5" PointX="0.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_subcategory" Width="1.5" PointX="5" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_subscriber" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_subcategory_tbl_category" ManuallyRouted="false" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_options_tbl_question" ManuallyRouted="false" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_question_tbl_question" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_country" Width="1.5" PointX="9.375" PointY="5.375" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_state" Width="1.5" PointX="11.625" PointY="5.375" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_user" Width="1.5" PointX="13.875" PointY="4.125" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_state_tbl_country" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_user_tbl_country" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_user_tbl_state" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_faq_category" Width="1.5" PointX="7.375" PointY="9.875" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_faq_faq_category1" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_blogcategory" Width="1.5" PointX="0.75" PointY="4.125" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_blogs_tbl_blogcategory" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_banner" Width="1.5" PointX="9.375" PointY="8.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_answer" Width="1.5" PointX="12.5" PointY="0.875" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_answer_tbl_question" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_task" Width="1.5" PointX="10.25" PointY="0.75" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_answer_tbl_task" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_task_tbl_category" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_task_tbl_subcategory" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_log" Width="1.5" PointX="12.5" PointY="11.25" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_log_tbl_task" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_chat" Width="1.5" PointX="0.75" PointY="10.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_chatfile" Width="1.5" PointX="2.75" PointY="10.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_minitask" Width="1.5" PointX="12.5" PointY="14.5" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_minitask_tbl_task" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_optiontype" Width="1.5" PointX="5.25" PointY="0.75" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_optiontype_tbl_options" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_taskattachment" Width="1.5" PointX="16.125" PointY="4.125" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_taskattachment_tbl_task" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_taskattachment_tbl_user" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_notification" Width="1.5" PointX="0.75" PointY="14.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_recommendations" Width="1.5" PointX="12.875" PointY="17.375" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_survey" Width="1.5" PointX="8" PointY="13" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_surveyQue" Width="1.5" PointX="5.75" PointY="13.375" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_recommendations_tbl_task" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_survey_tbl_surveyQue" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_note" Width="1.5" PointX="15.375" PointY="0.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_price" Width="1.5" PointX="15.375" PointY="10.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_gifts" Width="1.5" PointX="15.375" PointY="13.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_subscription" Width="1.5" PointX="5.375" PointY="16.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_cms" Width="1.5" PointX="16.375" PointY="7.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_tempgifts" Width="1.5" PointX="7.375" PointY="16.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_blogviews" Width="1.5" PointX="9.375" PointY="16.75" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_CancelAnswer" Width="1.5" PointX="21.875" PointY="0.875" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_CancelCat" Width="1.5" PointX="17.375" PointY="1.125" />
+        <EntityTypeShape EntityType="db_jugglejoyModel.tbl_CancelReason" Width="1.5" PointX="19.625" PointY="0.875" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_CancelAnswer_tbl_CancelReason" />
+        <AssociationConnector Association="db_jugglejoyModel.FK_tbl_CancelReason_tbl_CancelCat" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

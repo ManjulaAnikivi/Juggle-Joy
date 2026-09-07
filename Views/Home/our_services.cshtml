@@ -1,0 +1,128 @@
+﻿
+@{
+    //ViewBag.Title = "Our services";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our services - @MvcApplication.project_name</title>
+
+    @Html.Partial("css")
+
+</head>
+<body class="body-our-services-page">
+    @Html.Partial("header")
+    <div class="main our-services-page">
+
+        <section class="our-services banner">
+            <div class="our-services-banner-main" style="background: url('/Assets/images/our-services-banner.png') no-repeat center center / cover;">
+                <div class="container">
+                    <div class="content-wrapper">
+                        <h1 class="wow fadeInUp">Discover the magic of JuggleJoy</h1>
+                        <p class="wow fadeInUp" data-wow-delay=".1s">
+                            Here at JuggleJoy, we’re all about making life easier for busy parents. Our task-delegation service is designed to simplify your life and smash your to-do list, so you can focus on what truly matters.
+                            <br><br>
+                            As parents, we get it – the mental juggling act of managing a home, kids and your own needs can be a real challenge! Whilhhhe we can't list them all (because who can?!), the following are just some of the tasks we can help with to support your family and win you back some precious free time.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="our-services-cards section-position">
+            <div class="our-services-cards-main">
+
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-12 services-card">
+                            <div class="content-wrapper wow fadeInUp">
+                                <img src="~/Assets/images/our-services/finding-venues.png" alt="finding-venues">
+                                <div class="content">
+                                    <h4>Finding venues</h4>
+                                    <p>
+                                        Let your assistant conjure up and book the venue of your dreams for that special occasion (no wand required!). Imagine picture-perfect settings and hassle-free planning with our help.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-12 services-card">
+                            <div class="content-wrapper wow fadeInUp">
+                                <img src="~/Assets/images/our-services/home-maintenance.png" alt="home-maintenance">
+                                <div class="content">
+                                    <h4>Home maintenance</h4>
+                                    <p>
+                                        Whether it’s a leaky tap, creaky door or broken piece of furniture, our DIY superheroes can tackle home repairs like a pro while you get on with 
+your day.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-12 services-card">
+                            <div class="content-wrapper wow fadeInUp">
+                                <img src="~/Assets/images/our-services/holiday-package.png" alt="holiday-package">
+                                <div class="content">
+                                    <h4>Holiday planning</h4>
+                                    <p>
+                                        Let our JuggleJoy assistants shoulder the planning stress for your next getaway. From crafting the perfect itinerary and booking flights, to organising car hire. All you need to do is count down the days!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-12 services-card">
+                            <div class="content-wrapper wow fadeInUp">
+                                <img src="~/Assets/images/our-services/meal-planning.png" alt="meal-planning">
+                                <div class="content">
+                                    <h4>Meal planning</h4>
+                                    <p>
+                                        No need to stress about what to feed the munchkins next week. Share your likes and dislikes, and we'll handle the rest, leaving you to sharpen your inner Jamie Oliver skills.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-12 services-card">
+                            <div class="content-wrapper wow fadeInUp">
+                                <img src="~/Assets/images/our-services/education-&-tutors.png" alt="education-&-tutors">
+                                <div class="content">
+                                    <h4>Education & tutors</h4>
+                                    <p>
+                                        Your assistant can help to source and book tutoring sessions for you or the little ones so that everyone achieves their potential, with plenty of time to relax afterwards!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-12 services-card">
+                            <div class="content-wrapper wow fadeInUp">
+                                <img src="~/Assets/images/our-services/wellness.png" alt="wellness">
+                                <div class="content">
+                                    <h4>Wellness</h4>
+                                    <p>
+                                        As parents, we often put our own mental health to one side. Your assistant can help plan and book regular wellness sessions with an expert, prioritising and nurturing 
+your well-being.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="chat-icon">
+                <a href="#">
+                    <img src="~/Assets/images/chat-icon-1.png" alt="chat-icon">
+                </a>
+                <p class="py-1">
+                    Got a question?
+                    Chat to us!
+                </p>
+            </div>*@
+        </section>
+
+    </div>
+  
+    @Html.Partial("footer")
+</body>
+</html>
+@Html.Partial("js")

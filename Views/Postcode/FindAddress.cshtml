@@ -1,0 +1,37 @@
+﻿
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("FindAddress", "Postcode", FormMethod.Post))
+{
+    <label for="addressId">Address ID:</label>
+    <input type="text" name="addressId" required />
+
+    <label for="language">Language:</label>
+    <input type="text" name="language"  />
+
+    <label for="dateTime">Date Time:</label>
+    <input type="text" name="dateTime" required />
+
+    <label for="acceptValue">Accept Value:</label>
+    <input type="text" name="acceptValue" required />
+
+    <input type="submit" value="Find Address" />
+}
+
+@if (ViewBag.AddressResult != null)
+{
+    <div>
+        <h3>Address Result:</h3>
+        <pre>@ViewBag.AddressResult</pre>
+    </div>
+}
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div style="color:red;">
+        <strong>Error:</strong> @ViewBag.ErrorMessage
+    </div>
+}
+

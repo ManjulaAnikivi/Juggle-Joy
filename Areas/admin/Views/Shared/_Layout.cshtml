@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>@ViewBag.Title</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="shortcut icon" href="~/Assets/images/logo-100x100.png" type="image/x-icon" />
+
+	@Html.Partial("admin_css")
+	@Html.Partial("admin_js")
+</head>
+<body>
+    <div class="page-container page-navigation-top-fixed">
+       @Html.Partial("sidebar")
+        <div class="page-content">
+            @Html.Partial("header")
+            <div class="page-content-wrap">
+                @RenderBody()
+            </div>
+            @Html.Partial("footer")
+        </div>
+    </div>
+</body>
+</html>

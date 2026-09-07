@@ -1,0 +1,137 @@
+﻿@model juggle_joy.Models.Contact_Us_Validation
+@{
+    Layout = null;
+    //ViewBag.Title = MvcApplication.project_name;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Info - @MvcApplication.project_name</title>
+
+    @Html.Partial("css")
+    <script src="https://www.google.com/recaptcha/api.js?render=@juggle_joy.Models.GlobalMethods.Google_reCAPTCHA_SiteKey"></script>
+</head>
+
+<body class="body-contact-us-page">
+    @*@Html.Partial("header")*@
+    @Html.Partial("header")
+    <div class="main contact-us-page">
+
+        <section class="contact-us">
+            <div class="contact-us-main">
+                <div class="container">
+                    <h1 class="font-caveat font-size-caveat-main wow fadeInUp">Contact Us</h1>
+                    <div class="inner-container">
+
+                        <div class="row wow fadeInUp">
+                            <div class="col-xl-8 col-lg-8 col-md-12 col-12">
+                                <h2>Get in Touch</h2>
+
+                                @using (Html.BeginForm("contact_us", "Home", FormMethod.Post))
+                                {
+                                    @Html.HiddenFor(x => x.UserGoogleCaptchaToken)
+                                    @Html.AntiForgeryToken();
+                                    <p id="lbl_msg" style="color: #00c1ab">@ViewBag.msg</p>
+                                    <fieldset>
+                                        <div class="half-fields">
+                                            <div class="form_field">
+                                                <label for="ContactName">Name*</label>
+                                                @Html.TextBoxFor(x => x.ContactName, "", new { placeholder = "Name" })
+                                                @Html.ValidationMessageFor(x => x.ContactName, "", new { @class = "text-danger" })
+
+                                            </div>
+                                            <div class="form_field">
+                                                <label for="ContactEmail">Email*</label>
+                                                @Html.TextBoxFor(x => x.ContactEmail, "", new { placeholder = "Email address" })
+                                                @Html.ValidationMessageFor(x => x.ContactEmail, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="half-fields">
+                                            <div class="form_field">
+                                                <label for="ContactPhone">Phone*</label>
+                                                @Html.TextBoxFor(x => x.ContactPhone, "", new { placeholder = "Phone", pattern = "[0-9]{3}-[0-9]{2}-[0-9]{3}" })
+                                                @Html.ValidationMessageFor(x => x.ContactPhone, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="form_field">
+                                                <label for="ContactSubject">Subject*</label>
+                                                @Html.TextBoxFor(x => x.ContactSubject, "", new { placeholder = "Subject" })
+                                                @Html.ValidationMessageFor(x => x.ContactSubject, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="form_field">
+                                            <label for="ContactMsg">Message*</label>
+                                            @Html.TextAreaFor(x => x.ContactMsg, new { placeholder = "Message" })
+                                            @Html.ValidationMessageFor(x => x.ContactMsg, "", new { @class = "text-danger" })
+                                        </div>
+
+                                        <div class="form_submit">
+                                            <input type="submit" value="Send Message" class="primary-btn">
+                                        </div>
+                                    </fieldset>
+                                }
+                            </div>
+                            <div class="col-xl-4 col-lg-4 col-md-12 col-12">
+                                <h2>Contact Info</h2>
+                                <div class="contact-info-container">
+                                    <div class="contact-info-wrapper">
+                                        <span><i class="fa-solid fa-phone"></i></span>
+                                        <div class="info">
+                                            <p class="strong-heading">Phone:</p>
+                                            <a href="tel:+12 3456 78900">+12 3456 78900</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-info-wrapper">
+                                        <span><i class="fa-solid fa-envelope"></i></span>
+                                        <div class="info">
+                                            <p class="strong-heading">Email Address:</p>
+                                            <a href="mailto:howdy@jugglejoy.com">howdy@jugglejoy.com</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-info-wrapper">
+                                        <span><i class="fa-solid fa-location-dot"></i></span>
+                                        <div class="info">
+                                            <p class="strong-heading">Address:</p>
+                                            <p class="address">124 City Road, <br> London, EC1V 2NX</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+    @Html.Partial("footer")
+
+</body>
+</html>
+@Html.Partial("js")
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script>
+		if ('@ViewBag.msg' == null) {
+			$("#lbl_msg").fadeOut();
+		}
+		else {
+			$("#lbl_msg").fadeOut(5000);
+		}
+</script>
+
+<script>
+
+          grecaptcha.ready(function () {
+        grecaptcha.execute('@juggle_joy.Models.GlobalMethods.Google_reCAPTCHA_SiteKey', { action: 'userRegister' }).then(function (token) {
+            $("#UserGoogleCaptchaToken").val(token);
+        });
+    });
+</script>
+

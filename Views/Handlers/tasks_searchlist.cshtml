@@ -1,0 +1,519 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_task>
+@using juggle_joy.Models
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    Layout = null;
+    int handlerid = Convert.ToInt32(Session["HandlerID"]);
+    var tbl_user = ctx.tbl_user.ToList();
+    var handler = tbl_user.Where(x => x.Status == (int)UserStatus.Active && x.HandlerID == handlerid).ToList();
+    var task = ctx.tbl_task.FirstOrDefault();
+    var asstID = ViewBag.assistantid;
+    var tbl_task = ctx.tbl_task.ToList();
+    //var ongoing = tbl_task.Where(x => x.AssistantID == asstID && x.Status == (int)TaskStatus.Ongoing).ToList();
+    //var completed = tbl_task.Where(x => x.AssistantID == asstID && x.Status == (int)TaskStatus.Complete).ToList();
+    int i = 1;
+    var handlerName = tbl_user.Where(x => x.UserID == handlerid).FirstOrDefault();
+    var searchkeywords = ViewBag.keywords;
+    var assistant = tbl_user.Where(x => x.UserType == "A" && x.Status == (int)UserStatus.Active && x.HandlerID == handlerid).OrderBy(x => x.UserID).ToList();
+
+    
+}
+<link href="~/Content/chosen/chosen.min.css" rel="stylesheet" />
+
+ 
+
+<style>
+    .light-theme a, .light-theme span {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        line-height: 20.83px !important;
+        border: 1px solid var(--secondary-color) !important;
+        border-radius: 4px !important;
+        color: var(--primary-color) !important;
+        background: #ffffff !important;
+        width: 40px !important;
+        height: 40px !important;
+        display: inline-flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 3px !important;
+        box-shadow: unset !important;
+        /*cursor:pointer !important;*/
+    }
+
+    .light-theme .current {
+        color: #ffffff !important;
+        background: var(--primary-color) !important;
+        border-color: #00c1ab !important;
+        box-shadow: unset !important;
+    }
+
+    .last-item {
+        margin-left: auto;
+        margin-right: 20px;
+    }
+
+    .hover {
+        visibility: hidden;
+        position: absolute;
+        top: -32px;
+        left: -106px;
+        background: #e1e2dd;
+        color: #000433 !important;
+        border-radius: 5px;
+        padding: 5px;
+        width: max-content;
+        font-weight: normal;
+    }
+
+        .hover::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 90%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #e1e2dd transparent transparent transparent;
+        }
+    #cars_chosen {
+        width: 129px !important;
+    }
+    .chosen-container-single .chosen-single span {
+        display: unset !important;
+    }
+
+    .chosen-container-single .chosen-single div b {
+        background: unset !important;
+    }
+
+    .chosen-container-single .chosen-single {
+        padding-left: 11px !important;
+        background: white !important;
+        width:129px !important;
+    }
+
+    .admin-page-table-content-container {
+        overflow-x: unset !important;
+    }
+
+    @@media (max-width: 1249px) {
+        .admin-page-table-content-main .admin-page-table-content-container {
+            overflow-x: scroll !important;
+        }
+    }
+
+</style>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    @Html.Partial("assistantHandler_css")
+    <link href="~/admin_assets/css/simplePagination.min.css" rel="stylesheet" />
+
+</head>
+
+<body class="body-admin-handler-dashboard-page body-admin-pages">
+    @Html.Partial("handlerheader")
+
+    <main class="main admin-handler-dashboard-page">
+
+
+        <section class="admin-handler-dashboard-section">
+            <div class="admin-handler-dashboard-main">
+                <div class="container-fluid">
+                    <div class="grid admin-page-grid">
+
+                        <div class="admin-page-sidebar">
+                            <div class="admin-page-sidebar-main">
+
+
+                                <div class="admin-page-sidebar-row">
+                                    <h3 class="handler">@handlerName.FirstName</h3>
+                                    <ul class="listing" style="display:block">
+
+                                        @foreach (var item in handler)
+                                        {
+                                            var assistants = tbl_user.Where(x => x.UserID == item.UserID && x.UserType == "A" && x.Status == (int)UserStatus.Active).ToList();
+                                            foreach (var items in assistants)
+                                            {
+                                                var pendingTask = ctx.tbl_task.Where(x => x.AssistantID == items.UserID && x.Status == (int)TaskStatus.Received).ToList().Count();
+                                                if (items.UserID == ViewBag.assistantid)
+                                                {
+                                                    <li class="selected">
+                                                        <a href="/task-pending/@item.UserID">@items.FirstName</a>
+                                                        @if (pendingTask > 0)
+                                                        {
+                                                            <span class="sidebar-notification-count">
+
+                                                                @pendingTask
+                                                            </span>
+                                                        }
+
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li class="">
+                                                        <a href="/task-pending/@item.UserID">@items.FirstName</a>
+                                                        @if (pendingTask > 0)
+                                                        {
+                                                            <span class="sidebar-notification-count">
+                                                                @pendingTask
+                                                            </span>
+                                                        }
+                                                    </li>
+                                                }
+
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-12 tab-content">
+                            <div class="dashboard-popup-content dashboard-popups dashboard-popup-background">
+                                <section class="task-detail-popup message-handler">
+                                    <div class="task-detail-popup-main">
+                                        <div class="popup-container">
+                                            <div class="task-detail-popup-wrapper">
+                                                <div class="content-wrapper">
+                                                    <div class="task-popup-box-contents">
+                                                        <div class="popup-tabs">
+
+
+                                                            <div class="admin-page-table-content background-panel-color">
+                                                                <div class="admin-page-table-content-main">
+                                                                    @if (searchkeywords != null)
+                                                                    {
+                                                                        <p style="color: #00c1ab; font-size: 20px; margin: 10px ">You searched for <span class="strong-heading">"@searchkeywords"</span></p>
+                                                                    }
+                                                                    <p id="lbl_msg1" style="text-align:left"></p>
+                                                                    <div class="admin-page-table-content-container">
+
+                                                                        <ul class="admin-tasks-table">
+
+                                                                            <li class="table-row table-heading">
+                                                                                <div class="table-heading-wrapper">
+                                                                                    <div class="table-task-id">ID</div>
+                                                                                    <div class="table-task-sla">SLA</div>
+                                                                                    <div class="table-task-summary">Summary</div>
+                                                                                    <div class="table-task-sla">Assistant</div>
+                                                                                    <div class="table-task-priority">Priority</div>
+                                                                                    <div class="table-task-status">Status</div>
+                                                                                    @*<div class="table-task-created-by">Created by</div>*@
+                                                                                </div>
+                                                                            </li>
+
+
+                                                                            @if (Model.Count() > 0)
+                                                                            {
+
+                                                                                foreach (var item in Model)
+                                                                                {
+                                                                                    var DiffInt = 6;
+                                                                                    if (item.Deadline.HasValue)
+                                                                                    {
+                                                                                        var DeadlineDate = item.Deadline.Value.Date;
+                                                                                        var currentDate = DateTime.Now.Date;
+                                                                                        var diff = DeadlineDate - currentDate;
+                                                                                        var daysDiff = diff.TotalDays;
+                                                                                        DiffInt = (int)daysDiff;
+                                                                                    }
+                                                                                    var user = tbl_user.Where(x => x.UserID == item.FromID).FirstOrDefault();
+
+                                                                                    <li class="table-row pagination-list">
+                                                                                        <a href="/assistant-specific-tasks/@item.TaskID">
+                                                                                            <div class="table-task-id">@i</div>
+
+                                                                                            <div class="table-task-sla">
+                                                                                                @*@if (item.Status == (int)TaskStatus.Received)
+            {
+                <span class="progress-bar">
+                    <span class="progress" style="width: 30%;"></span>
+                </span>
+            }
+            else if (item.Status == (int)TaskStatus.Ongoing)
+            {
+                <span class="progress-bar">
+                    <span class="progress" style="width: 60%;"></span>
+                </span>
+            }
+            else if (item.Status == (int)TaskStatus.Complete)
+            {
+                <span class="progress-bar">
+                    <span class="progress" style="width: 100%;"></span>
+                </span>
+            }
+            else
+            {
+                <span class="progress-bar">
+                    <span class="progress" style="width: 100%; background-color: #e5756f"></span>
+                </span>
+            }*@
+                                                                                                @if (item.Deadline.HasValue)
+                                                                                                {
+                                                                                                    if (DiffInt >= 9)
+                                                                                                    {
+                                                                                                        <span class="progress-bar">
+                                                                                                            <span class="progress" style="width: 33%; background-color: #00c1ab !important;"></span>
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                    else if (DiffInt >= 4 && DiffInt <= 8)
+                                                                                                    {
+                                                                                                        <span class="progress-bar">
+                                                                                                            <span class="progress" style="width: 66%; background-color: #ffce00 !important;"></span>
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                    else if (DiffInt >= 0 && DiffInt <= 3)
+                                                                                                    {
+                                                                                                        <span class="progress-bar">
+                                                                                                            <span class="progress" style="width: 90%; background-color: #e5756f !important;"></span>
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <span class="progress-bar">
+                                                                                                            <span class="progress" style="width: 100%; background-color: #e5756f !important;"></span>
+                                                                                                        </span>
+                                                                                                    }
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 33%; background-color: #00c1ab !important;"></span>
+                                                                                                    </span>
+                                                                                                }
+                                                                                            </div>
+                                                                                            <div class="table-task-summary">@item.TaskTitle</div>
+                                                                                            <div class="table-task-sla">
+                                                                                                <select id="cars" class="cars" name="cars" taskid="@item.TaskID">
+                                                                                                    <option value="0" selected disabled>Select Assistant</option>
+
+                                                                                                    @if (item.AssistantID != null)
+                                                                                                    {
+                                                                                                        var asst = tbl_user.Where(x => x.UserID == item.AssistantID).FirstOrDefault();
+                                                                                                        <option value="@item.AssistantID" selected="selected">@asst.FirstName @asst.LastName</option>
+
+                                                                                                        foreach (var items in assistant)
+                                                                                                        {
+                                                                                                            if (items.UserID != item.AssistantID)
+                                                                                                            {
+                                                                                                                <option value="@items.UserID">@items.FirstName @items.LastName</option>
+
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+
+
+                                                                                                    @foreach (var items in assistant)
+                                                                                                    {
+                                                                                                        if (item.AssistantID == null)
+                                                                                                        {
+                                                                                                            <option value="@items.UserID">@items.FirstName @items.LastName</option>
+                                                                                                        }
+                                                                                                    }
+                                                                                                </select>
+                                                                                            </div>
+                                                                                            @if (item.Deadline.HasValue)
+                                                                                            {
+                                                                                                if (DiffInt >= 0 && DiffInt <= 3)
+                                                                                                {
+                                                                                                    <div class="table-task-priority">
+                                                                                                        <span class="table-task-priority-data low">High</span>
+                                                                                                    </div>
+                                                                                                }
+                                                                                                else if (DiffInt > 3 && DiffInt < 9)
+                                                                                                {
+                                                                                                    <div class="table-task-priority">
+                                                                                                        <span class="table-task-priority-data " style="background-color: #ffce00 !important;">Medium</span>
+                                                                                                    </div>
+                                                                                                }
+                                                                                                else if (DiffInt < 0)
+                                                                                                {
+                                                                                                    <div class="table-task-priority">
+                                                                                                        <span class="table-task-priority-data low">Low</span>
+                                                                                                    </div>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <div class="table-task-priority">
+                                                                                                        <span class="table-task-priority-data high">Low</span>
+                                                                                                    </div>
+                                                                                                }
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <div class="table-task-priority">
+                                                                                                    <span class="table-task-priority-data high">Low</span>
+                                                                                                </div>
+                                                                                            }
+
+                                                                                            <div class="table-task-status">
+                                                                                                @if (item.Status == (int)TaskStatus.Received)
+                                                                                                {
+                                                                                                    <span class="table-task-status-data">
+                                                                                                        New
+                                                                                                    </span>
+
+                                                                                                }
+                                                                                                else if (item.Status == (int)TaskStatus.Ongoing)
+                                                                                                {
+                                                                                                    <span class="table-task-status-data">
+                                                                                                        In Progress
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else if (item.Status == (int)TaskStatus.Complete)
+                                                                                                {
+                                                                                                    <span class="table-task-status-data">
+                                                                                                        Open
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <span class="table-task-status-data hold">Hold</span>
+                                                                                                }
+                                                                                            </div>
+                                                                                            @*<div class="table-task-created-by">@user.FirstName</div>*@
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    i++;
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <li class="table-row" style="text-align:center;padding:10px"> No Records Found</li>
+                                                                            }
+
+                                                                        </ul>
+
+
+                                                                    </div>
+
+                                                                    @if (Model.Count() > 10)
+                                                                    {
+                                                                        <div class="task-pagination">
+                                                                            <div id="pagination"></div>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+    @Html.Partial("handlerfooter")
+    <script src="~/Assets/js/all.min.js"></script>
+    <script src="~/Assets/js/jquery.min.js"></script>
+    <script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery-1.6.simplePagination.min.js"></script>
+    <script src="~/Scripts/chosen.jquery.min.js"></script>
+    
+    <script>
+		$("#pending").addClass("selected")
+
+		$(".admin-page-sidebar-row").addClass("active__row");
+		$(".handler").addClass("toggle-active");
+		$(".listing").css("display","block");
+
+		$(".accept").on("mouseover", function () {
+			$(this).find('.hover').css('visibility', 'visible');
+		});
+
+		$(".accept").on("mouseout", function () {
+			$(this).find('.hover').css('visibility', 'hidden');
+
+		});
+
+		//$(function () {
+		//	pageid = 1;
+		//	$(".pagination-list").hide()
+		//		.slice(10 * (pageid - 1),
+		//			10 + 10 * (pageid - 1)).show();
+		//});
+		$(".pagination-list").slice(10).hide();
+		$('#pagination').pagination({
+			// Total number of items present
+			// in wrapper class
+			//items: 9,
+			items: '@Model.Count()',
+			// Items allowed on a single page
+			itemsOnPage: 10,
+			onPageClick: function (pageid) {
+				$(".pagination-list").hide()
+					.slice(10 * (pageid - 1),
+						10 + 10 * (pageid - 1)).show();
+                //$("#list").load("/Handlers/tasks_searchlist", { id: pageid, keywords: searchkeywords });
+              /*  window.location.href = "/Handlers/tasks_searchlist?keywords=" + searchkeywords;*/
+			}
+		});
+    </script>
+    <script>
+
+
+
+	////var count = @i;
+	$(".cars").chosen();
+
+	$('select[name="cars"]').on('change', function () {
+		debugger
+		let assistantid = $(this).val();
+		var taskid = $(this).attr("taskid")
+
+		$.ajax({
+			type: "post",
+			url: "/Handlers/saveassistant",
+			data: { id: taskid, asstID: assistantid },
+			datatype: "json",
+			//traditional: true,
+			success: function (data) {
+				if (data.success == true) {
+					//alert("Assistant Added/Edited successfully");
+					$("#lbl_msg1").css("display", "block");
+					$("#lbl_msg1").css("color", "#00c1ab");
+					$('html, body').animate({
+						scrollTop: $(".admin-page-sidebar").offset().top
+					}, 'fast');
+					$("#lbl_msg1").html("Assistant assigned successfully");
+					$("#lbl_msg1").fadeOut(5000);
+					$("#handler_sidebar").load("/Handlers/handler_sidebar")
+				}
+				else {
+					alert("Failed to Add/Edit assistant");
+
+				}
+			}
+		});
+	});
+
+
+    </script>
+
+</body>
+
+</html>

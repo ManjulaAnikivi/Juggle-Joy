@@ -1,0 +1,179 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_user>
+@using juggle_joy.Models;
+@{
+	ViewBag.Title = "Active Assistant | " + MvcApplication.project_name;
+
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+	var active_assistants = ctx.tbl_user.Where(x => x.Status == (int)UserStatus.Active && x.UserType == "A").ToList().Count();
+	var blocked_assistants = ctx.tbl_user.Where(x => x.Status == (int)UserStatus.Blocked && x.UserType == "A").ToList().Count();
+
+}
+<style>
+	.switch span {
+		width: 44px;
+		height: 20px;
+		border-radius: 0px;
+	}
+
+		.switch span:after {
+			width: 20px;
+			border-radius: 0px;
+		}
+
+	.list-group .list-group-item {
+		height: 48px;
+	}
+</style>
+
+<ul class="breadcrumb">
+	<li><a href="~/admin/dashboard">Home</a></li>
+	<li class="active">Manage Assistant </li>
+</ul>
+
+<div class="page-title">
+	<h2><span class="fa fa-edit"></span> Active Assistant</h2>
+</div>
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="panel panel-default tabs">
+
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active"><a>Active (@active_assistants)</a></li>
+                    <li><a href="/admin/blocked-assistants">Blocked (@blocked_assistants)</a></li>
+                </ul>
+                @using (Html.BeginForm("action", "assistant", FormMethod.Post))
+                {
+                    <p id="lbl_msg2" style="color: #006400">@ViewBag.AssistantNotInUse</p>
+                    <p id="lbl_msg1" style="color: #E5756F">  @ViewBag.AssistantInUse </p>
+                    <p id="lbl_msg" class="panel-title msg">@ViewBag.ActiveAssistantListMsg @ViewBag.UpdateRegistrationMsgActive</p>
+
+
+
+                    <div class="panel-body table-responsive">
+                        @if (Model.Count() > 0)
+                        {
+
+                            <table id="tblbloglist" class="table dataTable table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th style="background-position: center left;">Assistant Name</th>
+                                        <th style="background-position: center left;">EmailID</th>
+                                        <th style="background-position: center left;">User Name</th>
+                                        <th style="background-position: center left;text-align: center;">Edit</th>
+                                        <th style="background-image:none;text-align:center" align="center"><input type="checkbox" id="chkall" style="margin-left: 8px;" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+
+                                        <tr>
+                                            <td>@item.FirstName    @item.LastName</td>
+                                            <td>@item.EmailID</td>
+                                            <td>@item.UserName</td>
+                                            <td style="text-align: center;"><a href="/admin/add-assistant/@item.UserID"><i class="fa fa-edit"></i></a></td>
+
+                                            <td align="center"><input type="checkbox" name="IdsToDelete" value='@item.UserID' style="margin-left: 8px;" /></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tr>
+                                    <td align="right" colspan="9" style="padding-right:12px;">
+                                        <input type="submit" id="btnblock" name="action" value="Block" class="btn btn-warning" />
+                                        <input type="submit" id="btndelete" name="action" value="Delete" class="btn btn-danger" />
+                                    </td>
+                                </tr>
+                            </table>
+                        }
+                        else
+                        {
+                            <label>No Records Found</label>
+                        }
+                    </div>
+
+                }
+            </div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    $("#lnk_assist,#lnk_assist_Manage").addClass("active");
+
+    if ('@ViewBag.ActiveAssistantListMsg' != "" || '@ViewBag.UpdateRegistrationMsgActive' != "")
+    {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+
+        if ('@ViewBag.AssistantInUse' != "")
+ {
+     $("#lbl_msg1").fadeOut(10000);
+ }
+ else {
+     $("#lbl_msg1").fadeOut();
+    }
+
+       if ( '@ViewBag.AssistantNotInUse')
+{
+    $("#lbl_msg2").fadeOut(10000);
+}
+else {
+    $("#lbl_msg2").fadeOut();
+    }
+
+
+    $(document).ready(function (e) {
+        $('#btndelete').click(function () {
+            if ($("input[name='IdsToDelete']:checked").length == 0) {
+                alert("Please select record to delete.");
+                return false;
+            }
+            else {
+                var count = $("input[name='IdsToDelete']:checked").length;
+                return confirm("Are you sure want to delete " + count + " record(s).");
+            }
+        });
+    });
+
+    $('#btnblock').click(function () {
+        if ($("input[name='IdsToDelete']:checked").length == 0) {
+            alert("Please select record to block.");
+            return false;
+        }
+        else {
+            var count = $("input[name='IdsToDelete']:checked").length;
+            return confirm("Are you sure want to block " + count + " record(s).");
+        }
+    });
+
+
+    $("#chkall").change(function () {
+        $("input[name='IdsToDelete']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='IdsToDelete']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='IdsToDelete']:checked").length == $("input[name='IdsToDelete']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+
+    $('#tblbloglist').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        "ordering": false,
+    });
+
+</script>
+

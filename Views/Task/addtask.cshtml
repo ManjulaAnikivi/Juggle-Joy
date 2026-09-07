@@ -1,0 +1,1267 @@
+﻿@model juggle_joy.Models.TaskValidation
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    //loading category
+    var catlist = ctx.tbl_category.ToList();
+
+    //loading subcategory-on page load
+    var catfirstdata = ctx.tbl_category.FirstOrDefault();
+
+    var subcatfirstdatalist = ctx.tbl_subcategory.Where(x => x.CategoryID == catfirstdata.CategoryID).ToList();
+
+    //Address
+    int userid = Convert.ToInt32(Session["UserID"]);
+    var tbluser = ctx.tbl_user.Where(x => x.UserID == userid).FirstOrDefault();
+
+
+    //selecting default radio buttons
+    var isfirstCat = true;
+    var isfirsSubtCat = true;
+
+
+
+    //binding values
+    var subcatid = Model.subcategory;
+
+    var catid = Model.CategoryID;
+
+    var blockOnchangeSubcat = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID).FirstOrDefault();
+
+
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AddTask-@MvcApplication.project_name</title>
+
+    @Html.Partial("dashboard_css")
+    <style>
+        .img-container {
+            width: 200px;
+            height: 100px;
+            text-align: center;
+            margin: 0 auto;
+            vertical-align: middle;
+            display: table-cell;
+            border-radius: 5px;
+            border: 1px solid #CCCCCC;
+            cursor: pointer;
+        }
+
+            .img-container img {
+                max-width: 190px;
+                max-height: 95px;
+                text-align: center;
+                border-radius: 5px;
+            }
+
+        .show_close {
+            display: block;
+            border-width: 0px;
+            width: 22px;
+            height: 22px;
+            position: relative;
+            margin-left: 189px;
+            margin-bottom: 95px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: -112px;
+        }
+
+        .hide_close {
+            display: none;
+            border-width: 0px;
+            width: 20px;
+            height: 20px;
+            position: relative;
+            margin-left: 182px;
+            margin-bottom: 95px;
+        }
+
+        @@media(max-width: 767px) {
+            .new-task-slide-dots {
+                top: 95% !important;
+            }
+        }
+        @@media(max-width: 610px) {
+            .imageDiv {
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 300px !important;
+            }
+            .respImage{
+                width:50%;
+            }
+           
+            }
+
+        @@media(max-width: 610px) {
+            .show_close {
+                margin-left: 184px;
+            }
+        }
+        @@media(max-width: 450px) {
+            .show_close {
+                margin-left: 157px;
+            }
+        }
+    </style>
+</head>
+
+
+<body style="background-color: #d1cec6f2">
+
+
+    @Html.Partial("dashboard-header")
+
+
+    <main>
+
+        <section class="new-task-popup" id="list">
+
+            <div class="new-task-popup-main">
+
+                <div class="new-task-popup-wrapper" style="margin-top: 80px; margin-bottom: 340px; padding-bottom: 27px; ">
+
+                    @if (Model.Status == (int)TaskStatus.Received)
+                    {
+                        <div class="popup-cross-btn">
+                            <a href="/pending"><i class="fa-solid fa-circle-xmark"></i></a>
+                        </div>
+                    }
+                    else if (Model.Status == (int)TaskStatus.Ongoing)
+                    {
+                        <div class="popup-cross-btn">
+                            <a href="/ongoing"><i class="fa-solid fa-circle-xmark"></i></a>
+                        </div>
+                    }
+                    else if (Model.Status == (int)TaskStatus.Complete)
+                    {
+                        <div class="popup-cross-btn">
+                            <a href="/completed"><i class="fa-solid fa-circle-xmark"></i></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="popup-cross-btn">
+                            <a href="/dashboard"><i class="fa-solid fa-circle-xmark"></i></a>
+                        </div>
+                    }
+
+
+                    @*<form action="" name="form_add_new_task" id="form_add_new_task" class="form_add_new_task">*@
+                    @*@using (Html.BeginForm("add_task", "Task", FormMethod.Post, new { id = "form_add_new_task", @class = "form_add_new_task" }))
+                        {
+                            @Html.AntiForgeryToken()*@
+                    <div class="new-task-content-slides-box">
+
+                        <div class="new-task-content-slides-main">
+
+
+                            <div class="new-task-content-slide slide_count_1 slide-active">
+                                @using (Html.BeginForm("add_task_slide1", "Task", FormMethod.Post, new { @class = "form_add_new_task", id = "myForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="new-task-content-wrapper">
+
+                                        <div class="new-task-content task_part_1">
+                                            <p class="new-task-notice">
+                                                Please provide as much information as
+                                                possible.
+                                                This will help us understand your needs better, and enable us to
+                                                complete the task more efficiently.
+                                            </p>
+
+                                            <div class="new-task-heading">
+
+                                                <h3><span>1</span>What is the Category of your Task?*</h3>
+                                            </div>
+                                            <div class="new-task-category-wrapper">
+                                                @foreach (var item in catlist)
+                                                {
+                                                    if (Model.CategoryID == null && Model.TaskTitle != null)
+                                                    {
+                                                        <div class="new-task-category">
+                                                            <input type="radio" name="category" id="category-@item.Category"
+                                                                   value="@item.CategoryID">
+                                                            @Html.RadioButtonFor(x => x.CategoryID, @item.CategoryID, new { @name = "category", id = @item.Category, @onchange = "ToggleInfo(this);" })
+                                                            <label for="@item.Category">
+                                                                <div class="new-task-category-inner">
+                                                                    <div class="category-image-wrapper">
+                                                                        <img src="~/Assets/Category/@item.CategoryImage"
+                                                                             alt="home">
+                                                                    </div>
+                                                                    <div class="category-name">
+                                                                        <p>@item.Category</p>
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else if (blockOnchangeSubcat != null)
+                                                    {
+                                                        if (catid == item.CategoryID)
+                                                        {
+                                                            <div class="new-task-category">
+                                                                @*<input type="radio" name="category" id="category-@item.Category"
+                                                                    value="@item.CategoryID">*@
+                                                                @Html.RadioButtonFor(x => x.CategoryID, @item.CategoryID, new { @name = "category", id = @item.Category, @onchange = "ToggleInfo(this);", @checked = "checked" })
+                                                                <label for="@item.Category">
+                                                                    <div class="new-task-category-inner">
+                                                                        <div class="category-image-wrapper">
+                                                                            <img src="~/Assets/Category/@item.CategoryImage"
+                                                                                 alt="home">
+                                                                        </div>
+                                                                        <div class="category-name">
+                                                                            <p>@item.Category</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="new-task-category">
+                                                                @*<input type="radio" name="category" id="category-@item.Category"
+                                                                    value="@item.CategoryID">*@
+                                                                @Html.RadioButtonFor(x => x.CategoryID, @item.CategoryID, new { @name = "category", id = @item.Category, disabled = "true" })
+                                                                <label for="@item.Category">
+                                                                    <div class="new-task-category-inner">
+                                                                        <div class="category-image-wrapper">
+                                                                            <img src="~/Assets/Category/@item.CategoryImage"
+                                                                                 alt="home">
+                                                                        </div>
+                                                                        <div class="category-name">
+                                                                            <p>@item.Category</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if (isfirstCat)
+                                                        {
+                                                            isfirstCat = false;
+                                                            <div class="new-task-category">
+                                                                @*<input type="radio" name="category" id="category-@item.Category"
+                                                                    value="@item.CategoryID">*@
+                                                                @Html.RadioButtonFor(x => x.CategoryID, @item.CategoryID, new { @name = "category", id = @item.Category, @onchange = "ToggleInfo(this);", @checked = "checked" })
+                                                                <label for="@item.Category">
+                                                                    <div class="new-task-category-inner">
+                                                                        <div class="category-image-wrapper">
+                                                                            <img src="~/Assets/Category/@item.CategoryImage"
+                                                                                 alt="home">
+                                                                        </div>
+                                                                        <div class="category-name">
+                                                                            <p>@item.Category</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="new-task-category">
+                                                                <input type="radio" name="category" id="category-@item.Category"
+                                                                       value="@item.CategoryID">
+                                                                @Html.RadioButtonFor(x => x.CategoryID, @item.CategoryID, new { @name = "category", id = @item.Category, @onchange = "ToggleInfo(this);" })
+                                                                <label for="@item.Category">
+                                                                    <div class="new-task-category-inner">
+                                                                        <div class="category-image-wrapper">
+                                                                            <img src="~/Assets/Category/@item.CategoryImage"
+                                                                                 alt="home">
+                                                                        </div>
+                                                                        <div class="category-name">
+                                                                            <p>@item.Category</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        }
+
+                                                    }
+
+
+                                                }
+
+
+
+                                            </div>
+
+                                            <div class="new-task-heading">
+                                                <h3 class="mb-0">Select Subcategory*</h3>
+                                            </div>
+                                            <div class="new-task-subcategory-wrapper" id="subcat">
+
+                                                @foreach (var item in subcatfirstdatalist)
+                                                {
+                                                    if (Model.CategoryID == null && Model.TaskTitle != null)
+                                                    {
+                                                        <div class="new-task-subcategory">
+                                                            <input type="radio" name="subcategory" id="@item.SubCategoryID"
+                                                                   value="@item.SubCategoryID" onchange="myfunction();">
+                                                            <label for="@item.SubCategoryID">
+                                                                <div class="new-task-subcategory-inner">
+                                                                    <div class="subcategory-name">
+                                                                        <p>@item.SubCategory</p>
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (isfirsSubtCat)
+                                                        {
+                                                            isfirsSubtCat = false;
+                                                            <div class="new-task-subcategory">
+                                                                <input type="radio" name="subcategory" id="@item.SubCategoryID"
+                                                                       value="@item.SubCategoryID" onchange="myfunction();" checked="checked">
+                                                                <label for="@item.SubCategoryID">
+                                                                    <div class="new-task-subcategory-inner">
+                                                                        <div class="subcategory-name">
+                                                                            <p>@item.SubCategory</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="new-task-subcategory">
+                                                                <input type="radio" name="subcategory" id="@item.SubCategoryID"
+                                                                       value="@item.SubCategoryID" onchange="myfunction();">
+                                                                <label for="@item.SubCategoryID">
+                                                                    <div class="new-task-subcategory-inner">
+                                                                        <div class="subcategory-name">
+                                                                            <p>@item.SubCategory</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    }
+
+                                                }
+
+
+                                            </div>
+
+                                        </div>
+                                        <label id="lbl_subMsg" style="color: rgb(229, 117, 111); margin-left: 330px"></label>
+                                        <div class="new-task-content task_part_7">
+
+                                            <div class="new-task-heading">
+                                                <h3><span>2</span>What title would like to give to this task?</h3>
+                                            </div>
+
+                                            <div class="new-task-content-inside">
+                                                @Html.TextAreaFor(x => x.TaskTitle, new { placeholder = "your task title" })
+                                                <label id="lbl_title" style="color: rgb(229, 117, 111);"></label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    @*@Html.HiddenFor(x => x.TaskID)*@
+                                    <div class="new-task-slide-navigation">
+                                        <button type="button" class="new-task-back-button">Back</button>
+
+
+
+                                        <div class="end-btn">
+                                            <div class="new-task-draft-next-wrapper">
+                                                <button type="button" id="form1_draft" class="new-task-draft-button form1 formsubmit1" name="taskaction1" value="Draft">Save as Draft</button>
+                                                <button type="button" id="form1_next" class="new-task-next-button form1 formsubmit1" name="taskaction1" value="Next">Next</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <input type="hidden" name="addtask_taskid" class="addtask_taskid" value="0" />
+                            </div>
+
+
+
+                            <div class="new-task-content-slide slide_count_2">
+                                @using (Html.BeginForm("add_task_slide2", "Task", FormMethod.Post, new { @class = "form_add_new_task", id = "myForm2" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div id="DivPartialViewdata">
+
+
+                                    </div>
+                                    @*@Html.HiddenFor(x => x.TaskID)*@
+                                    <div class="new-task-slide-navigation">
+                                        <button type="button" class="new-task-back-button">Back</button>
+
+
+                                        <div class="end-btn">
+                                            <div class="new-task-draft-next-wrapper">
+                                                <button type="button" class="new-task-draft-button formsubmit2" name="taskaction2" value="Draft">Save as Draft</button>
+                                                <button type="button" class="new-task-next-button formsubmit2" name="taskaction2" value="Next">Next</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+
+
+                            <div class="new-task-content-slide slide_count_3">
+                                @using (Html.BeginForm("add_task_slide3", "Task", FormMethod.Post, new { @class = "form_add_new_task", id = "myForm3" }))
+                                {
+                                    @Html.AntiForgeryToken()<div class="new-task-content-wrapper">
+
+
+
+                                        <div class="new-task-content task_part_8">
+
+                                            <div class="new-task-heading">
+                                                <h3>
+                                                    <span id="span_1"></span>When would you like this task to be completed?
+                                                </h3>
+                                            </div>
+
+                                            <div class="new-task-content-inside">
+                                                <div class="new-task-radio-button-wrapper">
+
+                                                    <div class="new-task-radio-button">
+                                                        <input type="radio" name="Deadline"
+                                                               id="radio-button-next-week" value="N">
+                                                        <label class="radio" for="radio-button-next-week">
+                                                            <div class="new-task-radio-button-inner">
+                                                                <div class="radio-button-name">
+                                                                    <p>In the next week</p>
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="new-task-radio-button">
+                                                        <input type="radio" name="Deadline"
+                                                               id="radio-button-in-couple-of-weeks"
+                                                               value="C">
+                                                        <label class="radio" for="radio-button-in-couple-of-weeks">
+                                                            <div class="new-task-radio-button-inner">
+                                                                <div class="radio-button-name">
+                                                                    <p>In the next couple of weeks</p>
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                    <br />
+                                                    <div class="new-task-radio-button">
+                                                        <input type="radio" name="Deadline"
+                                                               id="radio-button-in-next-few-months"
+                                                               value="M">
+                                                        <label class="radio" for="radio-button-in-next-few-months">
+                                                            <div class="new-task-radio-button-inner">
+                                                                <div class="radio-button-name">
+                                                                    <p>In the next few months</p>
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="new-task-radio-button">
+                                                        <input type="radio" name="Deadline"
+                                                               id="radio-button-flexible" value="F">
+                                                        <label class="radio" for="radio-button-flexible">
+                                                            <div class="new-task-radio-button-inner">
+                                                                <div class="radio-button-name">
+                                                                    <p>I am as flexible as a pretzel!</p>
+                                                                </div>
+                                                            </div>
+                                                        </label>
+                                                    </div>
+
+
+                                                    <div class="new-task-radio-button" style="display:none;">
+                                                        <input type="radio" name="Deadline" id="radio-button-specific-date-hidden" value="S">
+                                                    </div>
+
+                                                    <div class="new-task-radio-button custom-radio-selection">
+                                                        <label class="date" for="radio-button-specific-date">
+                                                            <div class="radio-button-name">
+                                                                <span>
+                                                                    <i class="fa-solid fa-calendar-days"></i>
+                                                                </span>
+                                                                <p>Specific date</p>
+                                                            </div>
+                                                        </label>
+
+                                                        @if (Model.specificDate != null)
+                                                        {
+                                                            <input type="date" name="specific_date" id="radio-button-specific-date" value="@Model.specificDate.Value.ToString("yyyy-MM-dd")" />
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="date" name="specific_date"
+                                                                   id="radio-button-specific-date" value="">
+                                                        }
+                                                    </div>
+
+
+
+
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                        @*@Html.HiddenFor(x => x.TaskID)*@
+                                        <div class="new-task-content task_part_9">
+
+                                            <div class="new-task-heading">
+                                                <h3><span id="span_2"></span>What is your budget?</h3>
+                                            </div>
+
+                                            <div class="new-task-content-inside new-task-budget-wrapper">
+
+                                                @Html.TextBoxFor(x => x.Budget, new { placeholder = "£" })
+                                            </div>
+
+
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="new-task-slide-navigation">
+                                        <button type="button" class="new-task-back-button">Back</button>
+
+                                        <div class="end-btn">
+                                            <div class="new-task-draft-next-wrapper">
+                                                @*<button type="submit" class="new-task-next-button" name="taskaction3" value="Draft" style="border: none; background: none;color: #828281;">Save as Draft</button>
+                                                    <button type="submit" class="new-task-draft-button" name="taskaction3" value="Next" style="background-color: #00c1ab; border-radius: 20px; padding: 5px 20px;color:white">Next</button>*@
+                                                <button type="button" class="new-task-draft-button formsubmit3" name="taskaction3" value="Draft">Save as Draft</button>
+                                                <button type="button" class="new-task-next-button formsubmit3" name="taskaction3" value="Next">Next</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+
+
+                            <div class="new-task-content-slide slide_count_4">
+                                @using (Html.BeginForm("add_task_slide4", "Task", FormMethod.Post, new { @class = "form_add_new_task", id = "myForm4", enctype = "multipart/form-data" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <div class="new-task-content-wrapper">
+
+                                        <div class="new-task-content task_part_10">
+
+                                            <div class="new-task-heading">
+                                                <h3>
+                                                    <span id="span_3"></span>Any other information you would like to share with your assistant?
+                                                </h3>
+                                            </div>
+
+                                            <div class="new-task-content-inside imageDiv" style="display: flex; height: 136px;">
+                                                @*<textarea name="new-task-other-info" id="new-task-other-info"
+        placeholder="Feel free to provide any additional information or specific details that you believe would be helpful for your assistant to better understand and address your needs"></textarea>*@
+
+                                               
+                                                <div class="respImage">
+
+                                                    <div class="img-container" id="imgprofile">
+                                                        @if (Model.Image != null)
+                                                        {
+                                                            <img id="img_prev" src="~/Assets/TaskPicture/@Model.Image" alt="Image" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <img id="img_prev" src="~/Assets/no-img.png" alt="No Image" />
+                                                        }
+                                                    </div>
+                                                    <img id="imgbtn_close" src="~/Assets/close.png" class="hide_close" onclick="btnhide();" alt="Close Icon" />
+                                                    <span style="font-size:12px">(Click here to upload image)</span>
+                                                    <br />
+                                                    <span id="lblmsg" style="color:#e80c4d;"></span>
+
+                                                    @if (Model.Image != null)
+                                                    {
+                                                        @Html.TextBoxFor(x => x.Image, new { @class = "form-control", type = "file", accept = ".jpg,.png,.jpeg", Style = "visibility:hidden;" })<br />
+
+                                                    }
+                                                    else
+                                                    {
+                                                        @*<input type="file" name="Image" id="Image" value=" " style="visibility:hidden;" />*@
+                                                        @Html.TextBoxFor(x => x.Image, new { @class = "form-control", type = "file", accept = ".jpg,.png,.jpeg", Style = "visibility:hidden;" })<br />
+                                                        //@Html.HiddenFor(x => x.Image)
+                                                    }
+                                                </div>
+                                                    
+                                                        @Html.TextAreaFor(x => x.Description, new {  placeholder = "Feel free to provide any additional information or specific details that you believe would be helpful for your assistant to better understand and address your needs" })
+                                                   
+                                             
+
+
+
+                                                
+                                               
+                                            </div>
+
+
+
+                                        </div>
+
+                                        <div class="new-task-content task_part_11">
+
+                                            <div class="new-task-heading">
+                                                <h3><span id="span_4"></span>Is this task recurring?</h3>
+                                            </div>
+
+                                            <div class="new-task-task-recurring">
+                                                <div class="new-task-input-box">
+                                                    @*<select name="Repeating" id="Repeating">
+                                                            <option value="0">No</option>
+                                                            <option value="1">Weekly</option>
+                                                            <option value="2">Fortnightly</option>
+                                                            <option value="3">Monthly</option>
+
+                                                        </select>*@
+
+                                                    @Html.DropDownListFor(x => x.Repeating, new List<SelectListItem>
+                                                        { new SelectListItem { Text = "No", Value = "0" },
+                                                          //new SelectListItem { Text = "Daily", Value = "D" },
+                                                          new SelectListItem { Text = "Weekly", Value = "1" },
+                                                          new SelectListItem { Text = "Fortnightly", Value = "2" },
+                                                          new SelectListItem { Text = "Monthly", Value = "3" },
+                                                          //new SelectListItem { Text = "Custom . . .", Value = "C" },
+                                                          }, new { })
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+                                    @*@Html.HiddenFor(x => x.TaskID)*@
+                                    <div class="new-task-slide-navigation">
+                                        <button type="button" class="new-task-back-button">Back</button>
+
+                                        <div class="end-btn">
+                                            <div class="new-task-draft-next-wrapper">
+                                                <button type="button" class="new-task-draft-button formsubmit4" name="taskaction4" value="Draft">Save as Draft</button>
+                                                <button type="button" class="new-task-next-button formsubmit4" name="taskaction4" value="Create">
+                                                    Create
+                                                    Task
+                                                </button>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+
+                        </div>
+
+
+
+                        <div class="new-task-slide-dots">
+                            <span class="slide-dot active-dot" data-index='0'>
+                                <span class="slide-progress">25%</span>
+                            </span>
+                            <span class="slide-dot" data-index='1'>
+                                <span class="slide-progress">50%</span>
+                            </span>
+                            <span class="slide-dot" data-index='2'>
+                                <span class="slide-progress">75%</span>
+                            </span>
+                            <span class="slide-dot" data-index='3'>
+                                <span class="slide-progress slide-progress-last">100%</span>
+                            </span>
+                        </div>
+
+
+                        <br />
+                    </div>
+                    @* } *@
+                    @*</form>*@
+
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+    @Html.Partial("dashboard-footer")
+
+    @Html.Partial("js")
+    @Html.Partial("dashboard-script")
+
+    <script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+    <script>
+        function btnhide() {
+            debugger
+            $("#imgbtn_close").removeClass("show_close").addClass("hide_close");
+            $('#lblmsg,#lbl_img').html("");
+            document.getElementById("Image").value = "";
+            document.getElementById("img_prev").src = "/Assets/no-img.png";
+        };
+
+        $('#Image').change(function () {
+            debugger
+
+            var fileUpload1 = $("#Image")[0];
+            var reader1 = new FileReader();
+            //Read the contents of Image File.
+            reader1.readAsDataURL(fileUpload1.files[0]);
+            reader1.onload = function (e) {
+                //Initiate the JavaScript Image object.
+                var image1 = new Image();
+                //Set the Base64 string return from FileReader as source.
+                image1.src = e.target.result;
+                image1.onload = function () {
+                    //Determine the Height and Width.
+                    var h = image1.height;
+                    var w = image1.width;
+                    var actualheight = 984;
+                    var actualwidth = 1200;
+                };
+            };
+            var fileExtension = ['jpeg', 'jpg', 'png'];
+            if ($.inArray($(this).val().split('.').pop().toLowerCase(), fileExtension) == -1) {
+                $("#lblmsg").html("Only '.jpeg','.jpg', '.png' formats are allowed.");
+                $("#Image").val(null);
+                $("#Image").focus();
+            }
+            else {
+                var oFReader = new FileReader();
+                oFReader.readAsDataURL(document.getElementById("Image").files[0]);
+                oFReader.onload = function (oFREvent) {
+                    document.getElementById("img_prev").style.visibility = "visible";
+                    document.getElementById("img_prev").src = oFREvent.target.result;
+                    $("#lblmsg,#lbl_img").html("");
+                    $("#imgbtn_close").removeClass("hide_close");
+                    $("#imgbtn_close").addClass("show_close");
+                };
+            }
+        });
+        $("#imgprofile").click(function (e) {
+            $("#Image").click();
+        });
+    </script>
+
+    <script>
+
+        var track = document.querySelector('.new-task-content-slides-main');
+        var slides = document.querySelectorAll('.new-task-content-slide');
+        var dots = document.querySelectorAll('.slide-dot');
+        var buttonWrapper = document.querySelector('.new-task-draft-next-wrapper');
+        //var submitButton = document.querySelector('.new-task-submit-wrapper');
+
+        var i;
+        // const reset = () => dots.forEach((dot) => dot.classList.remove('active-dot'));
+        var reset = () => {
+            dots.forEach((dot) => dot.classList.remove('active-dot'));
+            slides.forEach((slide) => slide.classList.remove('slide-active'));
+        };
+
+
+        function slideTo(n) {
+            // track.style.transform = `translateX(-${n * slides[0].offsetWidth}px)`;
+            reset();
+            slides[n].classList.add('slide-active');
+            dots[n].classList.add('active-dot');
+            /* alert(count);*/
+
+        }
+
+        function activateArrows(direction) {
+            direction === 'right' ? i++ : i--;
+            if (i < 0) i = 0;
+            if (i > slides.length - 1) i = slides.length - 1;
+            slideTo(i);
+        }
+
+        function activateDots(e) {
+            i = e.target.dataset.index;
+            slideTo(i);
+        }
+
+        function activate(e) {
+            e.target.matches('.slide-dot') && activateDots(e);
+            e.target.matches('.new-task-next-button') && activateArrows('right');
+            e.target.matches('.new-task-back-button') && activateArrows();
+            if (i == dots.length - 1) {
+                buttonWrapper.classList.add("hide-btn-wrapper");
+                //submitButton.classList.add("show-btn-wrapper");
+            }
+            else {
+                buttonWrapper.classList.remove("hide-btn-wrapper");
+                //submitButton.classList.remove("show-btn-wrapper");
+            }
+        }
+
+        function init(n) {
+            i = n;
+            slideTo(n);
+        }
+
+        document.addEventListener('click', activate, false);
+        window.addEventListener('load', init(0), false);
+    </script>
+
+    <script>
+        var count;
+
+
+
+    </script>
+
+
+    <script>
+
+
+
+        @*if (@Model.TaskID> 0) {
+
+                     if ('@catid' ==null) {
+                         alert("success blockOnchangeSubcat");
+                         //$('input[name=CategoryID]').attr("disabled", true);
+                     }
+               }*@
+       if ('@catid' == 10) {
+
+
+            //if Custom category is selected then we are directly loading question by default
+            var catid ='@catid';
+            $('#subcat').html('');
+            LoadSubCat(catid);
+            let cid = 0;
+            LoadQuestion(cid);
+        }
+        else {
+            debugger
+
+            if ('@subcatid' == "") {
+                //getting value of selected subcategory
+                let Sid = $("input[name='subcategory']:checked").val();
+                LoadQuestion(Sid);
+
+
+            }
+            else {
+
+                var catid ='@catid';
+                debugger
+                //alert(catid);
+                $('#subcat').html('');
+                LoadSubCat(catid);
+
+                var Sid = '@subcatid';
+                LoadQuestion(Sid);
+
+
+            }
+        }
+
+
+
+
+
+
+
+
+        function ToggleInfo(el) {
+            debugger
+            if (el.value == 10) {
+                //if Custom category is selected then we are directly loading question by default
+                $('#subcat').html('');
+                LoadSubCat(el.value);
+                let cid = 0;
+                    LoadQuestion(cid);
+            }
+            else {
+                $('#subcat').html('');
+                LoadSubCat(el.value);
+            }
+
+    };
+
+
+    //tbl_subcategory
+        function LoadSubCat(res) {
+
+
+            debugger
+        var html = "";
+        var div1 = "new-task-subcategory";
+        var div2 = "new-task-subcategory-inner";
+        var div3 = "subcategory-name";
+
+        $.ajax({
+            type: "Get",
+            url: "/Task/subcategory",
+            data: { id: res },
+            dataType: "json",
+            success: function (data) {
+                debugger
+                //not exists
+                var obj = (data);
+
+                if (obj != "") {
+                    $.each(obj, function (key, item) {
+
+                        debugger
+                         if ('@blockOnchangeSubcat' != "") {
+                                if ('@subcatid' == item.SubCategoryID) {
+                                    html = '<div class="' + div1 + '"><input type = "radio" checked="checked" name = "subcategory" id = "' + item.SubCategoryID + '" value = "' + item.SubCategoryID + '" onchange="myfunction();" ><label for="' + item.SubCategoryID + '"><div class="' + div2 + '"><div class="' + div3 + '"><p>' + item.SubCategory + '</p></div> </div></label></div>';
+                                }
+                                else {
+                                    html = '<div class="' + div1 + '"><input type = "radio" disabled="disable" name = "subcategory" id = "' + item.SubCategoryID + '" value = "' + item.SubCategoryID + '" onchange="myfunction();" ><label for="' + item.SubCategoryID + '"><div class="' + div2 + '"><div class="' + div3 + '"><p>' + item.SubCategory + '</p></div> </div></label></div>';
+                                }
+                            }
+                         else {
+                                 if ('@subcatid' == item.SubCategoryID) {
+                                     html = '<div class="' + div1 + '"><input type = "radio" checked="checked" name = "subcategory" id = "' + item.SubCategoryID + '" value = "' + item.SubCategoryID + '" onchange="myfunction();" ><label for="' + item.SubCategoryID + '"><div class="' + div2 + '"><div class="' + div3 + '"><p>' + item.SubCategory + '</p></div> </div></label></div>';
+                                 }
+                                 else {
+                                     html = '<div class="' + div1 + '"><input type = "radio" name = "subcategory" id = "' + item.SubCategoryID + '" value = "' + item.SubCategoryID + '" onchange="myfunction();" ><label for="' + item.SubCategoryID + '"><div class="' + div2 + '"><div class="' + div3 + '"><p>' + item.SubCategory + '</p></div> </div></label></div>';
+                                 }
+
+                        }
+
+                        $('#subcat').append(html);
+
+
+                    });
+                }
+                else {
+                    html = '<p style="color:#00C1AB">No records found<p>';
+                    $('#subcat').append(html);
+                }
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //console.log("not able to");
+                //alert("failed to load subcategory");
+            }
+        });
+
+
+    };
+
+
+        //onchange
+
+
+            function myfunction() {
+                var id = $('input[name="subcategory"]:checked').val();
+                LoadQuestion(id);
+            };
+
+
+
+    function LoadQuestion(res) {
+
+        $.ajax({
+            type: "Post",
+            url: "/Task/questions",
+            data: { id: res },
+            dataType: "html",
+            success: function (data) {
+                debugger
+                $("#DivPartialViewdata").html(data);
+                //alert(count);
+                $("#span_1").html(count+1);
+                $("#span_2").html(count + 2);
+                $("#span_3").html(count + 3);
+                $("#span_4").html(count + 4);
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //console.log("not able to");
+               // alert("failed to load questions");
+            }
+        });
+
+
+    };
+
+
+
+    </script>
+
+    <script>
+    if ('@ViewBag.slideactive' != '') {
+        //alert(step);
+        if ('@ViewBag.slideactive' == 'step1') {
+            debugger
+            $('.slide_count_1').removeClass('slide-active');
+            $('.slide_count_2').addClass('slide-active');
+            slideTo(1);
+            $('.new-task-slide-dots span[data-index="1"]').css('pointer-events', 'auto');
+
+        }
+        else if ('@ViewBag.slideactive' == 'step2') {
+            debugger
+            $('.slide_count_1').removeClass('slide-active');
+            $('.slide_count_2').removeClass('slide-active');
+            $('.slide_count_3').addClass('slide-active');
+            slideTo(2);
+            $('.new-task-slide-dots span[data-index="1"], .new-task-slide-dots span[data-index="2"]').css('pointer-events', 'auto');
+        }
+        else if ('@ViewBag.slideactive' == 'step3') {
+            $('.slide_count_1').removeClass('slide-active');
+            $('.slide_count_2').removeClass('slide-active');
+            $('.slide_count_3').removeClass('slide-active');
+            $('.slide_count_4').addClass('slide-active');
+            slideTo(3);
+            $('.new-task-slide-dots span[data-index="1"], .new-task-slide-dots span[data-index="2"], .new-task-slide-dots span[data-index="3"]').css('pointer-events', 'auto');
+        }
+    }
+
+        if ('@Model.DeadlineType' != null) {
+                 var value = '@Model.DeadlineType';
+            $("input[name=Deadline][value=" + value + "]").attr('checked', 'checked');
+        }
+
+
+    </script>
+
+    @* below script is added because select options not working ie not able to select *@
+
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+
+    <script>
+        //Date picker functionality
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Adding the original event listener for the specific date radio button
+            document.getElementById("radio-button-specific-date").addEventListener("change", function () {
+                debugger
+                var specificDate = this.value;
+                var deadlineRadioButtons = document.querySelectorAll('input[name="Deadline"]');
+
+                if (specificDate) {
+                    deadlineRadioButtons.forEach(function (radio) {
+                        radio.checked = false; // Uncheck all deadline radio buttons
+                    });
+                    document.getElementById("radio-button-specific-date-hidden").checked = true;
+                }
+            });
+
+            // Clear the specific date value if any other deadline radio button is selected
+            var deadlineRadioButtons = document.querySelectorAll('input[name="Deadline"]');
+            deadlineRadioButtons.forEach(function (radio) {
+                // Make sure to not add this event listener to the "Specific Date" radio button
+                if (radio.id !== "radio-button-specific-date-hidden") {
+                    radio.addEventListener("change", function () {
+                        // Clear the specific date value
+                        document.getElementById("radio-button-specific-date").value = "";
+                        // Optionally, uncheck the hidden "Specific Date" radio button
+                        document.getElementById("radio-button-specific-date-hidden").checked = false;
+                    });
+                }
+            });
+
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+
+
+
+           if ('@Model.TaskID' == null || '@Model.TaskID' == '0' && '@Model.CategoryID' == ''|| '@Model.CategoryID' != 10 && '@Model.subcategory' == '') {
+                 debugger
+                 $(' .new-task-slide-dots span[data-index="1"], .new-task-slide-dots span[data-index="2"], .new-task-slide-dots span[data-index="3"]').css('pointer-events', 'none');
+             }
+
+            if (@Model.TaskID> 0) {
+                debugger
+
+                var taskid=@Model.TaskID;
+            $('.addtask_taskid').val(taskid);
+            }
+
+            //$('.curr').removeClass('focused');
+        });
+
+        $('.formsubmit1').on('click', function (e) {
+
+            let cID = $("input[name='CategoryID']:checked").val();
+
+            if (cID == null) {
+                $('#lbl_subMsg').html("Please select category");
+                return false;
+            }
+            else if (cID != 10) {
+                if ($("input[name='subcategory']:checked").length == 0) {
+                    $('#lbl_subMsg').html("Please select subcategory");
+                    return false;
+                }
+                else {
+                    $('#lbl_subMsg').html(" ");
+                }
+            }
+
+
+
+            if ($('#TaskTitle').val() == "") {
+                $('#lbl_title').html("Please mention your task title");
+                return false;
+            }
+            else {
+                $('#lbl_title').html(" ");
+            }
+
+            e.preventDefault(); // Prevent the default form submission
+            debugger
+            var taskaction1 = $(this).val();
+            var ids = $('.addtask_taskid').val();
+            $.ajax({
+                url: '/Task/add_task_slide1',
+                type: 'POST',
+                data: $('#myForm').serialize() + "&TaskId=" + ids +"&taskaction1="+taskaction1 ,
+                success: function (data) {
+                    $('.new-task-slide-dots span[data-index="1"]').css('pointer-events', 'auto');
+                    debugger
+                    if (data.dashboard) {
+                        window.location.href = '/dashboard';
+                    } else {
+                        taskid = data.taskid;
+                        $('.addtask_taskid').val(taskid);
+                        $(window).scrollTop(0)
+                    }
+
+                },
+                error: function (error) {
+                    window.location.href = '/dashboard';
+                }
+            });
+        });
+
+        $('.formsubmit2').on('click', function (e) {
+            e.preventDefault();
+            debugger
+            var taskaction2 = $(this).val();
+            var ids = $('.addtask_taskid').val();
+
+            var formData = $('#myForm2').serialize() + "&TaskId=" + ids + "&taskaction2=" + taskaction2;
+            $.ajax({
+                url: '/Task/add_task_slide2',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    $('.new-task-slide-dots span[data-index="1"], .new-task-slide-dots span[data-index="2"]').css('pointer-events', 'auto');
+                    if (response.dashboard) {
+                        window.location.href = '/dashboard';
+                    }
+                    $(window).scrollTop(0)
+
+                },
+                error: function (error) {
+                    window.location.href = '/dashboard';
+                }
+            });
+        });
+
+        $('.formsubmit3').on('click', function (e) {
+            e.preventDefault();
+            debugger
+            var taskaction3 = $(this).val();
+            var ids = $('.addtask_taskid').val();
+
+            var formData = $('#myForm3').serialize() + "&TaskId=" + ids + "&taskaction3=" + taskaction3;
+            $.ajax({
+                url: '/Task/add_task_slide3',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    $('.new-task-slide-dots span[data-index="1"], .new-task-slide-dots span[data-index="2"], .new-task-slide-dots span[data-index="3"]').css('pointer-events', 'auto');
+                    if (response.dashboard) {
+                        window.location.href = '/dashboard';
+                    }
+                    $(window).scrollTop(0)
+                },
+                error: function (error) {
+                    window.location.href = '/dashboard';
+                }
+            });
+        });
+
+        $('.formsubmit4').on('click', function (e) {
+            e.preventDefault();
+            debugger
+            var taskaction4 = $(this).val();
+            var ids = $('.addtask_taskid').val();
+            var filePath = $("#Image")[0].value;
+
+            var formData = new FormData(myForm4);
+            formData.append('TaskId',ids);
+            formData.append('taskaction4', taskaction4);
+            //var formData = $('#myForm4').serialize() + "&TaskId=" + ids + "&taskaction4=" + taskaction4;
+            $.ajax({
+                url: '/Task/add_task_slide4',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (response) {
+                    debugger
+                    if (response.dashboard) {
+                        window.location.href = '/dashboard';
+                    }
+                    else if (response.pending){
+                        window.location.href = '/pending';
+                    }
+
+                },
+                error: function (error) {
+                    window.location.href = '/dashboard';
+                }
+            });
+        });
+    </script>
+
+    @*restrict past dates in HTML5 input type Date*@
+    <script>
+        $(function () {
+            debugger
+            var dtToday = new Date();
+
+            var month = dtToday.getMonth() + 1;
+            var day = dtToday.getDate();
+            var year = dtToday.getFullYear();
+            if (month < 10)
+                month = '0' + month.toString();
+            if (day < 10)
+                day = '0' + day.toString();
+
+            var minDate = year + '-' + month + '-' + day;
+
+            $('#radio-button-specific-date').attr('min', minDate);
+        });
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+</body>
+</html>

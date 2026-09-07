@@ -1,0 +1,149 @@
+﻿@using juggle_joy.Models
+@{
+	Layout = null;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	int handlerid = Convert.ToInt32(Session["HandlerID"]);
+	var tbl_user = ctx.tbl_user.ToList();
+	var handler = tbl_user.Where(x => x.HandlerID == handlerid && x.Status == (int)UserStatus.Active && x.HandlerID == handlerid).ToList();
+	var handlerName = tbl_user.Where(x => x.UserID == handlerid).FirstOrDefault();
+	var TotalPages = ctx.tbl_task.Where(x => x.ToID == handlerid).ToList();
+	var task = ctx.tbl_task.Where(x => x.Status != (int)TaskStatus.Ongoing && x.Status != (int)TaskStatus.Draft && x.Status != (int)TaskStatus.Complete).ToList().Count();
+
+	
+}
+
+<style>
+
+	.light-theme a, .light-theme span {
+		font-size: 16px !important;
+		font-weight: 700 !important;
+		line-height: 20.83px !important;
+		border: 1px solid var(--secondary-color) !important;
+		border-radius: 4px !important;
+		color: var(--primary-color) !important;
+		background: #ffffff !important;
+		width: 40px !important;
+		height: 40px !important;
+		display: inline-flex !important;
+		justify-content: center !important;
+		align-items: center !important;
+		margin: 0 3px !important;
+		box-shadow: unset !important;
+	}
+
+	.light-theme .current {
+		color: #ffffff !important;
+		background: var(--primary-color) !important;
+		border-color: #00c1ab !important;
+		box-shadow: unset !important;
+	}
+
+	.body-admin-pages main.main .container-fluid .background-panel-color > * {
+		min-height: unset !important;
+	}
+</style>
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    @Html.Partial("assistantHandler_css")
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplePagination.js/1.6/simplePagination.min.css">*@
+    <link href="~/admin_assets/css/simplePagination.min.css" rel="stylesheet" />
+
+</head>
+
+<body class="body-admin-handler-dashboard-page body-admin-pages">
+	@Html.Partial("handlerheader")
+
+	<main class="main admin-handler-dashboard-page">
+
+
+		<section class="admin-handler-dashboard-section">
+			<div class="admin-handler-dashboard-main">
+				<div class="container-fluid">
+					<div class="grid admin-page-grid">
+
+						<div class="admin-page-sidebar" id="partial">
+							<div class="admin-page-sidebar-main">
+								<div id="handler_sidebar">
+								</div>
+							</div>
+						</div>
+
+
+						<div class="admin-page-table-content background-panel-color">
+
+							<div id="list" style="min-height:fit-content">
+								<center>
+									<img src="~/Assets/spinner.gif" style="height:50px" />
+								</center>
+							</div>
+							@if (task > 10)
+							{
+								<div class="task-pagination" style="min-height:unset !important">
+									<div class="pagination-numbers">
+									</div>
+									<div id="pagination"></div>
+								</div>
+							}
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	@Html.Partial("handlerfooter")
+	<script src="~/Assets/js/all.min.js"></script>
+	<script src="~/Assets/js/jquery.min.js"></script>
+	<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+	@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>*@
+	<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+	@*<script src="https://cdnjs.cloudflare.com/ajax/libs/simplePagination.js/1.6/jquery.simplePagination.min.js"></script>*@
+	<script src="~/Scripts/jquery-1.6.simplePagination.min.js"></script>
+
+    <script>
+
+		$("#handler_sidebar").load("/Handlers/handler_sidebar");
+		showLoader()
+		$("#list").load("/Handlers/task_list", function () {
+			hideLoader();
+		});
+
+		function showLoader() {
+			$("#preloader").css("display", "block");
+		}
+		function hideLoader() {
+			$("#preloader").css("display", "none");
+		}
+
+
+		debugger
+		$('#pagination').pagination({
+			// Total number of items present
+			// in wrapper class
+			//items: 9,
+			items: '@task',
+			// Items allowed on a single page
+			itemsOnPage: 10,
+
+			onPageClick: function (pageid) {
+				//$(".admin-tasks-table .table-row").hide()
+				//	.slice(4 * (pageid - 1),
+				//		4 + 4 * (pageid - 1)).show();
+				$("#list").load("/Handlers/task_list", { id: pageid });
+
+			}
+		});
+    </script>
+
+
+</body>
+
+</html>

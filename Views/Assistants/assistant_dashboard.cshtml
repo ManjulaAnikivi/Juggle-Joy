@@ -1,0 +1,209 @@
+﻿
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var tasks = ctx.tbl_task.ToList();
+    int assistantid = Convert.ToInt32(Session["AssistantID"]);
+    var assistantname = ctx.tbl_user.Where(x => x.UserID == assistantid).FirstOrDefault();
+    var newtasks = tasks.Where(x => x.Status == (int)TaskStatus.Received).ToList();
+    //var pending = tasks.Where(x => x.AssistantID == assistantid && x.Status == (int)TaskStatus.Received).ToList().Count();
+    var ongoing = tasks.Where(x => x.AssistantID == assistantid && x.Status == (int)TaskStatus.Ongoing).ToList().Count();
+    var completed = tasks.Where(x => x.AssistantID == assistantid && x.Status == (int)TaskStatus.Complete).ToList().Count();
+
+
+    // 5-star score is calculated
+    var i=0;
+    var j=0;
+    var k = 0;
+    var l = 0;
+    var m =0 ;
+    var tblsurvey = ctx.tbl_survey.Where(x => x.AssistantID == assistantid).ToList();
+
+    foreach (var item in tblsurvey)
+    {
+        if (item.Rate == "1")
+        {
+            i++;
+        }
+        else if (item.Rate == "2")
+        {
+            j++;
+        }
+        else if (item.Rate == "3")
+        {
+            k++;
+        }
+        else if (item.Rate == "4")
+        {
+            l++;
+        }
+        else if (item.Rate == "5")
+        {
+            m++;
+        }
+    }
+
+    var Scoretotal = (m*5) + (l*4) + (k*3) + (j*2) + (i*1);
+    var Responsetotal = m + l + k + j + i;
+    double starscore = (double)Scoretotal / Responsetotal;
+
+    starscore = (double)System.Math.Round(starscore, 1);
+
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    @Html.Partial("assistantHandler_css")
+    <script src="~/Assets/js/all.min.js"></script>
+    <script src="~/Assets/js/jquery.min.js"></script>
+
+    <style>
+        .info-palette {
+            cursor: pointer;
+        }
+    </style>
+    @*<script src="~/Assets/js/admin-dashboard.js"></script>*@
+</head>
+<body class="body-handler-profile-page body-admin-pages">
+
+    @Html.Partial("assistantheader")
+
+    <main class="main handler-profile-page">
+
+        <section class="handler-profile-section">
+            <div class="handler-profile-main background-panel-color">
+                <div class="handler-profile-container">
+                    <h2>Assistant: @assistantname.FirstName </h2>
+
+                    <div class="row">
+                        <div class="col-lg-4 col-md-12 col-12 pe-5 column-divider">
+                            <div class="info-palette-wrapper">
+
+                                <div class="info-palette pending-tasks" onclick="window.location.href = '/new-tasks'">
+                                    <p>New Tasks</p>
+                                    <span>@newtasks.Count()</span>
+                                </div>
+
+
+
+                                <div class="info-palette new-tasks" onclick="window.location.href = '/ongoing-tasks'">
+                                    <p>Assigned</p>
+                                    <span>@ongoing</span>
+                                </div>
+
+                                <div class="info-palette solved" onclick="window.location.href = '/completed-tasks'">
+                                    <p>Solved</p>
+                                    <span>@completed</span>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-8 col-md-12 col-12 ps-5">
+                            <div class="handler-profile-review-container background-panel-color">
+                                <h3>Reviews</h3>
+
+                                <div class="handler-profile-review-wrapper">
+                                    @if (starscore >0 )
+                                    {
+                                        <div class="review-point">@starscore</div>
+                                    }
+                                    else
+                                    {
+                                <div class="review-point"><p style="font-size: 21px; padding: 10px; text-align: center;">No review points</p></div>
+                                    }
+                                    <div class="user-score-wrapper">
+                                        <h4>User Score</h4>
+                                        <p>Generally favorable reviews based on <span>CRatings</span></p>
+                                        <div class="user-review-score-wrapper">
+                                            <span class="user-review-score rate1">1</span>
+                                            <span class="user-review-score rate2">2</span>
+                                            <span class="user-review-score rate3">3</span>
+                                            <span class="user-review-score rate4">4</span>
+                                            <span class="user-review-score rate5">5</span>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    @Html.Partial("handlerfooter")
+
+    @Html.Partial("js")
+    <script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+
+</body>
+
+</html>
+
+<script>
+    //Reviews
+    if ('@starscore' <= 0.7) {
+        $('.rate1').addClass("rated");
+        $('.rate1').css('background', 'linear-gradient(90deg, #00c1ab 50%, transparent 50%)');
+    }
+    else if ('@starscore' >= 0.8 && '@starscore' <= 1) {
+        $('.rate1').addClass("rated");
+    }
+    else if ('@starscore' >= 1.1 && '@starscore' <= 1.7) {
+        $('.rate1').addClass("rated");
+        $('.rate2').addClass("rated");
+        $('.rate2').css('background', 'linear-gradient(90deg, #00c1ab 50%, transparent 50%)');
+    }
+     else if ('@starscore' >= 1.8 &&'@starscore' <= 2) {
+     $('.rate1').addClass("rated");
+     $('.rate2').addClass("rated");
+ }
+  else if ('@starscore' >= 2.1 &&'@starscore' <= 2.7) {
+     $('.rate1').addClass("rated");
+     $('.rate2').addClass("rated");
+        $('.rate3').addClass("rated");
+        $('.rate3').css('background', 'linear-gradient(90deg, #00c1ab 50%, transparent 50%)');
+ }
+    else if ('@starscore' >= 2.8 &&'@starscore' <= 3) {
+        $('.rate1').addClass("rated");
+        $('.rate2').addClass("rated");
+        $('.rate3').addClass("rated");
+    }
+
+    else if ('@starscore' >= 3.1 &&'@starscore' <= 3.7) {
+        $('.rate1').addClass("rated");
+        $('.rate2').addClass("rated");
+        $('.rate3').addClass("rated");
+        $('.rate4').addClass("rated");
+        $('.rate4').css('background', 'linear-gradient(90deg, #00c1ab 50%, transparent 50%)');
+    }
+     else if ('@starscore' >= 3.8 &&'@starscore' <= 4) {
+     $('.rate1').addClass("rated");
+     $('.rate2').addClass("rated");
+     $('.rate3').addClass("rated");
+     $('.rate4').addClass("rated");
+ }
+    else if ('@starscore' >= 4.1 &&'@starscore' <= 4.7) {
+        $('.rate1').addClass("rated");
+        $('.rate2').addClass("rated");
+        $('.rate3').addClass("rated");
+        $('.rate4').addClass("rated");
+        $('.rate5').addClass("rated");
+        $('.rate5').css('background', 'linear-gradient(90deg, #00c1ab 50%, transparent 50%)');
+    }
+    else if ('@starscore' >= 4.8 &&'@starscore' <= 5) {
+        $('.rate1').addClass("rated");
+        $('.rate2').addClass("rated");
+        $('.rate3').addClass("rated");
+        $('.rate4').addClass("rated");
+        $('.rate5').addClass("rated");
+}
+</script>

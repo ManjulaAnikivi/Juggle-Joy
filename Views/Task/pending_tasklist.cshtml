@@ -1,0 +1,494 @@
+﻿@model List<IGrouping<DateTime, juggle_joy.Models.tbl_task>>
+
+@using juggle_joy.Models
+
+
+@{
+    Layout = null;
+    int userid = Convert.ToInt32(Session["UserID"]);
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var tbluser = ctx.tbl_user.Where(x => x.UserID == userid).FirstOrDefault();
+
+
+    //var tblsub = ctx.tbl_subcategory.ToList();
+    //var tblcat = ctx.tbl_category.ToList();
+    var tblassistants = ctx.tbl_user.Where(x => x.UserType == "A").ToList();
+
+    var taskcount = Convert.ToInt32(ViewBag.count);
+}
+
+<style>
+
+.verification-popup {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 999999;
+    top: 0;
+    left: 0;
+    background: #d1cec680;
+}
+
+.verification-popup-main {
+    width: 450px;
+    height: 415px;
+    background: #ffffff;
+    border-radius: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.verification-popup-container {
+    padding: 40px 30px 30px;
+    position: relative;
+}
+
+
+
+    .verification-popup-container > * {
+        /* display: flex; */
+        /* flex-direction: column; */
+        /* align-items: center; */
+        text-align: center;
+    }
+
+        .verification-popup-container > * > *:not(.verification-bottom-btns) {
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+
+    .verification-popup-container .message {
+        margin: 10px auto 40px;
+    }
+
+        .verification-popup-container .message p {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 20.83px;
+        }
+
+
+
+.verification-bottom-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 36px;
+}
+
+
+
+.popup-cross-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+    .popup-cross-btn > * {
+        border: none;
+        background: none;
+        padding: 0;
+        color: var(--primary-text);
+        border-radius: 50%;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .primary-btn {
+        min-width: 120px;
+        height: 40px;
+        border: none;
+        border-radius: 7px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--white-color);
+        background: var(--primary-color);
+        /* text-transform: uppercase; */
+        text-decoration: none;
+        text-underline-offset: 3px;
+        display: inline-flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 20px;
+        outline: none;
+    }
+
+
+    .danger-btn {
+        min-width: 120px;
+        height: 40px;
+        border: none;
+        border-radius: 7px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--white-color);
+        background: #e5756f;
+        /* text-transform: uppercase; */
+        text-decoration: none;
+        text-underline-offset: 3px;
+        display: inline-flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 20px;
+        outline: none;
+    }
+        @@media(max-width: 767px) {
+            .verification-popup-main {
+                width: 66%;
+                height: 420px;
+            }
+
+           
+        }
+    @@media(max-width: 578px) {
+        .verification-popup-main {
+            width: 60%;
+            height: 90%;
+        }
+
+        .primary-btn {
+            min-width: 80px;
+           
+        }
+
+        .danger-btn {
+            min-width: 80px;
+           
+        }
+    }
+
+    @@media(max-width: 530px) {
+        .verification-popup-main {
+            width: 90%;
+            height: 90%;
+        }
+    }
+        @@media(max-width: 380px) {
+
+            .verification-popup-main {
+                width: 96%;
+                height: 85%;
+            }
+
+         
+        }
+
+</style>
+<p id="lbl_stopRecurring"></p>
+<div class="tasks-wrapper">
+
+
+    @if (Model.Count() > 0)
+    {
+        foreach (var items in Model)
+        {
+            <div class="task-date">
+                <p>@items.Key.ToString("MMM,dd ")</p>
+            </div>
+            <div class="tasks-task">
+                @foreach (var item in items.OrderByDescending(x => x.TaskID))
+                {
+
+                    //var subcat = tblsub.Where(x => x.SubCategoryID == item.SubCategoryID).FirstOrDefault();
+                    //var cat = tblcat.Where(x => x.CategoryID == subcat.CategoryID).FirstOrDefault();
+                    <div class="pagination-list">
+
+                        <div class="task-content-wrapper">
+                            <div class="task-content">
+                                <div class="task-left">
+                                    <div class="task-icon-wrapper" onclick="window.location.href='/taskDetails/@item.TaskID'">
+                                        <div class="task-icon">
+                                            @*<img src="~/Assets/Category/@cat.CategoryImage" alt="categoty_image">*@
+                                            <img src="~/Assets/Category/@item.tbl_category.CategoryImage" alt="categoty_image">
+                                        </div>
+                                    </div>
+                                    <div class="task-title">
+
+
+                                        @{
+                                            var tblassistant = tblassistants.Where(x => x.UserID == item.AssistantID).FirstOrDefault();
+                                            if (tblassistant != null)
+                                            {
+
+                                                <span class="task-status" style="background: #FFF5CC !important; border-color: #FFE166 !important; "> Assigned to @tblassistant.FirstName</span>
+                                                <span class="task-status status-action-required"></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="task-status status-unassigned"></span>
+                                            }
+                                        }
+                                        @if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Canceled)
+                                        {
+                                            <div class="task-edit-btn">
+                                                <a href="/addtask/@item.TaskID" style="color: #00c1ab;pointer-events:none">
+                                                    <span class="edit-icon">
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </span>
+                                                    <span>Edit Task</span>
+                                                </a>
+                                            </div>
+                                        }
+                                        else if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Paused)
+                                        {
+                                            var subscription = ctx.tbl_subscription.Where(x => x.UserID == userid).Select(x => x.ExpirationDate).FirstOrDefault();
+
+                                            if (DateTime.Now <= subscription)
+                                            {
+                                                <div class="task-edit-btn">
+                                                    <a href="/addtask/@item.TaskID" style="color: #00c1ab">
+                                                        <span class="edit-icon">
+                                                            <i class="fa-solid fa-pen-to-square"></i>
+                                                        </span>
+                                                        <span>Edit Task</span>
+                                                    </a>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="task-edit-btn">
+                                                    <a href="/addtask/@item.TaskID" style="color: #00c1ab;pointer-events:none">
+                                                        <span class="edit-icon">
+                                                            <i class="fa-solid fa-pen-to-square"></i>
+                                                        </span>
+                                                        <span>Edit Task</span>
+                                                    </a>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="task-edit-btn">
+                                                <a href="/addtask/@item.TaskID" style="color: #00c1ab">
+                                                    <span class="edit-icon">
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </span>
+                                                    <span>Edit Task</span>
+                                                </a>
+                                            </div>
+                                        }
+
+
+                                        @if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Canceled)
+                                        {
+                                            if (item.Repeating == Convert.ToString((int)RecurringStatus.Weekly) || item.Repeating == Convert.ToString((int)RecurringStatus.Fortnightly) || item.Repeating == Convert.ToString((int)RecurringStatus.Monthly))
+                                            {
+                                                <div class="task-edit-btn" id="DivRecurring">
+
+                                                    <span class="task-status" style="background: #FAE3E2 !important; border-color: #EFACA9 !important; color: #EFACA9 !important; ">Stop Recurring</span>
+
+                                                </div>
+                                            }
+                                        }
+                                        else if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Paused)
+                                        {
+                                            var subscription = ctx.tbl_subscription.Where(x => x.UserID == userid).Select(x => x.ExpirationDate).FirstOrDefault();
+
+                                            if (DateTime.Now <= subscription)
+                                            {
+                                                if (item.Repeating == Convert.ToString((int)RecurringStatus.Weekly) || item.Repeating == Convert.ToString((int)RecurringStatus.Fortnightly) || item.Repeating == Convert.ToString((int)RecurringStatus.Monthly))
+                                                {
+                                                    <div class="task-edit-btn" onclick="modalPopup('@item.TaskID')" id="DivRecurring">
+
+                                                        <span class="task-status" style="background: #FAE3E2 !important; border-color: #EFACA9 !important; color: #EFACA9 !important; ">Stop Recurring</span>
+
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (item.Repeating == Convert.ToString((int)RecurringStatus.Weekly) || item.Repeating == Convert.ToString((int)RecurringStatus.Fortnightly) || item.Repeating == Convert.ToString((int)RecurringStatus.Monthly))
+                                                {
+                                                    <div class="task-edit-btn" id="DivRecurring">
+
+                                                        <span class="task-status" style="background: #FAE3E2 !important; border-color: #EFACA9 !important; color: #EFACA9 !important; ">Stop Recurring</span>
+
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (item.Repeating == Convert.ToString((int)RecurringStatus.Weekly) || item.Repeating == Convert.ToString((int)RecurringStatus.Fortnightly) || item.Repeating == Convert.ToString((int)RecurringStatus.Monthly))
+                                            {
+                                                <div class="task-edit-btn" onclick="modalPopup('@item.TaskID')" id="DivRecurring">
+
+                                                    <span class="task-status" style="background: #FAE3E2 !important; border-color: #EFACA9 !important; color: #EFACA9 !important; ">Stop Recurring</span>
+
+                                                </div>
+                                            }
+
+                                        }
+
+                                        <div onclick="window.location.href='/taskDetails/@item.TaskID'">
+                                            <h2>@item.TaskTitle</h2>
+                                            <div class="task-title-bottom">
+                                                <p class="task-due-date">
+                                                    <span class="due-date-title">
+                                                        Due
+                                                        Date:
+                                                    </span>
+                                                    @{
+                                                        var daysDiffInt = "";
+                                                        if (item.Deadline.HasValue)
+                                                        {
+                                                            var deadline = item.Deadline.Value.Date;
+                                                            var currentDate = DateTime.Now.Date;
+
+                                                            var diff = deadline - currentDate;
+
+                                                            var daysDiff = diff.TotalDays;
+
+
+                                                            var DiffInt = (int)daysDiff;
+                                                            daysDiffInt = DiffInt.ToString();
+                                                        }
+
+                                                    }
+                                                    @if (item.Deadline.HasValue)
+                                                    {
+                                                        if (int.Parse(daysDiffInt) > 0)
+                                                        {
+                                                            <span class="due-date-date">In @daysDiffInt days</span>
+                                                        }
+                                                        else if (int.Parse(daysDiffInt) == 0)
+                                                        {
+                                                            <span class="due-date-date">Expiring today</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="due-date-date">Expired</span>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="due-date-date">No Due Date</span>
+                                                    }
+                                                </p>
+                                                <p class="task-categories">
+                                                    <span class="category-title">Category:</span><span class="category-category">@item.tbl_category.Category</span>
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-right task-button-wrapper" onclick="window.location.href='/taskDetails/@item.TaskID'">
+                                    <a href="/taskDetails/@item.TaskID" class="task-btn"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+
+        }
+
+
+    }
+    else
+    {
+        <p class="task-notice" style="color: white; font-size: 16px !important; display: block; background: rgb(0, 193, 171); opacity: 0.7; ">
+            No Records Found
+        </p>
+    }
+
+
+</div>
+
+
+<section class="verification-popup" style="display:none">
+    <div class="verification-popup-main">
+        <div class="verification-popup-container">
+           
+                <div class="popup-cross-btn">
+                    <button onclick="$('.verification-popup').css('display', 'none');"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            
+
+            <form  method="post">
+               
+                <h4>Are you sure you want to stop the recurring task?</h4>
+                <br />
+                <div class="message">
+                    <p>
+                        If you proceed, any upcoming occurrences of this task will be canceled. This will only cancel the next recurring task without affecting the current one. Deleting the current task can be done within the task page.
+                    </p>
+                    <br />
+                    <p>
+                        Do you want to continue canceling this task from recurring?
+                    </p>
+                </div>
+              
+                
+
+                <div class="verification-bottom-btns">
+                    <button type="button" onclick="$('.verification-popup').css('display', 'none');" class="verify-btn danger-btn "><i class="fa-solid fa-xmark"></i>No</button>
+                    <button type="button" class="verify-btn primary-btn " onclick="stopRecurring()"><i class="fa-solid fa-check"></i>Yes</button>
+
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+</section>
+
+
+<script>
+    var taskID;
+    function modalPopup(id) {
+        debugger
+        $('.verification-popup').css('display', 'block');
+        taskID = id;
+    }
+
+    function stopRecurring() {
+        debugger
+        
+        $.ajax({
+            type: "Post",
+            url: "/Task/stopRecurring",
+            data: { id: taskID },
+            dataType: "html",
+            success: function (data) {
+                $('.verification-popup').css('display', 'none');
+                $('#DivRecurring').css('display', 'none');
+                $("#lbl_stopRecurring").css("display", "block")
+                $("#lbl_stopRecurring").fadeOut(5000);
+                $("#lbl_stopRecurring").css("color", "#00c1ab");
+                $("#lbl_stopRecurring").css("font-size", "16px");
+                $('#lbl_stopRecurring').html("The task has terminated its repetitive recreation. ");
+                //alert("success");
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //console.log("not able to");
+                // alert("failed to load questions");
+                //$('#lbl_stopRecurring').html("something went wrong. ");
+            }
+        });
+
+
+    };
+
+</script>
+<script>
+
+    counttasks = @taskcount;
+
+
+</script>

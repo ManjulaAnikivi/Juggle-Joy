@@ -1,0 +1,132 @@
+﻿@model juggle_joy.Models.AssistantValidation
+@{
+	ViewBag.Title = "Register | " + MvcApplication.project_name;
+}
+
+
+
+<style>
+	#register-tab-2 {
+		border-bottom-color: #227495
+	}
+
+	.form-box {
+		max-width: 700px;
+		border: var(--gray-color) 1px solid;
+	}
+
+
+	.pt-2 {
+		padding-top: 0.5rem !important;
+	}
+</style>
+
+
+<ul class="breadcrumb">
+	<li><a href="~/admin/dashboard">Home</a></li>
+	<li class="active">Assistant Registration</li>
+</ul>
+
+<div class="page-title">
+	@if (Model.UserID > 0)
+	{
+		<h2><span class="fa fa-user"></span> Update Assistant </h2>
+	}
+	else
+	{
+		<h2><span class="fa fa-user"></span> Add Assistant </h2>
+	}
+</div>
+
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-xs-12  col-md-12 col-lg-12">
+			@using (Html.BeginForm("Register", "assistant", FormMethod.Post))
+			{
+				@Html.HiddenFor(x => x.UserID);
+				@Html.AntiForgeryToken();
+				<div class="panel panel-default">
+					<p id="lbl_msg" class="panel-title msg">@ViewBag.msg</p>
+					<div class="panel-body">
+						<div class="row">
+							<div class="row">
+								<div class="form-group col-md-4">
+									<label for="FirstName" class="control-label">First Name<span class="req"> *</span></label>
+									@Html.TextBoxFor(x => x.FirstName, new { @class = "form-control", maxlength = "50" })
+									@Html.ValidationMessageFor(x => x.FirstName)
+								</div>
+								<div class="form-group col-md-4">
+									<label for="LastName" class="control-label">Last Name<span class="req"> *</span></label>
+									@Html.TextBoxFor(x => x.LastName, new { @class = "form-control", maxlength = "50" })
+									@Html.ValidationMessageFor(x => x.LastName)
+								</div>
+								<div class="form-group col-md-4">
+									<label for="EmailID" class="control-label">EmailID<span class="req"> *</span></label>
+									@Html.TextBoxFor(x => x.EmailID, new { @class = "form-control", maxlength = "75" })
+									@Html.ValidationMessageFor(x => x.EmailID)
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-md-4">
+									<label for="UserName" class="control-label">User Name<span class="req"> *</span></label>
+									@Html.TextBoxFor(x => x.UserName, new { @class = "form-control", maxlength = "100" })
+									@Html.ValidationMessageFor(x => x.UserName)
+								</div>
+								<div class="form-group col-md-4">
+									<label for="HandlerID" class="control-label">Handler Name<span class="req"> *</span></label>
+									@Html.DropDownListFor(x => x.HandlerID, null, "Select Handler", new { @class = "form-control"})
+									@Html.ValidationMessageFor(x => x.HandlerID)
+								</div>
+								<div class="form-group col-md-4">
+									<label for="PasswordHash" class="control-label">Password<span class="req"> *</span></label>
+									@Html.TextBoxFor(x => x.PasswordHash, new { @class = "form-control", @readonly = "readonly", @Value = "Juggle@100" })
+									@Html.ValidationMessageFor(x => x.PasswordHash)
+								</div>
+							</div>
+							@*<div class="form-group col-md-4">
+									<label for="ConfirmPassword" class="control-label">Confirm Password<span class="req"> *</span></label>
+									@Html.PasswordFor(x => x.ConfirmPassword, new { @class = "form-control" })
+									@Html.ValidationMessageFor(x => x.ConfirmPassword)
+								</div>*@
+						</div>
+						<div class="panel-footer">
+							@if (Model.UserID > 0)
+							{
+								<button type="submit" class="btn btn-primary pull-right">Update Assistant</button>
+								<input type="button" id="cancel" class="btn btn-default" value="Cancel" />
+
+							}
+							else
+							{
+								<button type="submit" class="btn btn-primary pull-right">Add Assistant</button>
+
+							}
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+<script>
+
+    $('#lnk_assist,#lnk_assist_Add').addClass("active");
+
+        if ('@ViewBag.msg' != "")
+        {
+            $("#lbl_msg").fadeOut(10000);
+        }
+        else
+        {
+            $("#lbl_msg").fadeOut();
+        }
+
+
+        $('#cancel').click(function () {
+            window.location.href = "/admin/add-assistant";
+        });
+
+
+</script>
+

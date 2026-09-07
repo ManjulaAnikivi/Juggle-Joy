@@ -1,0 +1,666 @@
+﻿@using juggle_joy.Models
+
+@{
+    Layout = null;
+
+
+    int userid = Convert.ToInt32(Session["UserID"]);
+
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    var tbluser = ctx.tbl_user.Where(x => x.UserID == userid).FirstOrDefault();
+
+    var tbltask = ctx.tbl_task.ToList();
+
+    var tbltasklistDraft = tbltask.Where(x => x.Status == (int)TaskStatus.Draft && x.FromID == userid).OrderByDescending(x => x.TaskID).ToList();
+
+
+    var recived = tbltask.Where(x => x.Status == (int)TaskStatus.Received && x.FromID == userid).ToList().Count();
+
+    var ongoing = tbltask.Where(x => x.Status == (int)TaskStatus.Ongoing && x.FromID == userid).ToList().Count();
+
+    //filter by
+    var filterby = tbltasklistDraft.Select(x => x.CategoryID).Distinct();
+    var filterbyOrdered = filterby.OrderBy(x => x).ToList();
+
+    ////Renewal
+    //var tblsubscription = ctx.tbl_subscription.Where(x => x.UserID == userid && x.GiftID==null).FirstOrDefault();
+    //var currentDate = DateTime.Now.Date;
+
+    //var diff = tblsubscription.ExpirationDate.Value.Date - currentDate;
+
+    //var daysDiff = diff.TotalDays;
+
+
+    //var DiffInt = (int)daysDiff;
+}
+<style>
+
+    .light-theme a, .light-theme span {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        line-height: 20.83px !important;
+        border: 1px solid var(--secondary-color) !important;
+        border-radius: 4px !important;
+        color: var(--primary-color) !important;
+        background: #ffffff !important;
+        width: 40px !important;
+        height: 40px !important;
+        display: inline-flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 3px !important;
+        box-shadow: unset !important;
+        /*cursor:pointer !important;*/
+    }
+
+    .light-theme .current {
+        color: #ffffff !important;
+        background: var(--primary-color) !important;
+        border-color: #00c1ab !important;
+        box-shadow: unset !important;
+    }
+
+    .subscription {
+        border: 1px solid var(--primary-color);
+        border-radius: 10px;
+        color: var(--white-color);
+        background: var(--primary-color);
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 20.83px;
+        height: 35px;
+        padding: 5px 15px;
+        outline: none;
+        position: relative;
+        left: 66%;
+    }
+
+    /* .disabled {
+        pointer-events: none;
+        cursor: default;
+        position: relative;
+    }
+
+        .disabled:hover::after {
+            content: attr(data-title);
+            padding-left: 10px;
+            color: black;
+            position: absolute;
+            transform: translateX(-50%);
+            z-index: 10;
+            top:100%;
+            left:50%;
+            white-space:nowrap;
+            padding:2px;
+        }*/
+
+    @@media (max-width: 420px) {
+
+        .dashboard-title-main h1 {
+            font-size: 34px;
+        }
+    }
+
+
+    @@media (max-width: 390px) {
+
+        .dashboard-title-main h1 {
+            font-size: 26px;
+        }
+    }
+
+    @@media (max-width: 345px) {
+
+        .dashboard-title-main h1 {
+            font-size: 24px;
+        }
+    }
+
+    @@media (max-width: 320px) {
+
+        .dashboard-title-main h1 {
+            font-size: 22px;
+        }
+    }
+
+    @@media (max-width: 290px) {
+
+        .dashboard-title-main h1 {
+            font-size: 20px;
+        }
+    }
+
+    .subscriptionmsg {
+        align-content: center;
+        color: white;
+        font-size: 16px !important;
+        display: block;
+        opacity: 0.7;
+        padding-top: 20px;
+        padding-bottom: 10px;
+        font-size: 14px;
+        font-weight: 400;
+        width: fit-content;
+        /* line-height: 20px;*/
+        background: #e5756f;
+        border: 1px solid var(--secondary-color);
+        border-radius: 10px;
+        padding: 14px 20px;
+        margin: 0 auto 10px;
+    }
+
+    @@media (max-width: 450px) {
+
+        .subscriptionmsg {
+            font-size: 10px !important;
+        }
+    }
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard-@MvcApplication.project_name</title>
+    <link href="~/admin_assets/css/simplePagination.min.css" rel="stylesheet" />
+
+    @Html.Partial("dashboard_css")
+    @*<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>*@
+
+
+</head>
+
+<body class="body-dashboard-page">
+    @Html.Partial("dashboard-header")
+
+    <main class="main dashboard-page">
+
+        <div class="dashboard-display-content dashboard-popups dashboard-background">
+
+            <section class="dashboard-title">
+                <div class="dashboard-title-main">
+                    <div class="container">
+                        <div class="content-wrapper">
+                            <h1><span id="greeting"></span>, @Session["UserName"]</h1>
+                            @if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Canceled)
+                            {
+                                <a data-title="Your current plan is expired" class="primary-btn-dashboard add_new_task" href="/addtask" style="pointer-events:none;">
+                                    <i class="fa-solid fa-plus"></i><span>
+                                        Add
+                                        New
+                                        Task
+                                    </span>
+                                </a>
+                            }
+                            else if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Paused)
+                            {
+                                var subscription = ctx.tbl_subscription.Where(x => x.UserID == userid).Select(x => x.ExpirationDate).FirstOrDefault();
+
+                                if (DateTime.Now <= subscription)
+                                {
+                                    <a class="primary-btn-dashboard add_new_task" href="/addtask">
+                                        <i class="fa-solid fa-plus"></i><span>
+                                            Add
+                                            New
+                                            Task
+                                        </span>
+                                    </a>
+                                }
+                                else
+                                {
+
+                                    <a data-title="Your current plan is expired" class="primary-btn-dashboard add_new_task" href="/addtask" style="pointer-events:none;">
+                                        <i class="fa-solid fa-plus"></i><span>
+                                            Add
+                                            New
+                                            Task
+                                        </span>
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <a class="primary-btn-dashboard add_new_task" href="/addtask">
+                                    <i class="fa-solid fa-plus"></i><span>
+                                        Add
+                                        New
+                                        Task
+                                    </span>
+                                </a>
+                            }
+
+                        </div>
+
+                        @if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Canceled)
+                        {
+                           <p class="subscriptionmsg" id="subscriptionmsg">
+                               <i class="fa fa-check-circle-o" style="color:white;"></i> Your subscription is cancelled
+                               <a href="/Home/cancelSubscription_checkout" style="color: white; margin: 0 20px; text-decoration: underline;">
+                                   <span>
+                                       Resume Plan
+                                   </span>
+                               </a>
+                           </p>
+                        }
+                        </div>
+                </div>
+
+                @*<div class="dashboard-tabs-section-main">
+                        <div class="container">
+                            <p class="task-notice" id="subscription"style=" background: #FAE3E2 !important; border-color: #EFACA9 !important; display:none">
+                                <i class="fa-solid fa-circle-info" style="border: #EFACA9 !important; background: #FAE3E2 !important; color: #EFACA9 !important; "></i>
+                                Your subscription will expire in 3days
+                                <a href="/Task/renew" class="subscription">Renew</a>
+                            </p>
+                        </div>
+                    </div>*@
+            </section>
+
+
+
+            <section class="dashboard-tabs">
+                <div class="dashboard-tabs-main">
+                    <div class="container">
+                        <div class="tabs-and-features">
+                            <div class="task-tab-titles">
+                                <ul>
+                                    <li class="task-tab">
+                                        <a href="/dashboard" class="tab-title active-tab"
+                                           data-id="draft"><i class="fa-solid fa-lightbulb"></i><span>Draft</span></a>
+                                    </li>
+                                    <li class="task-tab">
+                                        <a href="/pending" class="tab-title"
+                                           data-id="pending">
+                                            <i class="fa-solid fa-hourglass-start"></i><span>Pending</span>
+                                            @if (recived > 0)
+                                            {
+                                                <span class="notification-count">@recived</span>
+
+                                            }
+
+                                        </a>
+                                    </li>
+                                    <li class="task-tab">
+                                        <a href="/ongoing" class="tab-title"
+                                           data-id="ongoing">
+                                            <i class="fa-solid fa-clock"></i><span>Ongoing</span>
+                                            @if (ongoing > 0)
+                                            {
+                                                <span class="notification-count">@ongoing</span>
+
+                                            }
+
+                                        </a>
+                                    </li>
+                                    <li class="task-tab">
+                                        <a href="/completed" class="tab-title"
+                                           data-id="completed">
+                                            <i class="fa-solid fa-star"></i><span>Completed</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="feature-buttons">
+                                <div class="feature-btn-wrapper feature-btn-filter" style=" z-index: 3 !important;">
+                                    <a href="javascript:void(0)" class="feature-btn filter_by">
+                                        <i class="fa-solid fa-filter"></i> Filter By
+                                    </a>
+                                    <div class="filter-sort filters">
+                                        @if (filterbyOrdered.Count() > 0)
+                                        {
+                                            foreach (var item in filterbyOrdered)
+                                            {
+                                                if (item != null)
+                                                {
+                                                    var cat = ctx.tbl_category.Where(x => x.CategoryID == item).FirstOrDefault();
+                                                    <a href="javascript:void(0)" onclick="fiterBy('@cat.CategoryID')">@cat.Category</a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="javascript:void(0)" onclick="fiterBy('100')">Incomplete</a>
+                                                }
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)">No records</a>
+                                        }
+
+                                        @*<a href="javascript:void(0)" onclick="fiterBy(1)">Home</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(2)">Family</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(3)">Food</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(4)">Getaway</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(5)">Health</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(6)">Wellness</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(7)">Events</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(8)">Shopping</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(9)">Vehicle</a>
+                                            <a href="javascript:void(0)" onclick="fiterBy(10)">Custom</a>*@
+                                    </div>
+                                </div>
+
+                                <div class="feature-btn-wrapper feature-btn-sort">
+                                    <a href="javascript:void(0)" class="feature-btn sort_by">
+                                        <i class="fa-solid fa-arrow-down-short-wide"></i> Sort By
+                                    </a>
+                                    @if (filterbyOrdered.Count() > 0)
+                                    {
+                                        <div class="filter-sort sorts">
+                                            <a href="javascript:void(0)" onclick="sortBy('N')">New to oldest</a>
+                                            <a href="javascript:void(0)" onclick="sortBy('O')">Old to newest</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="filter-sort sorts">
+                                            <a href="javascript:void(0)">No records</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="dashboard-tabs-section-container">
+
+                <section class="dashboard-tabs-section tab-active" data-id="draft">
+                    <div class="dashboard-tabs-section-main">
+                        <div class="container">
+                            <p class="task-notice" id="lbl_msg" style="color: white; font-size: 16px !important; display: block; background: rgb(0, 193, 171); opacity: 0.7; ">
+                                <i class="fa fa-check-circle-o" style="color: white;"></i> @ViewBag.draftMsg
+                                <span id='pop-off' style=" position: relative; left: 82%; cursor: pointer "> <i class='fa-solid fa-circle-xmark' style="color:white;"></i></span>
+                            </p>
+                            <p class="task-notice">
+                                <i class="fa-solid fa-circle-info"></i>This is your private space to list all the tasks weighing your mind.
+                                Please note that your assistant cannot access the tasks listed here.
+                                When you're ready to delegate a task, provide further details for each task and click 'Create Task'.
+                            </p>
+                            <div class="task-input" id="toDoList">
+                                <p id="lbl_toDo" style="margin-bottom:5px"></p>
+                                <span id="span_toDo">Press enter to add new task</span>
+                                <input type="text" placeholder="Brain dump your to-do list here . . ." id="to_do_list">
+
+                            </div>
+
+                            <div class="tasks-wrapper" id="taskList">
+
+                            </div>
+
+
+                            @if (tbltasklistDraft.Count() > 10)
+                            {
+                                <div class="task-pagination">
+                                    <div id="pagination"></div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </section>
+
+
+
+            </div>
+
+        </div>
+
+        <div class="dashboard-popup-content dashboard-popups dashboard-popup-background">
+            <section class="task-detail-popup message-handler">
+                <div class="task-detail-popup-main">
+                    <div class="popup-container">
+                        <div class="task-detail-popup-wrapper">
+                            <div class="popup-cross-btn">
+                                <button><i class="fa-solid fa-circle-xmark"></i></button>
+                            </div>
+
+                            <div class="content-wrapper" id="task_details">
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <div class="dashboard-new-task-popup dashboard-popups dashboard-popup-background" id="list">
+            <div id="preloaded">
+                <img src="~/Assets/spinner.gif" height="100" width="100" style="display: block; margin-left: auto; margin-right: auto;" />
+            </div>
+        </div>
+
+
+
+    </main>
+
+
+    @Html.Partial("dashboard-footer")
+
+    @Html.Partial("js")
+    @Html.Partial("dashboard-script")
+
+    <script>
+
+        if ('@ViewBag.draftMsg' != "")
+        {
+            $("#lbl_msg").css("display", "block");
+            //$("#lbl_msg").fadeOut(5000);
+            
+            setTimeout(function () {
+                $("#lbl_msg").css("display","none");
+            }, 4000);
+  }
+else
+        {
+            $("#lbl_msg").css("display", "none");
+    $("#lbl_msg").fadeOut();
+  }
+
+        $("#pop-off").on("click", function () {
+            $("#lbl_msg").css("display", "none");
+        })
+    </script>
+</body>
+</html>
+<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/jquery-1.6.simplePagination.min.js"></script>
+<script>
+    $("#subscriptionmsg-off").on("click", function () {
+        $("#subscriptionmsg").css("display", "none");
+    })
+
+</script>
+<script>
+    var counttasks;
+    var categoryid;
+    var subcategoryid;
+    function fiterBy(id) {
+        debugger
+        categoryid = id;
+
+
+        $.ajax({
+            type: "Post",
+            url: "/Task/dashboard_tasklist",
+            data: { catid: id, sortby: subcategoryid },
+            dataType: "html",
+            success: function (data) {
+                debugger
+                $("#taskList").html(data);
+                //alert(counttasks);
+                if (counttasks < 11) {
+                    $('.task-pagination').css('display', 'none');
+                } else {
+                    $('.task-pagination').css('display', 'flex');
+                    $(".pagination-list").slice(10).hide();
+                    $('#pagination').pagination({
+                        items: counttasks,
+
+                        itemsOnPage: 10,
+
+                        onPageClick: function (pageid) {
+                            $("#taskList").load("/Task/dashboard_tasklist", { id: pageid, catid: id, sortby: subcategoryid });
+
+                        }
+                    });
+                }
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //console.log("not able to");
+                // alert("failed to load questions");
+            }
+        });
+    };
+
+
+    function sortBy(res) {
+        subcategoryid = res;
+        $.ajax({
+            type: "Post",
+            url: "/Task/dashboard_tasklist",
+            data: { sortby: res, catid: categoryid },
+            dataType: "html",
+            success: function (data) {
+                debugger
+                $("#taskList").html(data);
+                //alert(counttasks);
+                if (counttasks < 11) {
+                    $('.task-pagination').css('display', 'none');
+                } else {
+                    $('.task-pagination').css('display', 'flex');
+                    $(".pagination-list").slice(10).hide();
+                    $('#pagination').pagination({
+                        items: counttasks,
+
+                        itemsOnPage: 10,
+
+                        onPageClick: function (pageid) {
+                            $("#taskList").load("/Task/dashboard_tasklist", { id: pageid, catid: categoryid, sortby: res });
+
+                        }
+                    });
+                }
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //console.log("not able to");
+                // alert("failed to load questions");
+            }
+        });
+    }
+</script>
+<script>
+    $("#taskList").load("/Task/dashboard_tasklist", function () { });
+
+
+		$(".pagination-list").slice(10).hide();
+		$('#pagination').pagination({
+			items: '@tbltasklistDraft.Count()',
+
+            itemsOnPage: 10,
+
+            //without partial load ie single page is used
+
+			//onPageClick: function (pageid) {
+			//	$(".pagination-list").hide()
+			//		.slice(10 * (pageid - 1),
+			//			10 + 10 * (pageid - 1)).show();
+            //}
+
+            onPageClick: function (pageid) {
+                $("#taskList").load("/Task/dashboard_tasklist", { id: pageid});
+
+            }
+        });
+
+
+
+</script>
+
+
+
+<script>
+   
+    $('#toDoList').keypress(function (e) {
+        debugger
+        var key = e.which;
+        if (key == 13) // the enter key code
+        {
+            var text = $('#to_do_list').val();
+
+            if (text == "") {
+                $('#lbl_toDo').css('display', 'block');
+                $('#lbl_toDo').css("color", "#E5756F");
+                $('#lbl_toDo').css("font-size", "16px");
+                $('#lbl_toDo').html("Please write your to do list");
+                $("#lbl_toDo").fadeOut(5000);
+                return false;
+            }
+            else {
+
+                //window.location.href = '/addtask?taskTitle=' + text;
+
+                $.ajax({
+                    type: "Post",
+                    url: "/Task/toDoList",
+                    data: { taskTitle: text },
+                    dataType: "json",
+                    success: function (data) {
+                        debugger
+                        $('#to_do_list').val("");
+                        $('#lbl_toDo').css('display', 'block');
+                        $('#lbl_toDo').css("color", "#00c1ab");
+                        $('#lbl_toDo').css("font-size", "16px");
+                        $('#lbl_toDo').css("font-weight", "bold");
+                        $('#lbl_toDo').html("Task saved as draft");
+                        $('#lbl_toDo').fadeOut(5000);
+                        $("#taskList").load("/Task/dashboard_tasklist", function () { });
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        //console.log("not able to");
+                        // alert("failed to load questions");
+                    }
+                });
+            }
+        }
+
+    });
+</script>
+
+@*<script>
+        if ('@DiffInt' <= '7') {
+            $('#subscription').css('display', 'block');
+        }
+    </script>*@
+<script>
+    $(document).ready(function () {
+        debugger
+        var today = new Date();
+        var cHour = today.getHours();
+
+        if (cHour >= 0 && cHour < 12) {
+            $('#greeting').text("Good Morning");
+        }
+        else if (cHour >= 12 && cHour < 18) {
+            $('#greeting').text("Good Afternoon");
+        }
+        else if (cHour >= 18 && cHour <= 23) {
+            $('#greeting').text("Good Evening");
+
+        }
+
+    });
+</script>

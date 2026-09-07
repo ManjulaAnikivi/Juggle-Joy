@@ -1,0 +1,92 @@
+﻿
+@{
+    Layout = null;
+    //ViewBag.Title = "Press";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Press - @MvcApplication.project_name</title>
+
+    @Html.Partial("css")
+
+</head>
+
+<body class="body-press-and-media-page">
+    @Html.Partial("header")
+
+    <div class="main press-and-media-page">
+
+        <section class="press-and-media-banner">
+            <div class="press-and-media-banner-main">
+                <div class="container">
+                    <div class="inner-container">
+                        <h1 class="font-caveat wow fadeInUp">Press and media</h1>
+                        <p class="medium-p-2 wow fadeInUp">
+                            Media coverage is instrumental in highlighting the importance of
+                            supporting busy parents in managing their daily tasks and finding balance in their lives.
+                            At JuggleJoy, we recognise the invaluable role that the press plays in sharing our mission.
+                            For media enquiries or collaborations with influencers, please contact us at:
+                            <br>
+                            <a href="mailto:pr@jugglejoy.com" class="wow fadeInUp">pr@jugglejoy.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="press-and-media-info">
+            <div class="press-and-media-info-main">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-5 col-md-4 col-12">
+                            <img src="~/Assets/images/logo-thumbnail.png" alt="logo-thumbnail" class="wow fadeIn">
+                        </div>
+                        <div class="col-lg-7 col-md-8 col-12">
+                            <p class="medium-p-2 wow fadeIn">
+                                JuggleJoy is the UK's first and only subscription-based digital concierge service, uniquely crafted to simplify and enrich the lives of busy working parents.
+                                <br><br>
+                                Established in 2024, our mission is to empower working parents to reclaim their time and prioritise the moments that matter most.
+                                <br><br>
+                                With a commitment to providing smart solutions and exceptional customer service, JuggleJoy is here to ease the burden felt by working parents on a daily basis.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="press-and-media-press-kit">
+            <div class="press-and-media-press-kit-main">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8 col-md-6 col-12">
+                            <img src="~/Assets/images/press-and-media-press-kit.png" alt="press-and-media-press-kit" class="wow fadeInLeft">
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <h2 class="font-caveat wow fadeInRight">Get our press kit</h2>
+                            <p class="wow fadeInRight" data-wow-delay=".2s">
+                                Photography and bios
+                                <br>Our logo pack
+                                <br>JuggleJoy fact sheet
+                                <br>Website screenshots
+                            </p>
+                            <a href="/Home/Error" class="primary-btn download-btn wow fadeInRight" data-wow-delay=".2s" style=" width: 263px;">
+                                <i class="fa-solid fa-download"></i> <span>Download our press kit</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+
+    @Html.Partial("footer")
+
+</body>
+</html>
+@Html.Partial("js")

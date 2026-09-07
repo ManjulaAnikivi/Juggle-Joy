@@ -1,0 +1,36 @@
+﻿<footer class="secondary-footer admin-footer">
+	<div class="footer-main">
+		<div class="container-fluid">
+			<div class="footer-copyright">
+				<p>Copyright © 2014 - @DateTime.Now.Year. JuggleJoy Limited. All Rights Reserved. </p>
+			</div>
+		</div>
+	</div>
+</footer>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script>
+		$(document).ready(function () {
+
+			//admin header search bar
+			$(".search-box-mobile-btn button").click(function () {
+				$(".header-search-box").slideToggle("fast");
+			});
+
+			// admin handler accordion
+			$(".admin-page-sidebar .handler").on("click", function (e) {
+				e.preventDefault();
+				var $this = $(this);
+				if (!$this.hasClass("toggle-active")) {
+					$(".admin-page-sidebar .listing").slideUp(400);
+					$(".admin-page-sidebar .handler").removeClass("toggle-active");
+					$(".admin-page-sidebar .handler").removeClass("active");
+					$(".admin-page-sidebar .handler").parent().removeClass("active__row");
+				}
+				$this.toggleClass("toggle-active");
+				$this.parent().toggleClass("active__row");
+				$this.next().slideToggle();
+			});
+
+		});
+</script>
+

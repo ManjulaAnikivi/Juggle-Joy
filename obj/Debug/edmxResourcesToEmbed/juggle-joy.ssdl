@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="db_jugglejoyModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="tbl_admin">
+    <Key>
+      <PropertyRef Name="AdminID" />
+    </Key>
+    <Property Name="AdminID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FullName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" MaxLength="20" Nullable="false" />
+    <Property Name="PasswordHash" Type="nvarchar" MaxLength="40" Nullable="false" />
+    <Property Name="Salt" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EmailID" Type="nvarchar" MaxLength="75" Nullable="false" />
+    <Property Name="PhoneNo" Type="nvarchar" MaxLength="20" Nullable="false" />
+    <Property Name="PwdResetKey" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PwdKeyCreatedTime" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="tbl_banner">
+    <Key>
+      <PropertyRef Name="BannerId" />
+    </Key>
+    <Property Name="BannerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BannerImage" Type="nvarchar" MaxLength="50" />
+    <Property Name="BannerText" Type="nvarchar" MaxLength="100" />
+    <Property Name="Description" Type="nvarchar(max)" />
+    <Property Name="UrlLink" Type="nvarchar" MaxLength="250" />
+    <Property Name="SortPreference" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_blogs">
+    <Key>
+      <PropertyRef Name="BlogID" />
+    </Key>
+    <Property Name="BlogID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BlogTitle" Type="nvarchar" MaxLength="100" />
+    <Property Name="BlogImage" Type="nvarchar" MaxLength="50" />
+    <Property Name="BlogDescription" Type="ntext" />
+    <Property Name="Date" Type="datetime" />
+  </EntityType>
+  <EntityType Name="tbl_contact">
+    <Key>
+      <PropertyRef Name="ContactID" />
+    </Key>
+    <Property Name="ContactID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ContactName" Type="nvarchar" MaxLength="50" />
+    <Property Name="ContactEmail" Type="nvarchar" MaxLength="75" />
+    <Property Name="ContactPhone" Type="nvarchar" MaxLength="20" />
+    <Property Name="ContactSubject" Type="nvarchar" MaxLength="200" />
+    <Property Name="ContactMsg" Type="ntext" />
+    <Property Name="ContactDate" Type="datetime" />
+  </EntityType>
+  <EntityType Name="tbl_faq">
+    <Key>
+      <PropertyRef Name="FaqID" />
+    </Key>
+    <Property Name="FaqID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FaqQuestion" Type="nvarchar" MaxLength="200" />
+    <Property Name="FaqAnswer" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="tbl_subscriber">
+    <Key>
+      <PropertyRef Name="SubscriberId" />
+    </Key>
+    <Property Name="SubscriberId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="EmailId" Type="nvarchar" MaxLength="75" />
+    <Property Name="SubscribedDate" Type="datetime" />
+  </EntityType>
+  <EntityContainer Name="db_jugglejoyModelStoreContainer">
+    <EntitySet Name="tbl_admin" EntityType="Self.tbl_admin" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_banner" EntityType="Self.tbl_banner" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_blogs" EntityType="Self.tbl_blogs" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_contact" EntityType="Self.tbl_contact" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_faq" EntityType="Self.tbl_faq" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_subscriber" EntityType="Self.tbl_subscriber" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

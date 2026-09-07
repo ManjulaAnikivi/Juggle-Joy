@@ -1,0 +1,245 @@
+﻿@model juggle_joy.Models.BannerValidation
+@using juggle_joy.Models
+@{
+    ViewBag.Title = "Add Banner | " + MvcApplication.project_name;
+}
+<ul class="breadcrumb">
+    <li><a href="~/admin/account/dashboard">Home</a></li>
+    <li class="active">Banner </li>
+</ul>
+
+
+<div class="page-title">
+    @if (Model.BannerId > 0)
+    {
+        <h2><span class="fa fa-edit"></span> Update Banner </h2>
+    }
+    else
+    {
+        <h2><span class="fa fa-edit"></span> Add Banner </h2>
+    }
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            @using (Html.BeginForm("addbanner", "banner", FormMethod.Post, new { id = "form_client", enctype = "multipart/form-data" }))
+            {
+                @*<input type="hidden" name="RetUrl" value="@ViewBag.RetUrl" />*@
+                <div class="panel panel-default">
+                    <p id="lbl_msg" class="panel-title ">@ViewBag.msg </p>
+
+
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="col-md-6 form-group">
+                                    <label>Banner Text</label>
+                                    @Html.TextBoxFor(x => x.BannerText, new { @class = "form-control flat", maxlength = "100" })
+                                    @Html.ValidationMessageFor(x => x.BannerText)
+                                </div>
+
+                                <div class="col-md-6 form-group">
+                                    <label>URL Link</label>
+                                    @Html.TextBoxFor(x => x.UrlLink, new { @class = "form-control flat", maxlength = "250" })
+                                    @Html.ValidationMessageFor(x => x.UrlLink)
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-4 form-group">
+
+                                <label for="BannerImage" class="control-label">Upload Banner video</label>
+
+                                @if (Model.BannerId == 0)
+                                {
+
+                                    @*<label>Upload video</label>*@
+                                    <div width="320" height="240" controls>
+                                        @*<input type='file' id='videoUpload' name="postedFile" class = "form-control flat"/>*@
+                                        @Html.TextBoxFor(x => x.BannerVideo, new { @class = "form-control flat", type = "file", accept = ".mp4" })
+                                        @Html.ValidationMessageFor(x => x.BannerVideo)
+                                        <span id="error_msg" style="color: #e80c4d"></span>
+                                        @*<div id="no_img">
+                                                <img src="~/Assets/no-video.jpg" style="border: 1px solid #D5D5D5;  margin-top: 10px " width="200" height="200" />
+                                            </div>*@
+
+                                        <video width="300" height="200" style="display: none; margin-left:20px " controls autoplay>
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div width="320" height="240" controls style="display:block">
+                                        @*<input type="file" name="postedFile" class="form-control flat" />*@
+                                        @Html.TextBoxFor(x => x.BannerVideo, new { @class = "form-control flat", type = "file", accept = ".mp4,.mov,.avi,.webm" })
+                                        @Html.ValidationMessageFor(x => x.BannerVideo)
+                                        <span id="error_msg" style="color: #e80c4d"></span>
+
+                                        <video controls="true" width="300" height="200" style="  margin-left: 20px;">
+                                            @*<source src="~/Assets/Videofiles/@Model.Name" type='video/mp4' />*@
+                                            <source src="@Url.Content("~/Assets/Videofiles/"+@Model.BannerVideo)" />
+                                        </video>
+                                    </div>
+                                }
+
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label>Description</label>
+                                @Html.TextBoxFor(x => x.Description, new { @class = "form-control flat", maxlength = "150" })
+                                @*@Html.ValidationMessageFor(x => x.Description)*@
+                                <span id="desc_error" style="color:#e80c4d"></span>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        @if (Model.BannerId == 0)
+                        {
+                            <a href="/admin/add-banner" class="btn btn-default">Cancel</a>
+                            <button type="submit" id="submit" class="btn btn-primary pull-right">Add Banner</button>
+                        }
+                        else
+                        {
+                            <a href="/admin/add-banner" class="btn btn-default">Cancel</a>
+                            <button type="submit" id="submit" class="btn btn-primary pull-right">Update Banner</button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-default" style="border:0px;">
+                <div class="box-header">
+                    <span style="color:Red;" id="lblmsg1">@ViewBag.deletemsg</span>
+                    <h3>List of Banners</h3>
+                </div>
+                <div class="box box-body " style="border:0px;">
+                    <div class="row">
+                        <div class="col-md-12" id="list">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br /><br />
+</div>
+<script type="text/javascript" src="~/admin_assets/tinymce/tinymce.min.js"></script>
+
+
+
+<script type="text/javascript">
+	if (@Model.BannerId > 0) {
+
+        $("#BannerVideo").attr("data-val", "false");
+	}
+
+	$('#lnk_banner').addClass("active");
+
+
+	    if ('@ViewBag.msg' != "")
+        {
+            $("#lbl_msg").delay(2500).fadeOut(5000);
+        }
+        else
+        {
+			$("#lbl_msg").fadeOut();
+		}
+
+		 if ('@ViewBag.deletemsg' != "")
+        {
+			 $("#lblmsg1").fadeOut(3000);
+        }
+        else
+        {
+			 $("#lblmsg1").fadeOut();
+		}
+
+    $(document).ready(function () { $('#list').load("/admin/banner/banner_List")});
+
+
+
+    tinymce.init({
+        selector: "#Description",
+        convert_fonts_to_spans: false,
+        plugins: ["advlist autolink lists link charmap print preview anchor textcolor ", "searchreplace visualblocks code fullscreen"],
+        toolbar: "insertfile undo redo | fontselect | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | forecolor backcolor | fullscreen",
+        menubar: false,
+        height: "150",
+        statusbar: false,
+        setup: function (editor) {
+            editor.on('keyup', function (e) {
+                $("#descError").html('');
+                $(".mce-tinymce").css("border", "1px solid #c5c5c5");
+            });
+        }
+    });
+
+
+
+    //code for preview the video
+    //document.getElementById("BannerVideo").onchange = function (event) {
+    //    debugger
+    //    if (this.files[0].size > 4000000) {
+    //        //alert("Please upload video less than 4MB. Thanks!!");
+    //        $("#error_msg").html("Please upload video less than 4MB");
+    //        $("#error_msg").fadeOut(5000);
+    //        $(this).val("");
+    //    }
+    //    else {
+    //        $("#no_img").hide();
+    //        let file = event.target.files[0];
+    //        let blobURL = URL.createObjectURL(file);
+    //        document.querySelector("video").style.display = 'block';
+    //        document.querySelector("video").src = blobURL;
+    //    }
+
+    //}
+
+
+
+
+
+    document.getElementById("BannerVideo").onchange = function (event) {
+        debugger
+
+        var filePath = this.value;
+        var allowedExtensions = /(\.mp4|\.MOV|\.AVI|\.WEBM)$/i;
+        if (!allowedExtensions.exec(filePath)) {
+            //alert('Please upload file having extensions .mp4 only.');
+            $("#error_msg").html("Please upload file having extensions .mp4,.mov,.avi,.webm only");
+            $("#error_msg").fadeOut(5000);
+            $(this).val("");
+            return false;
+        }
+        else if (this.files[0].size > 4000000) {
+            //alert("Please upload video less than 4MB. Thanks!!");
+            $("#error_msg").html("Please upload video less than 4MB");
+            $("#error_msg").fadeOut(5000);
+            $(this).val("");
+            return false;
+        }
+        else {
+            //$("#no_img").hide();
+            let file = event.target.files[0];
+            let blobURL = URL.createObjectURL(file);
+            document.querySelector("video").style.display = 'block';
+            document.querySelector("video").src = blobURL;
+            return true;
+        }
+
+    }
+
+</script>
+
+

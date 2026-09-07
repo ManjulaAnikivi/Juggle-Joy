@@ -1,0 +1,174 @@
+﻿@model juggle_joy.Models.tbl_task
+@using juggle_joy.Models;
+@{
+	Layout = null;
+	ViewBag.Title = "Task Details | " + MvcApplication.project_name;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	var user = ctx.tbl_user.Where(x => x.UserID == Model.FromID).FirstOrDefault();
+	var cat = ctx.tbl_category.Where(x => x.CategoryID == Model.CategoryID).FirstOrDefault();
+	var subcat = ctx.tbl_subcategory.Where(x => x.SubCategoryID == Model.SubCategoryID).FirstOrDefault();
+
+	var answers = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID).ToList();
+
+	//loading task details
+	var strid = Model.SubCategoryID.ToString();
+
+	var tblque = ctx.tbl_question
+				.AsEnumerable() // Switch to LINQ to Objects
+				.Where(x => x.SubCategoryID.Split(',').Any(z => z.Trim() == strid))
+				.ToList();
+}
+<div class="row font_size">
+	<div class="panel-body">
+		<ul class="list-group border-bottom">
+			<li class="list-group-item">
+				<span> <label class="bold">Name:</label></span>
+				<span style="float: right;">@user.FirstName @user.LastName</span>
+			</li>
+			<li class="list-group-item">
+				<span> <label class="bold">Email Adress:</label></span>
+				<span style="float: right;">@user.EmailID</span>
+			</li>
+			<li class="list-group-item">
+				<span> <label class="bold">Category:</label></span>
+				<span style="float: right;">@cat.Category</span>
+			</li>
+			<li class="list-group-item">
+				<span> <label class="bold">Sub Category:</label></span>
+				<span style="float: right;">@subcat.SubCategory</span>
+			</li>
+
+			<li class="list-group-item">
+				<span> <label class="bold">Deadline:</label></span>
+				<span style="float: right;">@GlobalMethods.ConvertToDate(Model.Deadline)</span>
+			</li>
+			@*<li class="list-group-item">
+			<span> <label class="bold">Zip Postal Code:</label></span>
+			<span style="float: right;">@Model.ZipPostalCode</span>
+		</li>*@
+			@*<li class="list-group-item">
+				<span> <label class="bold">Description:</label></span>
+				<br />
+				<span>@Html.Raw(Model.Description)</span>
+			</li>*@
+			@*@foreach (var items in answers)
+			{
+				var question = ctx.tbl_question.Where(x => x.QuestionID == items.QuestionID).FirstOrDefault();
+				<li class="list-group-item">
+					<span> <label class="bold">@question.Question</label></span>
+					<br />
+					<span>@items.Answer</span>
+				</li>
+			}*@
+
+			@foreach (var item in tblque)
+			{
+				var ans = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID && x.QuestionID == item.QuestionID && x.MinitaskID == null).FirstOrDefault();
+
+				<li class="list-group-item">
+					<span> <label class="bold">@item.Question</label></span>
+					<br />
+					@if (ans != null)
+					{
+
+						if (item.OptionType == "Radio")
+						{
+							var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == ans.Answer).FirstOrDefault();
+							if (tblopt != null)
+							{
+								if (tblopt.OptionType == "textbox")
+								{
+									<span>
+										@tblopt.Question,@ans.OtherAnswer
+									</span>
+								}
+								else
+								{
+									<span>
+										@tblopt.Question
+									</span>
+								}
+
+							}
+
+						}
+						else if (item.OptionType == "CheckBox")
+						{
+							var anslist = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID && x.QuestionID == item.QuestionID && x.MinitaskID == null).ToList();
+							foreach (var anwser in anslist)
+							{
+								var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == anwser.Answer).FirstOrDefault();
+								if (tblopt != null)
+								{
+									if (tblopt.OptionType == "textbox")
+									{
+										<span>
+											@tblopt.Question,@anwser.OtherAnswer
+										</span>
+									}
+									else
+									{
+										<span>
+											@tblopt.Question
+										</span>
+									}
+								}
+							}
+						}
+						else if (item.OptionType == "Option")
+						{
+							var anslist = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID && x.QuestionID == item.QuestionID && x.MinitaskID == null).ToList();
+
+							foreach (var anwser in anslist)
+							{
+								var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == anwser.Answer).FirstOrDefault();
+								if (tblopt != null)
+								{
+									if (tblopt.OptionType == "text" || tblopt.OptionType == "counter" || tblopt.OptionType == "date" || tblopt.OptionType == "time" || tblopt.OptionType == "textarea")
+									{
+										<span>
+											@tblopt.Question:@anwser.OtherAnswer
+										</span>
+									}
+
+									if (tblopt.OptionType == "checkbox")
+									{
+										if (@anwser.OtherAnswer != null)
+										{
+											<span>
+												@tblopt.Question:checked
+											</span>
+										}
+
+									}
+
+									if (tblopt.OptionType == "radio")
+									{
+
+										var opttypa = ctx.tbl_optiontype.Where(x => x.OptionID == tblopt.OptionID).FirstOrDefault();
+										<span>
+											@tblopt.Question:@opttypa.Question
+										</span>
+									}
+
+								}
+							}
+
+						}
+						else
+						{
+							//for counter and textarea
+							<span>
+								@ans.Answer
+							</span>
+						}
+					}
+
+				</li>
+
+			}
+		</ul>
+	</div>
+</div>
+
+

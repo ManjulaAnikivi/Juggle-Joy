@@ -1,0 +1,307 @@
+﻿@{ 
+	var login = ViewBag.login;
+}
+<style>
+
+
+	.header-main {
+		position: relative;
+		z-index: 999;
+		box-shadow: 0px 0px 0px 1px var(--secondary-color) !important;
+	}
+
+	.header-wrapper {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 13px 0;
+	}
+
+		.header-wrapper .logo {
+			max-width: 250px;
+		}
+
+		.header-wrapper .avatar-main {
+			position: relative;
+		}
+
+		.header-wrapper .avatar-logo > a {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background: var(--primary-color);
+		}
+
+			.header-wrapper .avatar-logo > a > * {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				width: 100%;
+				height: 100%;
+				border-radius: 50%;
+				color: var(--white-color);
+				font-size: 16px;
+				font-weight: 700;
+				line-height: 20.83px;
+			}
+
+		.header-wrapper .avatar-logo > * > img {
+			background: var(--white-color);
+		}
+
+		.header-wrapper .avatar-logo .submenu {
+			display: none;
+			position: absolute;
+			top: 100%;
+			right: 0;
+			z-index: 9999999999;
+			background: var(--white-color);
+			padding: 10px 0 10px;
+			border-radius: 10px;
+			box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
+			margin-top: 10px;
+		}
+
+		.header-wrapper .avatar-main .submenu.submenu-visible {
+			display: block;
+		}
+
+		.header-wrapper .avatar-main .submenu ul li > * {
+			display: block;
+			text-wrap: nowrap;
+			white-space: nowrap;
+			padding: 8px 20px;
+		}
+
+			.header-wrapper .avatar-main .submenu ul li > *:hover {
+				color: var(--white-color) !important;
+				background: var(--primary-color) !important;
+				transition: all 0.2s ease !important;
+			}
+
+	.submenu ul li a {
+		color: #00c1ab !important;
+		font-weight: normal !important;
+		padding: 8px 20px !important;
+		font-family: 'DM Sans', sans-serif !important;
+	}
+
+	.hide {
+		display: none !important;
+	}
+
+	@@media (max-width: 991px) {
+
+		.hide {
+			display: block !important;
+		}
+
+		.avatar-main {
+			display: none !important;
+		}
+	}
+</style>
+<header>
+	<div class="header-main">
+		<div class="container">
+			<div class="header-wrapper">
+				<div class="logo">
+					<a href="/">
+						<img src="/Assets/images/logo.png" alt="Jugglejoy-logo">
+					</a>
+				</div>
+                <div class="navigation">
+                    <ul class="nav">
+                        <li class="nav-item"><a href="/our-services">Our Services</a></li>
+                        <li class="nav-item"><a href="/pricing">Pricing</a></li>
+                        <li class="nav-item"><a href="/blogs">Blog</a></li>
+                        <li class="nav-item"><a href="/faq">FAQ</a></li>
+                        <li class="nav-item"><a href="/our-story">Our Story</a></li>
+                        @if (login == "user-login"|| login==null)
+                        {
+                            if (Session["UserID"] != null)
+                            {
+                                <li class="nav-item hide"><a href="/dashboard">Dashboard</a></li>
+                                <li class="nav-item hide"><a href="/my-profile">Update Profile</a></li>
+                                <li class="nav-item hide"><a href="/Home/logout">Logout</a></li>
+                            }
+                        }
+                        else if (login == "assistant-login")
+                        {
+                            if (Session["AssistantID"] != null)
+                            {
+                                <li class="nav-item hide"><a href="/Assistant-dashboard">Dashboard</a></li>
+                                <li class="nav-item hide"><a href="/Assistant-profile">Update Profile</a></li>
+                                <li class="nav-item hide"><a href="/Assistants/assistant_logout">Logout</a></li>
+                            }
+                        }
+                        else if (login == "handler-login")
+                        {
+                            if (Session["HandlerID"] != null)
+                            {
+                                <li class="nav-item hide"><a href="/handler-dashboard">Dashboard</a></li>
+                                <li class="nav-item hide"><a href="/handler-profile">Update Profile</a></li>
+                                <li class="nav-item hide"><a href="/Handlers/handler_logout">Logout</a></li>
+                            }
+                        }
+
+                    </ul>
+                    @if (login == "user-login" || login == null)
+                    {
+                        if (Session["UserID"] != null)
+                        {
+
+                            @*<div class="">
+                    <a href="/dashboard">
+                        <span><i class="fa-solid fa-user"></i> @Session["UserName"]</span>
+                    </a>
+                </div>*@
+
+                            <div class="avatar-main">
+                                <div class="avatar-logo">
+                                    <a href="javascript:void(0)">
+                                        @*<img src="./assets/images/logo-100x100.png" alt="logo">*@
+                                        <span>@Session["FirstName"]@Session["LastName"]</span>
+                                    </a>
+
+                                    <div class="submenu">
+                                        @*<div class="popup-cross-btn">
+                                <button><i class="fa-solid fa-circle-xmark"></i></button>
+                            </div>*@
+                                        <ul>
+                                            <li><a href="/dashboard">Dashboard</a></li>
+                                            <li><a href="/my-profile">My Profile</a></li>
+                                            <li><a href="/Home/logout">Logout</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="header-btn nav-item">
+                                <a href="/login">
+                                    <span><i class="fa-regular fa-circle-user"></i></span>
+                                    <span>Login</span>
+                                </a>
+                            </div>
+                        }
+                    }
+                    else if (login == "assistant-login")
+                    {
+
+                        if (Session["AssistantID"] != null)
+                        {
+
+                            <div class="avatar-main">
+                                <div class="avatar-logo">
+                                    <a href="javascript:void(0)">
+                                        @*<img src="./assets/images/logo-100x100.png" alt="logo">*@
+                                        <span>@Session["AssistantFirstName"]@Session["AssistantLastName"]</span>
+                                    </a>
+
+                                    <div class="submenu">
+                                        @*<div class="popup-cross-btn">
+                                <button><i class="fa-solid fa-circle-xmark"></i></button>
+                            </div>*@
+                                        <ul>
+                                            <li><a href="/assistant-dashboard">Dashboard</a></li>
+                                            <li><a href="/assistant-profile">My Profile</a></li>
+                                            <li><a href="/Assistants/assistant_logout">Logout</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="header-btn nav-item">
+                                <a href="/assistant-login">
+                                    <span><i class="fa-regular fa-circle-user"></i></span>
+                                    <span>Login</span>
+                                </a>
+                            </div>
+                        }
+
+                    }
+                    else if (login == "handler-login")
+                    {
+
+
+                        if (Session["HandlerID"] != null)
+                        {
+
+                            <div class="avatar-main">
+                                <div class="avatar-logo">
+                                    <a href="javascript:void(0)">
+                                        @*<img src="./assets/images/logo-100x100.png" alt="logo">*@
+                                        <span>@Session["HandlerFirstName"]@Session["HandlerLastName"]</span>
+                                    </a>
+
+                                    <div class="submenu">
+                                        @*<div class="popup-cross-btn">
+                                <button><i class="fa-solid fa-circle-xmark"></i></button>
+                            </div>*@
+                                        <ul>
+                                            <li><a href="/handler-dashboard">Dashboard</a></li>
+                                            <li><a href="/handler-profile">My Profile</a></li>
+                                            <li><a href="/Handlers/handler_logout">Logout</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="header-btn nav-item">
+                                <a href="/handler-login">
+                                    <span><i class="fa-regular fa-circle-user"></i></span>
+                                    <span>Login</span>
+                                </a>
+                            </div>
+                        }
+                    }
+                </div>
+
+				<div class="navigation-backdrop"></div>
+
+				<div class="mobile-bars">
+					<div class="bars">
+						<span class="bar"></span>
+						<span class="bar"></span>
+						<span class="bar"></span>
+					</div>
+
+					<div class="cross">
+						<span class="bar"></span>
+						<span class="bar"></span>
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+</header>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script>
+	$(document).ready(function () {
+
+		//submenu open/close
+		$(".avatar-logo a").click(function () {
+			$(".submenu").toggleClass("submenu-visible");
+		});
+		// $(".submenu .popup-cross-btn button").click(function () {
+		//     $(".submenu").removeClass("submenu-visible");
+		// });
+		$(document).click(function (event) {
+			if (!$(event.target).closest(".submenu,.avatar-logo a").length) {
+				$("body").find(".submenu").removeClass("submenu-visible");
+			}
+		});
+
+	})
+</script>

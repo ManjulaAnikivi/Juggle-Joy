@@ -1,0 +1,325 @@
+﻿@model juggle_joy.Models.QuestionValidation
+@using juggle_joy.Models
+@{
+    ViewBag.Title = "Questions" + " | " + MvcApplication.project_name;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    int i = 0;
+    var optionlist = ctx.tbl_options.Where(x => x.QuestionID == Model.QuestionID).ToList();
+    var subcategory = "";
+    if (Model.SubCategoryID != null)
+    {
+        subcategory = Model.SubCategoryID[0];
+    }
+
+    
+}
+
+<link href="~/Content/chosen/chosen.min.css" rel="stylesheet" />
+
+<style>
+    .chosen-container-multi {
+        border: 1px solid #F9F9F9 !important;
+        background: #F9F9F9 !important;
+        border-radius: 4px !important;
+    }
+
+    .chosen-choices {
+        border: 1px solid #D5D5D5 !important;
+        background: #F9F9F9 !important;
+        border-radius: 4px !important;
+    }
+
+    .chosen-search-input {
+        color: #555 !important;
+        padding: 6px 12px !important;
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px !important;
+    }
+</style>
+
+
+<ul class="breadcrumb">
+    <li><a href="~/admin/account/dashboard">Home</a></li>
+    <li class="active">Questions</li>
+</ul>
+
+<div class="page-title">
+    @if (Model.QuestionID > 0)
+    {
+        <h2><span class="fa fa-question-circle"></span> Update Questions</h2>
+
+    }
+    else
+    {
+        <h2><span class="fa fa-question-circle"></span> Add Questions</h2>
+    }
+</div>
+
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            @using (Html.BeginForm("Addquestion", "question", FormMethod.Post, new { id = "form_product" }))
+            {
+                @Html.AntiForgeryToken();
+                <div class="panel panel-default">
+                    <p id="lbl_msg" class="panel-title msg" style="color:red">@ViewBag.msg</p>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="form-group col-md-6" id="sbct">
+                                <label for="SubCategoryID" class="control-label">Subcategory<span class="req"> *</span></label>
+                                @Html.DropDownListFor(x => x.SubCategoryID, ViewBag.SubCategoryID as MultiSelectList, new { @class = "form-control", multiple = "multiple", id = "SubCategoryID", name = "SubCategoryID" })
+                                @*@Html.ValidationMessageFor(x => x.SubCategoryID)*@
+                                <span id="subcategory_Error" style="color:#e80c4d;"></span>
+
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="Question" class="control-label">Question<span class="req"> *</span></label>
+                                @Html.TextBoxFor(x => x.Question, new { @class = "form-control", maxlength = "100" })
+                                @Html.ValidationMessageFor(x => x.Question)
+                            </div>
+                        </div>
+
+                        @*<div class="row" style="text-align: center;">
+                                <span style=" margin-left: 20px">
+                                    <input type="radio" id="Counter" name="optionType" value="Counter">
+                                    <label for="Counter">Counter</label>
+                                </span>
+
+                                <span style=" margin-left: 20px">
+                                    <input type="radio" id="Option" name="optionType" value="Option">
+                                    <label for="Option">Option</label><br>
+                                </span>
+                            </div>*@
+
+
+					<div class="row" style="text-align: center;">
+
+						<span style=" margin-left: 20px">
+							@Html.RadioButtonFor(x => x.OptionType, "Textarea", new { @name = "optionType", @onchange = "ToggleInfo(this);", @checked = "checked" })
+							<label for="TextArea">TextArea</label>
+						</span>
+
+						<span style=" margin-left: 20px">
+							@Html.RadioButtonFor(x => x.OptionType, "Counter", new { @name = "optionType", @onchange = "ToggleInfo(this);" })
+							<label for="Counter">Counter</label>
+						</span>
+
+						<span style=" margin-left: 20px">
+							@Html.RadioButtonFor(x => x.OptionType, "Radio", new { @name = "optionType", @onchange = "ToggleInfo(this);" })
+							<label for="Radio">Radio</label>
+						</span>
+
+						<span style=" margin-left: 20px">
+							@Html.RadioButtonFor(x => x.OptionType, "CheckBox", new { @name = "optionType", @onchange = "ToggleInfo(this);" })
+							<label for="CheckBox">CheckBox</label><br/>
+						</span>
+
+
+					</div>
+
+
+
+                        <div class="row" >
+                            <div class="form-group  col-md-6 options" >
+                                <label for="SubcatID" class="control-label">Options<span class="req"> </span></label>
+                                <label id="label1"></label>
+                                @if (Model.QuestionID > 0)
+                                {
+                                    foreach (var item in optionlist)
+                                    {
+                                        <div id="que_@item.OptionID" style="margin-bottom:8px">
+                                            <div class="opsids">
+
+                                                @Html.Hidden("options[" + i + "].OptionID", item.OptionID)
+                                                @Html.TextBox("options[" + i + "].Options", item.Question, new { @class = "form-control", id = "options[" + i + "].Options" })
+                                                @*@Html.ValidationMessageFor(x => x.Question)*@
+                                                <div style="margin-top: -26px; position: relative; left: 104%;">
+                                                    @*<i class=" fa fa-plus Add" id="Add"></i>*@
+                                                    <i class="fa fa-minus" id="" style="margin-left:10px;cursor:pointer" onclick="removeque(@item.OptionID)"></i>
+                                                </div>
+                                            </div>
+                                            <br />
+
+                                        </div>
+                                        i++;
+
+                                    }
+                                }
+                                <div class="form-group" id="optids">
+                                    @Html.TextBox("options[" + i + "].Options", null, new { @class = "form-control", id = "options[" + i + "].Options" })
+                                    @*@Html.ValidationMessageFor(x => x.Question)*@
+                                    <div style="margin-top: -26px; position: relative; left: 106.5%;">
+                                        <i class=" fa fa-plus Add" id="Add" style="cursor:pointer"></i>
+                                        <i class="fa fa-minus Remove" id="Remove" style="margin-left:25px;display:none;margin-top:-17px;margin-bottom:-5px;cursor:pointer"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-footer">
+
+                        @if (Model.QuestionID == 0)
+                        {
+                            @Html.HiddenFor(x => x.QuestionID)
+
+                            <a href="/admin/questions" class="btn btn-default">Clear Form</a>
+                            <input type="submit" value="Add" class="btn btn-primary pull-right" />
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(x => x.QuestionID)
+                            <a href="/admin/questions" class="btn btn-default">Cancel</a>
+                            <input type="submit" value="Update" class="btn btn-primary pull-right " />
+                        }
+                    </div>
+
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/chosen.jquery.min.js"></script>
+<script type="text/javascript">
+	$('#lnk_question,#lnk_manage_que').addClass("active");
+
+
+
+	$("#form_product").submit(function () {
+		if ('.data-valmsg-replace' == true) {
+			return false;
+		}
+
+		if ($('#SubCategoryID').val() == null || $('#SubCategoryID').val() == '') {
+			if ($('#SubCategoryID').val() == '' || $('#SubCategoryID').val() == null) {
+				$("#subcategory_Error").html("Please select subcategory");
+				return false;
+			}
+			else {
+				$("#subcategory_Error").html("");
+			}
+		}
+
+	});
+
+    if ('@ViewBag.msg' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+		$("#lbl_msg").fadeOut();
+	}
+
+	$('#SubCategoryID').chosen();
+
+	$('.chosen-search-input').val('Select SubCategory');
+
+	$(".Add").on("click", function () {
+		debugger;
+		if (@Model.QuestionID > 0) {
+			var queLengthid = $('.options').children().length - 2;
+			$(".options:last-child").append("<div><br/><input type='text' name='options[" + queLengthid + "].Options' id='options[" + queLengthid + "].Options' class='form-control '/></div>");
+		}
+		else
+		{
+			var queLength = $('.options').children().length - 2;
+			$(".options:last-child").append("<div><br/><input type='text' name='options[" + queLength + "].Options' id='options[" + queLength + "].Options' class='form-control '/></div>");
+			queLength = "";
+		}
+
+		var optids = $('.options').children().length - 3;
+		if (optids >= 1) {
+			$("#Remove").css("display", "block");
+		}
+
+	});
+
+	$("#Remove").on("click", function () {
+		debugger
+		$(".options").children().last().remove();
+		var optids = $('.options').children().length - 2;
+		if (@Model.QuestionID == 0) {
+			if (optids <= 1) {
+				$("#Remove").css("display", "none");
+			}
+		}
+		else {
+			var opsids = $('.opsids').length + 1;
+
+			if (opsids >= optids) {
+				$("#Remove").css("display", "none");
+			}
+		}
+	});
+
+	if ('@subcategory' != '')
+    {
+            var subcat = '@subcategory'.split(',');
+            for (i = 0; i < subcat.length; i++)
+            {
+                $('#SubCategoryID option[value="' + subcat[i] + '"]').attr("selected", "selected").trigger('chosen:updated');;
+            }
+	}
+
+	function removeque(id) {
+
+		debugger;
+		$.ajax({
+			type: "post",
+			url: "/admin/delete_que/",
+			data: { id: id },
+			datatype: "json",
+			traditional: true,
+			success: function (data) {
+				$("#label1").html("Option removed successfully").css("display", "block");
+				$("#label1").css("color", "green");
+				$("#label1").fadeOut(5000);
+				//$("#que_" + id).css("display", "none");
+				//$("#que_" + id).remove();
+				window.location.href="/admin/questions/" + @Model.QuestionID;
+			}
+		});
+	}
+
+</script>
+
+
+<script>
+
+    $(".options").hide();
+
+    function ToggleInfo(el) {
+        debugger
+
+        var result = el.value;
+		if (result == "Radio" || result == "CheckBox") {
+            $(".options").show();
+        } else {
+            $(".options").hide();
+        }
+    };
+
+
+
+    if (@Model.QuestionID > 0) {
+        $(".options").hide();
+        debugger
+        var res = $('#OptionType:checked').val();
+       if (res == "Counter") {
+            $(".options").hide();
+       }
+	   else if (res == "TextArea") {
+            $(".options").hide();
+        }
+        else {
+            $(".options").show();
+        }
+    }
+  
+
+
+
+
+
+
+</script>

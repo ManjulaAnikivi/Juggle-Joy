@@ -1,0 +1,842 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="db_jugglejoyModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="tbl_admin">
+    <Key>
+      <PropertyRef Name="AdminID" />
+    </Key>
+    <Property Name="AdminID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FullName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="UserName" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="PasswordHash" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Salt" Type="Guid" Nullable="false" />
+    <Property Name="EmailID" Type="String" MaxLength="75" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="PhoneNo" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="PwdResetKey" Type="Guid" Nullable="false" />
+    <Property Name="PwdKeyCreatedTime" Type="DateTime" Nullable="false" Precision="3" />
+  </EntityType>
+  <EntityType Name="tbl_blogs">
+    <Key>
+      <PropertyRef Name="BlogID" />
+    </Key>
+    <Property Name="BlogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BlogTitle" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="BlogImage" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="BlogDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Date" Type="DateTime" Precision="3" />
+    <Property Name="CategoryID" Type="Int32" />
+    <NavigationProperty Name="tbl_blogcategory" Relationship="db_jugglejoyModel.FK_tbl_blogs_tbl_blogcategory" FromRole="tbl_blogs" ToRole="tbl_blogcategory" />
+  </EntityType>
+  <EntityType Name="tbl_category">
+    <Key>
+      <PropertyRef Name="CategoryID" />
+    </Key>
+    <Property Name="CategoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Category" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_subcategory" Relationship="Self.FK_tbl_subcategory_tbl_category" FromRole="tbl_category" ToRole="tbl_subcategory" />
+    <Property Name="CategoryImage" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_task" Relationship="db_jugglejoyModel.FK_tbl_task_tbl_category" FromRole="tbl_category" ToRole="tbl_task" />
+  </EntityType>
+  <EntityType Name="tbl_contact">
+    <Key>
+      <PropertyRef Name="ContactID" />
+    </Key>
+    <Property Name="ContactID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ContactName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="ContactEmail" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="ContactPhone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="ContactSubject" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="ContactMsg" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ContactDate" Type="DateTime" Precision="3" />
+  </EntityType>
+  <EntityType Name="tbl_faq">
+    <Key>
+      <PropertyRef Name="FaqID" />
+    </Key>
+    <Property Name="FaqID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FaqQuestion" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="FaqAnswer" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Faq_categoryID" Type="Int32" />
+    <NavigationProperty Name="tbl_faq_category" Relationship="db_jugglejoyModel.FK_tbl_faq_faq_category1" FromRole="tbl_faq" ToRole="tbl_faq_category" />
+    <Property Name="SortPreference" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tbl_options">
+    <Key>
+      <PropertyRef Name="OptionID" />
+    </Key>
+    <Property Name="OptionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="QuestionID" Type="Int32" />
+    <Property Name="Question" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_question" Relationship="Self.FK_tbl_options_tbl_question" FromRole="tbl_options" ToRole="tbl_question" />
+    <Property Name="OptionType" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Placeholder" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_optiontype" Relationship="db_jugglejoyModel.FK_tbl_optiontype_tbl_options" FromRole="tbl_options" ToRole="tbl_optiontype" />
+  </EntityType>
+  <EntityType Name="tbl_question">
+    <Key>
+      <PropertyRef Name="QuestionID" />
+    </Key>
+    <Property Name="QuestionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Question" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SubCategoryID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_options" Relationship="Self.FK_tbl_options_tbl_question" FromRole="tbl_question" ToRole="tbl_options" />
+    <Property Name="OptionType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_answer" Relationship="db_jugglejoyModel.FK_tbl_answer_tbl_question" FromRole="tbl_question" ToRole="tbl_answer" />
+    <Property Name="Placeholder" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tbl_subcategory">
+    <Key>
+      <PropertyRef Name="SubCategoryID" />
+    </Key>
+    <Property Name="SubCategoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CategoryID" Type="Int32" />
+    <Property Name="SubCategory" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_category" Relationship="Self.FK_tbl_subcategory_tbl_category" FromRole="tbl_subcategory" ToRole="tbl_category" />
+    <NavigationProperty Name="tbl_task" Relationship="db_jugglejoyModel.FK_tbl_task_tbl_subcategory" FromRole="tbl_subcategory" ToRole="tbl_task" />
+  </EntityType>
+  <EntityType Name="tbl_subscriber">
+    <Key>
+      <PropertyRef Name="SubscriberId" />
+    </Key>
+    <Property Name="SubscriberId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="EmailId" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="SubscribedDate" Type="DateTime" Precision="3" />
+  </EntityType>
+  <Association Name="FK_tbl_subcategory_tbl_category">
+    <End Role="tbl_category" Type="Self.tbl_category" Multiplicity="0..1" />
+    <End Role="tbl_subcategory" Type="Self.tbl_subcategory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_category">
+        <PropertyRef Name="CategoryID" />
+      </Principal>
+      <Dependent Role="tbl_subcategory">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_options_tbl_question">
+    <End Role="tbl_question" Type="Self.tbl_question" Multiplicity="0..1" />
+    <End Role="tbl_options" Type="Self.tbl_options" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_question">
+        <PropertyRef Name="QuestionID" />
+      </Principal>
+      <Dependent Role="tbl_options">
+        <PropertyRef Name="QuestionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_question_tbl_question">
+    <End Role="tbl_question" Type="Self.tbl_question" Multiplicity="1" />
+    <End Role="tbl_question1" Type="Self.tbl_question" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_question">
+        <PropertyRef Name="QuestionID" />
+      </Principal>
+      <Dependent Role="tbl_question1">
+        <PropertyRef Name="QuestionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="db_jugglejoyEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="tbl_admin" EntityType="Self.tbl_admin" />
+    <EntitySet Name="tbl_blogs" EntityType="Self.tbl_blogs" />
+    <EntitySet Name="tbl_category" EntityType="Self.tbl_category" />
+    <EntitySet Name="tbl_contact" EntityType="Self.tbl_contact" />
+    <EntitySet Name="tbl_faq" EntityType="Self.tbl_faq" />
+    <EntitySet Name="tbl_options" EntityType="Self.tbl_options" />
+    <EntitySet Name="tbl_question" EntityType="Self.tbl_question" />
+    <EntitySet Name="tbl_subcategory" EntityType="Self.tbl_subcategory" />
+    <EntitySet Name="tbl_subscriber" EntityType="Self.tbl_subscriber" />
+    <AssociationSet Name="FK_tbl_subcategory_tbl_category" Association="Self.FK_tbl_subcategory_tbl_category">
+      <End Role="tbl_category" EntitySet="tbl_category" />
+      <End Role="tbl_subcategory" EntitySet="tbl_subcategory" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_options_tbl_question" Association="Self.FK_tbl_options_tbl_question">
+      <End Role="tbl_question" EntitySet="tbl_question" />
+      <End Role="tbl_options" EntitySet="tbl_options" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_question_tbl_question" Association="Self.FK_tbl_question_tbl_question">
+      <End Role="tbl_question" EntitySet="tbl_question" />
+      <End Role="tbl_question1" EntitySet="tbl_question" />
+    </AssociationSet>
+    <EntitySet Name="tbl_country" EntityType="db_jugglejoyModel.tbl_country" />
+    <EntitySet Name="tbl_state" EntityType="db_jugglejoyModel.tbl_state" />
+    <EntitySet Name="tbl_user" EntityType="db_jugglejoyModel.tbl_user" />
+    <AssociationSet Name="FK_tbl_state_tbl_country" Association="db_jugglejoyModel.FK_tbl_state_tbl_country">
+      <End Role="tbl_country" EntitySet="tbl_country" />
+      <End Role="tbl_state" EntitySet="tbl_state" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_user_tbl_country" Association="db_jugglejoyModel.FK_tbl_user_tbl_country">
+      <End Role="tbl_country" EntitySet="tbl_country" />
+      <End Role="tbl_user" EntitySet="tbl_user" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_user_tbl_state" Association="db_jugglejoyModel.FK_tbl_user_tbl_state">
+      <End Role="tbl_state" EntitySet="tbl_state" />
+      <End Role="tbl_user" EntitySet="tbl_user" />
+    </AssociationSet>
+    <EntitySet Name="tbl_faq_category" EntityType="db_jugglejoyModel.tbl_faq_category" />
+    <AssociationSet Name="FK_tbl_faq_faq_category1" Association="db_jugglejoyModel.FK_tbl_faq_faq_category1">
+      <End Role="tbl_faq_category" EntitySet="tbl_faq_category" />
+      <End Role="tbl_faq" EntitySet="tbl_faq" />
+    </AssociationSet>
+    <EntitySet Name="tbl_blogcategory" EntityType="db_jugglejoyModel.tbl_blogcategory" />
+    <AssociationSet Name="FK_tbl_blogs_tbl_blogcategory" Association="db_jugglejoyModel.FK_tbl_blogs_tbl_blogcategory">
+      <End Role="tbl_blogcategory" EntitySet="tbl_blogcategory" />
+      <End Role="tbl_blogs" EntitySet="tbl_blogs" />
+    </AssociationSet>
+    <EntitySet Name="tbl_banner" EntityType="db_jugglejoyModel.tbl_banner" />
+    <EntitySet Name="tbl_answer" EntityType="db_jugglejoyModel.tbl_answer" />
+    <AssociationSet Name="FK_tbl_answer_tbl_question" Association="db_jugglejoyModel.FK_tbl_answer_tbl_question">
+      <End Role="tbl_question" EntitySet="tbl_question" />
+      <End Role="tbl_answer" EntitySet="tbl_answer" />
+    </AssociationSet>
+    <EntitySet Name="tbl_task" EntityType="db_jugglejoyModel.tbl_task" />
+    <AssociationSet Name="FK_tbl_answer_tbl_task" Association="db_jugglejoyModel.FK_tbl_answer_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_answer" EntitySet="tbl_answer" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_task_tbl_category" Association="db_jugglejoyModel.FK_tbl_task_tbl_category">
+      <End Role="tbl_category" EntitySet="tbl_category" />
+      <End Role="tbl_task" EntitySet="tbl_task" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_task_tbl_subcategory" Association="db_jugglejoyModel.FK_tbl_task_tbl_subcategory">
+      <End Role="tbl_subcategory" EntitySet="tbl_subcategory" />
+      <End Role="tbl_task" EntitySet="tbl_task" />
+    </AssociationSet>
+    <EntitySet Name="tbl_log" EntityType="db_jugglejoyModel.tbl_log" />
+    <AssociationSet Name="FK_tbl_log_tbl_task" Association="db_jugglejoyModel.FK_tbl_log_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_log" EntitySet="tbl_log" />
+    </AssociationSet>
+    <EntitySet Name="tbl_chat" EntityType="db_jugglejoyModel.tbl_chat" />
+    <EntitySet Name="tbl_chatfile" EntityType="db_jugglejoyModel.tbl_chatfile" />
+    <EntitySet Name="tbl_minitask" EntityType="db_jugglejoyModel.tbl_minitask" />
+    <AssociationSet Name="FK_tbl_minitask_tbl_task" Association="db_jugglejoyModel.FK_tbl_minitask_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_minitask" EntitySet="tbl_minitask" />
+    </AssociationSet>
+    <EntitySet Name="tbl_optiontype" EntityType="db_jugglejoyModel.tbl_optiontype" />
+    <AssociationSet Name="FK_tbl_optiontype_tbl_options" Association="db_jugglejoyModel.FK_tbl_optiontype_tbl_options">
+      <End Role="tbl_options" EntitySet="tbl_options" />
+      <End Role="tbl_optiontype" EntitySet="tbl_optiontype" />
+    </AssociationSet>
+    <EntitySet Name="tbl_taskattachment" EntityType="db_jugglejoyModel.tbl_taskattachment" />
+    <AssociationSet Name="FK_tbl_taskattachment_tbl_task" Association="db_jugglejoyModel.FK_tbl_taskattachment_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_taskattachment" EntitySet="tbl_taskattachment" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_taskattachment_tbl_user" Association="db_jugglejoyModel.FK_tbl_taskattachment_tbl_user">
+      <End Role="tbl_user" EntitySet="tbl_user" />
+      <End Role="tbl_taskattachment" EntitySet="tbl_taskattachment" />
+    </AssociationSet>
+    <EntitySet Name="tbl_notification" EntityType="db_jugglejoyModel.tbl_notification" />
+    <EntitySet Name="tbl_recommendations" EntityType="db_jugglejoyModel.tbl_recommendations" />
+    <EntitySet Name="tbl_survey" EntityType="db_jugglejoyModel.tbl_survey" />
+    <EntitySet Name="tbl_surveyQue" EntityType="db_jugglejoyModel.tbl_surveyQue" />
+    <AssociationSet Name="FK_tbl_recommendations_tbl_task" Association="db_jugglejoyModel.FK_tbl_recommendations_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_recommendations" EntitySet="tbl_recommendations" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_survey_tbl_surveyQue" Association="db_jugglejoyModel.FK_tbl_survey_tbl_surveyQue">
+      <End Role="tbl_surveyQue" EntitySet="tbl_surveyQue" />
+      <End Role="tbl_survey" EntitySet="tbl_survey" />
+    </AssociationSet>
+    <EntitySet Name="tbl_note" EntityType="db_jugglejoyModel.tbl_note" />
+    <EntitySet Name="tbl_price" EntityType="db_jugglejoyModel.tbl_price" />
+    <EntitySet Name="tbl_gifts" EntityType="db_jugglejoyModel.tbl_gifts" />
+    <EntitySet Name="tbl_subscription" EntityType="db_jugglejoyModel.tbl_subscription" />
+    <EntitySet Name="tbl_cms" EntityType="db_jugglejoyModel.tbl_cms" />
+    <EntitySet Name="tbl_tempgifts" EntityType="db_jugglejoyModel.tbl_tempgifts" />
+    <EntitySet Name="tbl_blogviews" EntityType="db_jugglejoyModel.tbl_blogviews" />
+    <EntitySet Name="tbl_CancelAnswer" EntityType="db_jugglejoyModel.tbl_CancelAnswer" />
+    <EntitySet Name="tbl_CancelCat" EntityType="db_jugglejoyModel.tbl_CancelCat" />
+    <EntitySet Name="tbl_CancelReason" EntityType="db_jugglejoyModel.tbl_CancelReason" />
+    <AssociationSet Name="FK_tbl_CancelAnswer_tbl_CancelReason" Association="db_jugglejoyModel.FK_tbl_CancelAnswer_tbl_CancelReason">
+      <End Role="tbl_CancelReason" EntitySet="tbl_CancelReason" />
+      <End Role="tbl_CancelAnswer" EntitySet="tbl_CancelAnswer" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_CancelReason_tbl_CancelCat" Association="db_jugglejoyModel.FK_tbl_CancelReason_tbl_CancelCat">
+      <End Role="tbl_CancelCat" EntitySet="tbl_CancelCat" />
+      <End Role="tbl_CancelReason" EntitySet="tbl_CancelReason" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="tbl_country">
+    <Key>
+      <PropertyRef Name="CountryID" />
+    </Key>
+    <Property Name="CountryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CountryCode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="Country" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="phonecode" Type="Int32" />
+    <NavigationProperty Name="tbl_state" Relationship="db_jugglejoyModel.FK_tbl_state_tbl_country" FromRole="tbl_country" ToRole="tbl_state" />
+    <NavigationProperty Name="tbl_user" Relationship="db_jugglejoyModel.FK_tbl_user_tbl_country" FromRole="tbl_country" ToRole="tbl_user" />
+  </EntityType>
+  <EntityType Name="tbl_state">
+    <Key>
+      <PropertyRef Name="StateID" />
+    </Key>
+    <Property Name="StateID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CountryID" Type="Int32" />
+    <Property Name="State" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="StateCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_country" Relationship="db_jugglejoyModel.FK_tbl_state_tbl_country" FromRole="tbl_state" ToRole="tbl_country" />
+    <NavigationProperty Name="tbl_user" Relationship="db_jugglejoyModel.FK_tbl_user_tbl_state" FromRole="tbl_state" ToRole="tbl_user" />
+  </EntityType>
+  <EntityType Name="tbl_user">
+    <Key>
+      <PropertyRef Name="UserID" />
+    </Key>
+    <Property Name="UserID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="EmailID" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="PhoneNo" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="Address" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="ZipPostalCode" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="CountryID" Type="Int32" />
+    <Property Name="State" Type="Int32" />
+    <Property Name="UserName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="PasswordHash" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Salt" Type="Guid" />
+    <Property Name="PwdResetKey" Type="Guid" />
+    <Property Name="PwdKeyCreatedTime" Type="DateTime" Precision="3" />
+    <Property Name="Status" Type="Int32" />
+    <Property Name="RegDate" Type="DateTime" Precision="3" />
+    <Property Name="UserType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <NavigationProperty Name="tbl_country" Relationship="db_jugglejoyModel.FK_tbl_user_tbl_country" FromRole="tbl_user" ToRole="tbl_country" />
+    <NavigationProperty Name="tbl_state" Relationship="db_jugglejoyModel.FK_tbl_user_tbl_state" FromRole="tbl_user" ToRole="tbl_state" />
+    <Property Name="HeardFrom" Type="Int32" />
+    <Property Name="PartnerEmail" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="HandlerID" Type="Int32" />
+    <NavigationProperty Name="tbl_taskattachment" Relationship="db_jugglejoyModel.FK_tbl_taskattachment_tbl_user" FromRole="tbl_user" ToRole="tbl_taskattachment" />
+    <Property Name="otp" Type="Int32" />
+    <Property Name="SubscriptionId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SubscriptionStatus" Type="Int32" />
+  </EntityType>
+  <Association Name="FK_tbl_state_tbl_country">
+    <End Type="db_jugglejoyModel.tbl_country" Role="tbl_country" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_state" Role="tbl_state" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_country">
+        <PropertyRef Name="CountryID" />
+      </Principal>
+      <Dependent Role="tbl_state">
+        <PropertyRef Name="CountryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_user_tbl_country">
+    <End Type="db_jugglejoyModel.tbl_country" Role="tbl_country" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_user" Role="tbl_user" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_country">
+        <PropertyRef Name="CountryID" />
+      </Principal>
+      <Dependent Role="tbl_user">
+        <PropertyRef Name="CountryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_user_tbl_state">
+    <End Type="db_jugglejoyModel.tbl_state" Role="tbl_state" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_user" Role="tbl_user" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_state">
+        <PropertyRef Name="StateID" />
+      </Principal>
+      <Dependent Role="tbl_user">
+        <PropertyRef Name="State" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_faq_category">
+    <Key>
+      <PropertyRef Name="Faq_Cat_id" />
+    </Key>
+    <Property Name="Faq_Cat_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Category" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_faq" Relationship="db_jugglejoyModel.FK_tbl_faq_faq_category1" FromRole="tbl_faq_category" ToRole="tbl_faq" />
+  </EntityType>
+  <Association Name="FK_tbl_faq_faq_category1">
+    <End Type="db_jugglejoyModel.tbl_faq_category" Role="tbl_faq_category" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_faq" Role="tbl_faq" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_faq_category">
+        <PropertyRef Name="Faq_Cat_id" />
+      </Principal>
+      <Dependent Role="tbl_faq">
+        <PropertyRef Name="Faq_categoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_blogcategory">
+    <Key>
+      <PropertyRef Name="CategoryID" />
+    </Key>
+    <Property Name="CategoryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Category" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_blogs" Relationship="db_jugglejoyModel.FK_tbl_blogs_tbl_blogcategory" FromRole="tbl_blogcategory" ToRole="tbl_blogs" />
+  </EntityType>
+  <Association Name="FK_tbl_blogs_tbl_blogcategory">
+    <End Type="db_jugglejoyModel.tbl_blogcategory" Role="tbl_blogcategory" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_blogs" Role="tbl_blogs" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_blogcategory">
+        <PropertyRef Name="CategoryID" />
+      </Principal>
+      <Dependent Role="tbl_blogs">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_banner">
+    <Key>
+      <PropertyRef Name="BannerId" />
+    </Key>
+    <Property Name="BannerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BannerText" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="UrlLink" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <Property Name="SortPreference" Type="Int32" />
+    <Property Name="BannerVideo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ContentType" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tbl_answer">
+    <Key>
+      <PropertyRef Name="AnswerID" />
+    </Key>
+    <Property Name="AnswerID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskID" Type="Int32" />
+    <Property Name="QuestionID" Type="Int32" />
+    <Property Name="Answer" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_question" Relationship="db_jugglejoyModel.FK_tbl_answer_tbl_question" FromRole="tbl_answer" ToRole="tbl_question" />
+    <NavigationProperty Name="tbl_task" Relationship="db_jugglejoyModel.FK_tbl_answer_tbl_task" FromRole="tbl_answer" ToRole="tbl_task" />
+    <Property Name="MinitaskID" Type="Int32" />
+    <Property Name="OtherAnswer" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <Association Name="FK_tbl_answer_tbl_question">
+    <End Type="db_jugglejoyModel.tbl_question" Role="tbl_question" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_answer" Role="tbl_answer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_question">
+        <PropertyRef Name="QuestionID" />
+      </Principal>
+      <Dependent Role="tbl_answer">
+        <PropertyRef Name="QuestionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_task">
+    <Key>
+      <PropertyRef Name="TaskID" />
+    </Key>
+    <Property Name="TaskID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="FromID" Type="Int32" />
+    <Property Name="ToID" Type="Int32" />
+    <Property Name="CategoryID" Type="Int32" />
+    <Property Name="SubCategoryID" Type="Int32" />
+    <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+    <Property Name="CompletionDate" Type="DateTime" Precision="3" />
+    <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Fileattachment" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="Urgency" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Name="Repeating" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Name="WorkTime" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Budget" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="Status" Type="Int32" />
+    <Property Name="Deadline" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="tbl_answer" Relationship="db_jugglejoyModel.FK_tbl_answer_tbl_task" FromRole="tbl_task" ToRole="tbl_answer" />
+    <NavigationProperty Name="tbl_category" Relationship="db_jugglejoyModel.FK_tbl_task_tbl_category" FromRole="tbl_task" ToRole="tbl_category" />
+    <NavigationProperty Name="tbl_subcategory" Relationship="db_jugglejoyModel.FK_tbl_task_tbl_subcategory" FromRole="tbl_task" ToRole="tbl_subcategory" />
+    <Property Name="TaskTitle" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_log" Relationship="db_jugglejoyModel.FK_tbl_log_tbl_task" FromRole="tbl_task" ToRole="tbl_log" />
+    <Property Name="DeadlineType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Name="AssistantID" Type="Int32" />
+    <NavigationProperty Name="tbl_minitask" Relationship="db_jugglejoyModel.FK_tbl_minitask_tbl_task" FromRole="tbl_task" ToRole="tbl_minitask" />
+    <NavigationProperty Name="tbl_taskattachment" Relationship="db_jugglejoyModel.FK_tbl_taskattachment_tbl_task" FromRole="tbl_task" ToRole="tbl_taskattachment" />
+    <Property Name="UserNote" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="MoreOptions" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <NavigationProperty Name="tbl_recommendations" Relationship="db_jugglejoyModel.FK_tbl_recommendations_tbl_task" FromRole="tbl_task" ToRole="tbl_recommendations" />
+  </EntityType>
+  <Association Name="FK_tbl_answer_tbl_task">
+    <End Type="db_jugglejoyModel.tbl_task" Role="tbl_task" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_answer" Role="tbl_answer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_answer">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_task_tbl_category">
+    <End Type="db_jugglejoyModel.tbl_category" Role="tbl_category" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_task" Role="tbl_task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_category">
+        <PropertyRef Name="CategoryID" />
+      </Principal>
+      <Dependent Role="tbl_task">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_task_tbl_subcategory">
+    <End Type="db_jugglejoyModel.tbl_subcategory" Role="tbl_subcategory" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_task" Role="tbl_task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_subcategory">
+        <PropertyRef Name="SubCategoryID" />
+      </Principal>
+      <Dependent Role="tbl_task">
+        <PropertyRef Name="SubCategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_log">
+    <Key>
+      <PropertyRef Name="LogID" />
+    </Key>
+    <Property Name="LogID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskID" Type="Int32" />
+    <Property Name="LogStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Name="LogDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="tbl_task" Relationship="db_jugglejoyModel.FK_tbl_log_tbl_task" FromRole="tbl_log" ToRole="tbl_task" />
+  </EntityType>
+  <Association Name="FK_tbl_log_tbl_task">
+    <End Type="db_jugglejoyModel.tbl_task" Role="tbl_task" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_log" Role="tbl_log" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_log">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_chat">
+    <Key>
+      <PropertyRef Name="ChatID" />
+    </Key>
+    <Property Name="ChatID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ToId" Type="Int32" />
+    <Property Name="FromId" Type="Int32" />
+    <Property Name="ChatText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="ChatreadStatus" Type="Int32" />
+    <Property Name="ChatDate" Type="DateTime" Precision="3" />
+    <Property Name="Subject" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="TaskID" Type="Int32" />
+    <Property Name="AssistantId" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tbl_chatfile">
+    <Key>
+      <PropertyRef Name="FileId" />
+    </Key>
+    <Property Name="FileId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ChatId" Type="Int32" />
+    <Property Name="FileName" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tbl_minitask">
+    <Key>
+      <PropertyRef Name="MinitaskID" />
+    </Key>
+    <Property Name="MinitaskID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskID" Type="Int32" />
+    <Property Name="Title" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="PostedDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="tbl_task" Relationship="db_jugglejoyModel.FK_tbl_minitask_tbl_task" FromRole="tbl_minitask" ToRole="tbl_task" />
+    <Property Name="UserNote" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="MoreOptions" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+  </EntityType>
+  <Association Name="FK_tbl_minitask_tbl_task">
+    <End Type="db_jugglejoyModel.tbl_task" Role="tbl_task" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_minitask" Role="tbl_minitask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_minitask">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_optiontype">
+    <Key>
+      <PropertyRef Name="OptionTypeID" />
+    </Key>
+    <Property Name="OptionTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="OptionID" Type="Int32" />
+    <Property Name="Question" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_options" Relationship="db_jugglejoyModel.FK_tbl_optiontype_tbl_options" FromRole="tbl_optiontype" ToRole="tbl_options" />
+  </EntityType>
+  <Association Name="FK_tbl_optiontype_tbl_options">
+    <End Type="db_jugglejoyModel.tbl_options" Role="tbl_options" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_optiontype" Role="tbl_optiontype" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_options">
+        <PropertyRef Name="OptionID" />
+      </Principal>
+      <Dependent Role="tbl_optiontype">
+        <PropertyRef Name="OptionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_taskattachment">
+    <Key>
+      <PropertyRef Name="TaskAttachmentID" />
+    </Key>
+    <Property Name="TaskAttachmentID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskID" Type="Int32" />
+    <Property Name="UserID" Type="Int32" />
+    <Property Name="Date" Type="DateTime" Precision="3" />
+    <Property Name="FileName" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_task" Relationship="db_jugglejoyModel.FK_tbl_taskattachment_tbl_task" FromRole="tbl_taskattachment" ToRole="tbl_task" />
+    <NavigationProperty Name="tbl_user" Relationship="db_jugglejoyModel.FK_tbl_taskattachment_tbl_user" FromRole="tbl_taskattachment" ToRole="tbl_user" />
+    <Property Name="FileSize" Type="Int32" />
+  </EntityType>
+  <Association Name="FK_tbl_taskattachment_tbl_task">
+    <End Type="db_jugglejoyModel.tbl_task" Role="tbl_task" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_taskattachment" Role="tbl_taskattachment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_taskattachment">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_taskattachment_tbl_user">
+    <End Type="db_jugglejoyModel.tbl_user" Role="tbl_user" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_taskattachment" Role="tbl_taskattachment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_user">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="tbl_taskattachment">
+        <PropertyRef Name="UserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_notification">
+    <Key>
+      <PropertyRef Name="NotificationID" />
+    </Key>
+    <Property Name="NotificationID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ToID" Type="Int32" />
+    <Property Name="Notification" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="ReadStatus" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Name="Url" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Date" Type="DateTime" Precision="3" />
+  </EntityType>
+  <EntityType Name="tbl_recommendations">
+    <Key>
+      <PropertyRef Name="RecID" />
+    </Key>
+    <Property Name="RecID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskID" Type="Int32" />
+    <Property Name="AssistantID" Type="Int32" />
+    <Property Name="Name" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="Rating" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Price" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="Availability" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="NextStep" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_task" Relationship="db_jugglejoyModel.FK_tbl_recommendations_tbl_task" FromRole="tbl_recommendations" ToRole="tbl_task" />
+    <Property Name="TaskStatus" Type="Int32" />
+    <Property Name="MiniTaskID" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tbl_survey">
+    <Key>
+      <PropertyRef Name="SurveyID" />
+    </Key>
+    <Property Name="SurveyID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="SurveyQueID" Type="Int32" />
+    <Property Name="Rate" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Name="Comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="AssistantID" Type="Int32" />
+    <Property Name="TaskID" Type="Int32" />
+    <NavigationProperty Name="tbl_surveyQue" Relationship="db_jugglejoyModel.FK_tbl_survey_tbl_surveyQue" FromRole="tbl_survey" ToRole="tbl_surveyQue" />
+  </EntityType>
+  <EntityType Name="tbl_surveyQue">
+    <Key>
+      <PropertyRef Name="SurveyQueID" />
+    </Key>
+    <Property Name="SurveyQueID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Question" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_survey" Relationship="db_jugglejoyModel.FK_tbl_survey_tbl_surveyQue" FromRole="tbl_surveyQue" ToRole="tbl_survey" />
+  </EntityType>
+  <Association Name="FK_tbl_recommendations_tbl_task">
+    <End Type="db_jugglejoyModel.tbl_task" Role="tbl_task" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_recommendations" Role="tbl_recommendations" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_recommendations">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_survey_tbl_surveyQue">
+    <End Type="db_jugglejoyModel.tbl_surveyQue" Role="tbl_surveyQue" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_survey" Role="tbl_survey" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_surveyQue">
+        <PropertyRef Name="SurveyQueID" />
+      </Principal>
+      <Dependent Role="tbl_survey">
+        <PropertyRef Name="SurveyQueID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="tbl_note">
+    <Key>
+      <PropertyRef Name="NoteID" />
+    </Key>
+    <Property Name="NoteID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TaskID" Type="Int32" />
+    <Property Name="HandlerID" Type="Int32" />
+    <Property Name="AssistantID" Type="Int32" />
+    <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Filepath" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Date" Type="DateTime" Precision="3" />
+  </EntityType>
+  <EntityType Name="tbl_price">
+    <Key>
+      <PropertyRef Name="PriceID" />
+    </Key>
+    <Property Name="PriceID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ActualPrice" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountedPrice" Type="Decimal" Precision="18" Scale="2" />
+  </EntityType>
+  <EntityType Name="tbl_gifts">
+    <Key>
+      <PropertyRef Name="GiftID" />
+    </Key>
+    <Property Name="GiftID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GiftCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Duration" Type="Int32" />
+    <Property Name="ActualPrice" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountedPrice" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountPercent" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="SenderEmail" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="RecepientName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Name="RecepientEmail" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="SentDate" Type="DateTime" Precision="3" />
+    <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SenderName" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="MailSender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Name="MailReceiver" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Name="Status" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tbl_subscription">
+    <Key>
+      <PropertyRef Name="SubscriptionID" />
+    </Key>
+    <Property Name="SubscriptionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserID" Type="Int32" />
+    <Property Name="SubscriptionFee" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="TransactionNo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="TransactionStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="TransactionMsg" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="SubscriptionDate" Type="DateTime" Precision="3" />
+    <Property Name="ExpirationDate" Type="DateTime" Precision="3" />
+    <Property Name="StripeOrderID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="StripePaymentType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="StripeReturnData" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="GiftID" Type="Int32" />
+  </EntityType>
+  <EntityType Name="tbl_cms">
+    <Key>
+      <PropertyRef Name="CmsID" />
+    </Key>
+    <Property Name="CmsID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CmsPageName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="CmsText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tbl_tempgifts">
+    <Key>
+      <PropertyRef Name="TempGiftID" />
+    </Key>
+    <Property Name="TempGiftID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GiftCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Duration" Type="Int32" />
+    <Property Name="ActualPrice" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountedPrice" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountPercent" Type="Decimal" Precision="18" Scale="2" />
+    <Property Name="SenderEmail" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="RecepientName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Name="RecepientEmail" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="SentDate" Type="DateTime" Precision="3" />
+    <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SenderName" Type="String" MaxLength="75" FixedLength="false" Unicode="true" />
+    <Property Name="Status" Type="Int32" />
+    <Property Name="MailSender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+    <Property Name="MailReceiver" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+  </EntityType>
+  <EntityType Name="tbl_blogviews">
+    <Key>
+      <PropertyRef Name="ViewID" />
+    </Key>
+    <Property Name="ViewID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BlogID" Type="Int32" />
+    <Property Name="IPaddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="tbl_CancelAnswer">
+    <Key>
+      <PropertyRef Name="CancelAnswerID" />
+    </Key>
+    <Property Name="CancelAnswerID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CancelID" Type="Int32" />
+    <Property Name="SpecificReaspn" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="UserID" Type="Int32" />
+    <NavigationProperty Name="tbl_CancelReason" Relationship="db_jugglejoyModel.FK_tbl_CancelAnswer_tbl_CancelReason" FromRole="tbl_CancelAnswer" ToRole="tbl_CancelReason" />
+  </EntityType>
+  <EntityType Name="tbl_CancelCat">
+    <Key>
+      <PropertyRef Name="CancelCatID" />
+    </Key>
+    <Property Name="CancelCatID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CancellationCategory" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_CancelReason" Relationship="db_jugglejoyModel.FK_tbl_CancelReason_tbl_CancelCat" FromRole="tbl_CancelCat" ToRole="tbl_CancelReason" />
+  </EntityType>
+  <EntityType Name="tbl_CancelReason">
+    <Key>
+      <PropertyRef Name="CancelID" />
+    </Key>
+    <Property Name="CancelID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CancelCatID" Type="Int32" />
+    <Property Name="Reason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="tbl_CancelAnswer" Relationship="db_jugglejoyModel.FK_tbl_CancelAnswer_tbl_CancelReason" FromRole="tbl_CancelReason" ToRole="tbl_CancelAnswer" />
+    <NavigationProperty Name="tbl_CancelCat" Relationship="db_jugglejoyModel.FK_tbl_CancelReason_tbl_CancelCat" FromRole="tbl_CancelReason" ToRole="tbl_CancelCat" />
+    <Property Name="OptionType" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <Association Name="FK_tbl_CancelAnswer_tbl_CancelReason">
+    <End Type="db_jugglejoyModel.tbl_CancelReason" Role="tbl_CancelReason" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_CancelAnswer" Role="tbl_CancelAnswer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_CancelReason">
+        <PropertyRef Name="CancelID" />
+      </Principal>
+      <Dependent Role="tbl_CancelAnswer">
+        <PropertyRef Name="CancelID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_CancelReason_tbl_CancelCat">
+    <End Type="db_jugglejoyModel.tbl_CancelCat" Role="tbl_CancelCat" Multiplicity="0..1" />
+    <End Type="db_jugglejoyModel.tbl_CancelReason" Role="tbl_CancelReason" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_CancelCat">
+        <PropertyRef Name="CancelCatID" />
+      </Principal>
+      <Dependent Role="tbl_CancelReason">
+        <PropertyRef Name="CancelCatID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

@@ -1,0 +1,220 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_question>
+@using juggle_joy.Models
+@{
+	/**/
+	ViewBag.Title = "Manage Questions | " + MvcApplication.project_name;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+}
+<style>
+	#lbl_msg {
+		color: red !important;
+	}
+
+	#update {
+		color: green !important;
+	}
+
+	.table > tbody > tr > td, .table > tfoot > tr > td {
+		padding: 8px;
+		line-height: 1.42857143;
+		vertical-align: inherit !important;
+		border-top: 1px solid #ddd;
+	}
+
+	#imgwidth {
+		width: 100px !important;
+	}
+</style>
+<ul class="breadcrumb">
+	<li><a href="~/admin/dashboard">Home</a></li>
+	<li class="active">Manage Questions</li>
+</ul>
+<div class="page-title">
+	<h2><span class="fa fa-list"></span> Manage Questions</h2>
+	<a href="questions" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Add New Question</a>
+</div>
+
+<style>
+</style>
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			@if (Model.Count() > 0)
+			{
+				<div class="panel panel-default">
+					<p id="lbl_msg" class="panel-title msg" style="color:red">@ViewBag.msg</p>
+					@*<div class="panel-heading">
+				</div>*@
+					<div class="panel-body table-responsive">
+						@using (Html.BeginForm("Delete_question", "question", FormMethod.Post))
+						{
+							<div class="form-group">
+								<table id="TblIncompleteRegList" class="table table-hover table-striped" style="border:1px solid lightgrey;font-size: 14px;">
+									<thead>
+										<tr style="text-align:center;">
+											<th style="background-position: center left;">Question</th>
+											<th style="background-position: center left;">Sub Category</th>
+											<th style="background-position: center left;">View</th>
+											<th style="background-position: center left;">Edit</th>
+											<th>
+												<input type="checkbox" id="chkall" style="cursor:pointer"/>
+											</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach (var item in Model)
+										{
+											var subcatid = item.SubCategoryID.Split(',').Select(int.Parse).ToList();
+											var subcategory = ctx.tbl_subcategory.Where(x => subcatid.Contains(x.SubCategoryID)).Select(x => x.SubCategory).ToList();
+											string concat = string.Join(", ", subcategory);
+											<tr style="border-width:2px;border-color:black">
+												<td>@item.Question</td>
+												@if (subcategory.Count() > 0)
+												{
+													<td>@concat</td>
+												}
+												else
+												{
+													<td>--</td>
+												}
+												<td>
+													<a onclick="question_details(@item.QuestionID)">
+														<i class="fa fa-eye" style="cursor:pointer"></i>
+													</a>
+												</td>
+
+												<td>
+													<a href="questions/@item.QuestionID" class="btn btn-primary btn-sm" style="background-color:#1caf9a;color:white;border-color:lightgray">Edit</a>
+												</td>
+												<td>
+													<input type="checkbox" name="Ids" value="@item.QuestionID" style="cursor:pointer" />
+												</td>
+											</tr>
+										}
+									</tbody>
+									<tr>
+										<td align="right" colspan="7">
+											<input type='submit' id="btndelete" value="Delete" class="btn btn-danger" />
+										</td>
+									</tr>
+								</table>
+							</div>
+						}
+					</div>
+				</div>
+			}
+			else
+			{
+			<div class="form-group">
+				<label>No records found</label>
+			</div>
+
+			}
+		</div>
+	</div>
+	<div class="modal" style="overflow: scroll; display:none;background: #808080b8;" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" style="max-width:1000px;">
+			<div class="modal-content" id="modal_content">
+				<div class="modal-header" style="background: #ab7009; color: white; font-size: 14px; background: rgb(128 128 128 / 72%); color: white; font-size: 14px; border-radius: unset !important">
+					<span style="font-size:20px;">
+						Questions
+					</span>
+					<button type="button" id="mclose1" class="close" data-dismiss="modal" style="color:white;opacity:initial"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+				</div>
+				<div class="modal-body" id="modal-body">
+					<center>
+						<span id="Loader">
+							<img src="~/admin_assets/img/ajax-loader-small.gif" alt="Loading" />
+						</span>
+					</center>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="~/js/moment.js"></script>
+<script src="~/csjss/select2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+		$('#lnk_questions,#lnk_manage_que').addClass("active");
+    });
+    if ('@ViewBag.msg' != "") {
+         $("#lbl_msg").fadeOut(5000);
+         $("#lbl_msg").css("color","red");
+    }
+    else {
+         $("#lbl_msg").fadeOut();
+    }
+    if ('@ViewBag.failed' != "") {
+        $("#fail").fadeOut(5000);
+    }
+    else {
+        $("#fail").fadeOut();
+    }
+    if ('@ViewBag.update' != "") {
+         $("#update").fadeOut(5000);
+    }
+    else {
+         $("#update").fadeOut();
+    }
+    $('#TblIncompleteRegList').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        "ordering": false,
+    });
+
+    $('#mclose1').click(function () {
+        $("#myModal").css("display", "none")
+    });
+    $('#btndelete').click(function () {
+        if ($("input[name='Ids']:checked").length == 0) {
+            alert("Please select record to delete.");
+            return false;
+        }
+        else {
+            var count = $("input[name='Ids']:checked").length;
+            return confirm("Are you sure want to delete " + count + " record(s).");
+        }
+    });
+    $("#chkall").change(function () {
+        $("input[name='Ids']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='Ids']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='Ids']:checked").length == $("input[name='Ids']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+    function question_details(id) {
+        debugger;
+        id = "/admin/question/question_details/" + id;
+        $('html, body').css({
+            'overflow': 'auto',
+            'height': '100%'
+        });
+        $("#myModal").css("display", "block");
+        $("#Loader").css("display", "block");
+        $("#modal-body").load(id, null, function (responseTxt, statusTxt, xhr) {
+            if (statusTxt == "success") {
+                $("#Loader").hide();
+                debugger;
+                $("#modal-body").show();
+                $("#myModal").slideDown(500);
+            }
+        });
+    }
+    $('#mclose1').click(function () {
+        $("#myModal").css("display", "none")
+    });
+
+</script>
+
+

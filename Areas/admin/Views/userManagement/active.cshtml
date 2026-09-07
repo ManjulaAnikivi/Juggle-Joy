@@ -1,0 +1,252 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_user>
+@using juggle_joy.Models;
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var pendingcount = ctx.tbl_user.Where(x => x.Status == (int)UserStatus.IncompleteRegistration && x.UserType == "U").Count();
+    // var email_verified = ctx.tbl_doctor_registration.Where(x => x.Verified_status == 2).Select(x => x.Doctorid).Count();
+    var email_verified = ctx.tbl_user.Where(x => x.Status == (int)UserStatus.Active && x.UserType == "U").Count();
+    var blocker = ctx.tbl_user.Where(x => x.Status == (int)UserStatus.Blocked && x.UserType == "U").Count();
+
+    ViewBag.Title = "Active Users | " + MvcApplication.project_name;
+}
+
+
+<ul class="breadcrumb">
+    <li><a href="~/admin/dashboard">Home</a></li>
+    <li class="active">Active Users List</li>
+</ul>
+<div class="page-title">
+    <h2><span class="fa fa-users"></span> Active Users List</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12 col-md-12 col-xs-12 col-sm-12">
+            <div class="panel panel-default tabs" style="border:0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li><a href="/admin/incomplete-registred-users">Incomplete Users Registration List (@pendingcount)</a></li>
+                    @*<li><a href="/admin/user/received">Received (@receivedcount)</a></li>*@
+                    <li class="active"><a>Active Users List (@email_verified)</a></li>
+                    <li><a href="/admin/blocked-users">Blocked Users List (@blocker)</a></li>
+                </ul>
+                <div class="panel-body tab-content table-responsive">
+                    <div class="panel panel-default table-responsive">
+                        <span id="lbl_msg" style="padding:unset !important">@ViewBag.ActiveUsersListMsg</span>
+                        <p id="lbl_msg2" style="padding: unset !important;color: #006400">@ViewBag.userNotInUse</p>
+                        <p id="lbl_msg1" style="padding: unset !important;color: #E5756F">  @ViewBag.userInUse </p>
+                        @if (Model.Count() > 0)
+                        {
+                            using (Html.BeginForm("action", "userManagement", FormMethod.Post))
+                            {
+                                <table id="TblActiveUsersList" class="table table-hover table-striped" style="border:1px solid lightgrey;font-size: 14px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="background-position: center left;">Name</th>
+                                            <th style="background-position: center left;">Email Address</th>
+                                            <th style="background-position: center left;">Phone No</th>
+                                            <th style="background-position: center left;">Reg. Date</th>
+                                            <th style="background-image:none; text-align:center" align="center">View</th>
+                                            <th style="background-image:none;text-align:center" align="center"><input type="checkbox" id="chkall" style="margin-left: 8px;" /></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+
+                                                <td>@item.FirstName @item.LastName</td>
+                                                <td>@item.EmailID</td>
+                                                <td>@item.PhoneNo</td>
+                                                <td>@GlobalMethods.ConvertToDate(item.RegDate)</td>
+                                                <td style="text-align:center;cursor:pointer;" align="center"><a onclick="user_details(@item.UserID)"><i class="fa fa-eye"></i></a></td>
+                                                <td align="center"><input type="checkbox" name="Ids" value='@item.UserID' style="margin-left: 8px;cursor:pointer" /></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tr>
+                                        <td align="right" colspan="6">
+                                            <input type="submit" id="btnblock" name="action" value="Block" class="btn btn-warning" />
+                                            <input type="submit" id="btndelete" name="action" value="Delete" class="btn btn-danger" />
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            }
+                        }
+                        else
+                        {
+                            <table width="90%" border="0" align="left" cellpadding="3" cellspacing="3">
+                                <tr>
+                                    <td>
+                                        <div style="color: Red">
+                                            No records found
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        }
+
+                    </div>
+                </div>
+                @using (Html.BeginForm("Export", "userManagement", FormMethod.Post))
+                {
+
+                    <div align="right" style="padding-right:12px;">
+                        <input type="submit" id="btndelete" value="Export to Excel" class="btn btn-danger" />
+                    </div>
+                    <div id="export-data-product">
+                        <div class="panel-body tab-content table-responsive" style="display:none;" id="exportlist">
+                            <div class="panel panel-default table-responsive">
+                                <table class="table table-hover table-striped" style="border:1px solid lightgrey;font-size: 14px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="background-position: center left;">Name</th>
+                                            <th style="background-position: center left;">Email Address</th>
+                                            <th style="background-position: center left;">Phone No</th>
+                                            <th style="background-position: center left;">Reg. Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+
+                                                <td>@item.FirstName @item.LastName</td>
+                                                <td>@item.EmailID</td>
+                                                <td>@item.PhoneNo</td>
+                                                <td>@GlobalMethods.ConvertToDate(item.RegDate)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="GridHtml" />                    
+                }
+                <br />
+                <div class="box box-body " style="border:0px;"></div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" style=" display:none;background: #808080b8;overflow:scroll" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modal_content">
+                <div class="modal-header" style="background:#ab7009;color:white;font-size:14px;     background: rgba(0, 0, 0, 0.31);color: white;font-size: 14px;">
+                    <span style="font-size:20px;">
+                        User Details
+                    </span>
+                    <button type="button" id="mclose1" class="close" data-dismiss="modal" style="color:white;opacity:initial"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <center>
+                        <span id="Loader">
+                            <img src="/admin_assets/img/ajax-loader-small.gif" alt="Loading" />&nbsp;Loading..
+                        </span>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+		$('#lnk_user').addClass("active");
+    });
+
+    if ('@ViewBag.ActiveUsersListMsg' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+
+        if ('@ViewBag.userInUse' != "")
+ {
+     $("#lbl_msg1").fadeOut(10000);
+ }
+ else {
+     $("#lbl_msg1").fadeOut();
+    }
+
+       if ( '@ViewBag.userNotInUse')
+{
+    $("#lbl_msg2").fadeOut(10000);
+}
+else {
+    $("#lbl_msg2").fadeOut();
+    }
+
+    $('#TblActiveUsersList').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        "ordering": false,
+    });
+
+    function user_details(id) {
+        id = "/admin/userManagement/user_details/" + id;
+        $('html, body').css({
+            'overflow': 'auto',
+            'height': '100%'
+        });
+        $("#myModal").css("display", "block")
+        $("#Loader").css("display", "block");
+
+        $("#modal-body").load(id, null, function (responseTxt, statusTxt, xhr) {
+            if (statusTxt == "success") {
+                $("#Loader").hide();
+                $("#modal-body").show();
+                $("#myModal").slideDown(500);
+            }
+        });
+
+    }
+
+    $('#mclose1').click(function () {
+        $("#myModal").css("display", "none")
+    });
+
+    $('#btndelete').click(function () {
+        if ($("input[name='Ids']:checked").length == 0) {
+            alert("Please select record to delete.");
+            return false;
+        }
+        else {
+            var count = $("input[name='Ids']:checked").length;
+            return confirm("Are you sure want to delete " + count + " record(s).");
+        }
+    });
+
+    $('#btnblock').click(function () {
+        if ($("input[name='Ids']:checked").length == 0) {
+            alert("Please select record to block.");
+            return false;
+        }
+        else {
+            var count = $("input[name='Ids']:checked").length;
+            return confirm("Are you sure want to block " + count + " record(s).");
+        }
+    });
+
+    $("#chkall").change(function () {
+        $("input[name='Ids']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='Ids']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='Ids']:checked").length == $("input[name='Ids']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+    $("input[name='GridHtml']").val($("#exportlist").html());
+    console.log($("#exportlist").html());
+</script>
+

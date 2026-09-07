@@ -1,0 +1,208 @@
+﻿@model juggle_joy.Models.CategoryValidation
+@{
+    ViewBag.Title = "Category | " + MvcApplication.project_name;
+}
+<style>
+	body {
+		overflow: unset !important;
+		background: #f5f5f5  !important;
+	}
+</style>
+
+<ul class="breadcrumb">
+    <li><a href="~/admin/account/dashboard">Home</a></li>
+    <li class="active">Category</li>
+</ul>
+
+<div class="page-title">
+
+    @if (Model.CategoryID > 0)
+    {
+        <h2><span class="fa fa-sitemap"></span> Update Category</h2>
+    }
+    else
+    {
+        <h2><span class="fa fa-sitemap"></span> Add Category</h2>
+    }
+</div>
+
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
+			@using (Html.BeginForm("manage", "category", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+				@Html.AntiForgeryToken();
+				@Html.HiddenFor(x => x.CategoryID)
+				<div class="panel panel-default">
+					<p id="lbl_msg" class="panel-title msg">@ViewBag.catmsg</p>
+
+					<div class="panel-body">
+
+
+                        <div class="row">
+                            <div class=" col-sm-6 col-md-6 col-lg-6" ">
+                                <div class="form-group">
+                                    <label for="Category" class="control-label">Category Name</label>
+                                    @Html.TextBoxFor(x => x.Category, new { @class = "form-control flat", maxlength = "50" })
+                                    @Html.ValidationMessageFor(x => x.Category)
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6 col-md-6 col-lg-6" ">
+                                @if (Model.CategoryImage != null)
+                                {
+                                    <div class="form-group">
+                                        <label>Category Image <span class="req"> </span></label>
+                                        @Html.TextBoxFor(x => x.CategoryImage, new { @class = "form-control", type = "file", id = "Logo", accept = ".jpg,.png,.jpeg", Style = "", onchange = "showimagepreview2(this);" })
+                                        @Html.ValidationMessageFor(x => x.CategoryImage)
+                                        @Html.HiddenFor(x => x.CategoryImage)
+                                        <span id="val_oi" style="color:darkgray;">(Please choose image size greater than or equal to width: 50px and height: 30px)</span>
+                                    </div>
+
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <label>Category Image <span class="req">  </span></label>
+                                        @Html.TextBoxFor(x => x.CategoryImage, new { @class = "form-control", type = "file", id = "Logo", accept = ".jpg,.png,.jpeg", Style = "", onchange = "showimagepreview2(this);" })
+                                        <span id="val_oi" style="color: #e80c4d;"> @Html.ValidationMessageFor(x => x.CategoryImage)</span>
+                                        @*<span id="val_oi" style="color:darkgray;">(Please choose image size greater than or equal to width: 1000px and height: 600px)</span>*@
+                                        <label id="errormsg" style="color:#e80c4d;"></label>
+                                    </div>//form group
+                                }
+
+                                @if (Model.CategoryImage != null)
+                                {
+                                    <div style="text-align:center;">
+                                        <div id="div2" style="display:block">
+                                            <img src="~/assets/Category/@Model.CategoryImage" id="imagepreview3" height="60" width="100" />
+                                            <br /><br />
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="text-align:center;">
+                                        <div id="div2" style="display:none">
+                                            <img src="" id="imagepreview2" height="60" width="100" />
+                                            <br /><br />
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+						<br />
+
+					</div>
+					<div class="panel-footer">
+                        @Html.HiddenFor(x=>x.CategoryID)
+
+						@if (Model.CategoryID == 0)
+						{
+							<input type="submit" id="btnaddcategory" class="btn btn-primary pull-right" value="Add Category" />
+						}
+						else
+						{
+							<input type="submit" id="btnupdate" class="btn btn-primary pull-right" value="Update Category" />
+							<input type="button" id="cancelcategory" class="btn btn-default" value="Cancel" />
+						}
+
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+
+	<div class="row" id="list">
+
+	</div>
+
+</div>
+
+<script type="text/javascript">
+
+    $('#lnk_manage_que,#lnk_category_Manage').addClass("active");
+
+            if ('@ViewBag.catmsg' != "") {
+                $("#lbl_msg").fadeOut(10000);
+            }
+           else {
+                $("#lbl_msg").fadeOut();
+            }
+
+
+
+            $(document).ready(function () {
+                $('#list').load("/admin/category/category_list", { id: 0 })
+            });
+
+            $('#cancelcategory').click(function () {
+                window.location.href = "/admin/add-category";
+            });
+
+</script>
+
+<script type="text/javascript">
+    function showimagepreview2(input) {
+        if (input.files && input.files[0]) {
+            var filerdr = new FileReader();
+            $('#div2').css("display", "block");
+            filerdr.onload = function (oFREvent) {
+                var image1 = new Image();
+                image1.src = oFREvent.target.result;
+                image1.onload = function () {
+                    var width = image1.width;
+                    var height = image1.height;
+                     if (width >= 50 && height >= 30) {
+                        $('#div2').css("display", "block");
+                        $('#imagepreview2').show();
+                        $('#imagepreview2').attr('src', oFREvent.target.result);
+                        $('#imagepreview3').attr('src', oFREvent.target.result);
+
+                        $("#errormsg").css("display", "none")
+                          $("#imgbtn_close").removeClass("hide_close").addClass("show_close");
+                        $("#imgbtn_close").removeClass("show_close").addClass("hide_close");
+                        $('#imagepreview2').attr('src', e.target.result);
+                        return true;
+                    }
+                    else {
+                        $('#imagepreview2').hide();
+                        $('#Logo').val('');
+                        $('#Image').val('');
+                        $("#errormsg").html("Please choose image size greater than or equal to width: 50px and height: 30px");
+                        $("#errormsg").fadeIn(500).fadeOut(8000);
+                        $("#div2").hide();
+                        return false;
+                    }
+                }
+
+            }
+            filerdr.readAsDataURL(input.files[0])
+        }
+    }
+
+    $("#btnaddcategory").submit(function () {
+        $("#val_oi").text("");
+    });
+
+    if (@Model.CategoryID>0) {
+        $("#Logo").attr("data-val", "false")
+
+    }
+
+    //document.getElementById("Logo").onchange = function (event) {
+    //    debugger
+
+    //    var filePath = this.value;
+    //    var allowedExtensions = /(\.jpg|\.png|\.jpeg)$/i;
+    //    if (!allowedExtensions.exec(filePath)) {
+
+    //        $("#errormsg").html("Please upload Image file having extensions .jpg,.png,.jpeg only");
+    //        $("#errormsg").fadeOut(5000);
+    //        $(this).val("");
+    //        return false;
+    //    }
+ 
+    //}
+</script>

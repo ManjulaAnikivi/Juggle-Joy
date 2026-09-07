@@ -1,0 +1,26 @@
+﻿@model juggle_joy.Models.tbl_contact
+@using juggle_joy.Models;
+@{
+	Layout = null;
+}
+<div class="row">
+	<div class="panel panel-default">
+		<div class="panel-heading text-right">
+			<div class="pull-left">
+				<h2><i class="fa fa-user"></i> @Model.ContactName</h2>
+			</div>
+			<strong><i class="fa fa-calendar"></i> @GlobalMethods.ConvertToDate(Model.ContactDate)</strong>
+		</div>
+		<div class="panel-body" style="padding:0px">
+			<ul class="list-group">
+				<li class="list-group-item text-right"><span class="pull-left"><strong class="">Email ID </strong></span> @Model.ContactEmail</li>
+				<li class="list-group-item text-right"><span class="pull-left"><strong class="">Phone No </strong></span> @Model.ContactPhone</li>
+				<li class="list-group-item text-right"><span class="pull-left"><strong class="">Subject </strong></span> @Model.ContactSubject</li>
+				<li class="list-group-item text-right">
+					<span class="pull-left"><strong>Message: </strong></span><br /><br />
+					<p style="text-align: justify;">@Model.ContactMsg</p>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>

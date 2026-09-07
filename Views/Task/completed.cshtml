@@ -1,0 +1,553 @@
+﻿@using juggle_joy.Models
+@using System.Data.Entity;
+@{
+    Layout = null;
+
+    int userid = Convert.ToInt32(Session["UserID"]);
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    var tbluser = ctx.tbl_user.Where(x => x.UserID == userid).FirstOrDefault();
+
+    var tbltask = ctx.tbl_task.ToList();
+    var pendingcount = tbltask.Where(x => x.Status == (int)TaskStatus.Received && x.FromID == userid).ToList().Count();
+    var ongoingcount = tbltask.Where(x => x.Status == (int)TaskStatus.Ongoing && x.FromID == userid).ToList().Count();
+    var completed= tbltask.Where(x => x.Status == (int)TaskStatus.Complete && x.FromID == userid).OrderByDescending(x => x.TaskID).ToList();
+    var completedcount = completed.Count();
+    //filter by
+    var filterby = completed.Select(x => x.CategoryID).Distinct();
+    var filterbyOrdered = filterby.OrderBy(x => x).ToList();
+}
+<style>
+
+    .light-theme a, .light-theme span {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        line-height: 20.83px !important;
+        border: 1px solid var(--secondary-color) !important;
+        border-radius: 4px !important;
+        color: var(--primary-color) !important;
+        background: #ffffff !important;
+        width: 40px !important;
+        height: 40px !important;
+        display: inline-flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 3px !important;
+        box-shadow: unset !important;
+        /*cursor:pointer !important;*/
+    }
+
+    .light-theme .current {
+        color: #ffffff !important;
+        background: var(--primary-color) !important;
+        border-color: #00c1ab !important;
+        box-shadow: unset !important;
+    }
+
+
+    @@media (max-width: 420px) {
+
+        .dashboard-title-main h1 {
+            font-size: 34px;
+        }
+    }
+
+
+    @@media (max-width: 390px) {
+
+        .dashboard-title-main h1 {
+            font-size: 26px;
+        }
+    }
+
+    @@media (max-width: 345px) {
+
+        .dashboard-title-main h1 {
+            font-size: 24px;
+        }
+    }
+
+    @@media (max-width: 320px) {
+
+        .dashboard-title-main h1 {
+            font-size: 22px;
+        }
+    }
+
+    @@media (max-width: 290px) {
+
+        .dashboard-title-main h1 {
+            font-size: 20px;
+        }
+    }
+
+    .subscriptionmsg {
+        align-content: center;
+        color: white;
+        font-size: 16px !important;
+        display: block;
+        opacity: 0.7;
+        padding-top: 20px;
+        padding-bottom: 10px;
+        font-size: 14px;
+        font-weight: 400;
+        width: fit-content;
+        /* line-height: 20px;*/
+        background: #e5756f;
+        border: 1px solid var(--secondary-color);
+        border-radius: 10px;
+        padding: 14px 20px;
+        margin: 0 auto 10px;
+    }
+
+    @@media (max-width: 450px) {
+
+        .subscriptionmsg {
+            font-size: 10px !important;
+        }
+    }
+
+</style>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Completed Task-@MvcApplication.project_name</title>
+    @Html.Partial("dashboard_css")
+    @*<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>*@
+  
+    <link href="~/admin_assets/css/simplePagination.min.css" rel="stylesheet" />
+</head>
+
+<body class="body-dashboard-page">
+    @Html.Partial("dashboard-header")
+
+    <main class="main dashboard-page">
+
+        <div class="dashboard-display-content dashboard-popups dashboard-background">
+
+            <section class="dashboard-title">
+                <div class="dashboard-title-main">
+                    <div class="container">
+                        <div class="content-wrapper">
+                            <h1><span id="greeting"></span>, @Session["UserName"]</h1>
+                            @if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Canceled)
+                            {
+                                <a data-title="Your current plan is expired" class="primary-btn-dashboard add_new_task" href="/addtask" style="pointer-events:none;">
+                                    <i class="fa-solid fa-plus"></i><span>
+                                        Add
+                                        New
+                                        Task
+                                    </span>
+                                </a>
+                            }
+                            else if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Paused)
+                            {
+                                var subscription = ctx.tbl_subscription.Where(x => x.UserID == userid).Select(x => x.ExpirationDate).FirstOrDefault();
+
+                                if (DateTime.Now <= subscription)
+                                {
+                                    <a class="primary-btn-dashboard add_new_task" href="/addtask">
+                                        <i class="fa-solid fa-plus"></i><span>
+                                            Add
+                                            New
+                                            Task
+                                        </span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a data-title="Your current plan is expired" class="primary-btn-dashboard add_new_task" href="/addtask" style="pointer-events:none;">
+                                        <i class="fa-solid fa-plus"></i><span>
+                                            Add
+                                            New
+                                            Task
+                                        </span>
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <a class="primary-btn-dashboard add_new_task" href="/addtask">
+                                    <i class="fa-solid fa-plus"></i><span>
+                                        Add
+                                        New
+                                        Task
+                                    </span>
+                                </a>
+                            }
+                        </div>
+                        @if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Canceled)
+                        {
+                            <p class="subscriptionmsg" id="subscriptionmsg">
+                                <i class="fa fa-check-circle-o" style="color:white;"></i> Your subscription is cancelled
+                                <a href="/Home/cancelSubscription_checkout" style="color: white; margin: 0 20px; text-decoration: underline; ">
+                                    <span>
+                                        Resume Plan
+                                    </span>
+                                </a>
+                            </p>
+                        }
+                        </div>
+                </div>
+            </section>
+
+            <section class="dashboard-tabs">
+                <div class="dashboard-tabs-main">
+                    <div class="container">
+                        <div class="tabs-and-features">
+                            <div class="task-tab-titles">
+                                <ul>
+                                    <li class="task-tab">
+                                        <a href="/dashboard" class="tab-title"
+                                           data-id="draft"><i class="fa-solid fa-lightbulb"></i><span>Draft</span></a>
+                                    </li>
+                                    <li class="task-tab">
+                                        <a href="/pending" class="tab-title"
+                                           data-id="pending">
+                                            <i class="fa-solid fa-hourglass-start"></i><span>Pending</span>
+                                            @if (@pendingcount > 0)
+                                            {
+                                                <span class="notification-count">@pendingcount</span>
+
+                                            }
+
+                                        </a>
+                                    </li>
+                                    <li class="task-tab">
+                                        <a href="/ongoing" class="tab-title"
+                                           data-id="ongoing">
+                                            <i class="fa-solid fa-clock"></i><span>Ongoing</span>
+                                            @if (ongoingcount > 0)
+                                            {
+                                                <span class="notification-count">@ongoingcount</span>
+
+                                            }
+
+                                        </a>
+                                    </li>
+                                    <li class="task-tab">
+                                        <a href="/completed" class="tab-title active-tab"
+                                           data-id="completed">
+                                            <i class="fa-solid fa-star"></i><span>Completed</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="feature-buttons">
+                                <div class="feature-btn-wrapper feature-btn-filter">
+                                    <a href="javascript:void(0)" class="feature-btn filter_by">
+                                        <i class="fa-solid fa-filter"></i> Filter By
+                                    </a>
+                                    <div class="filter-sort filters">
+                                        @if (filterbyOrdered.Count() > 0)
+                                        {
+                                            foreach (var item in filterbyOrdered)
+                                            {
+                                                var cat = ctx.tbl_category.Where(x => x.CategoryID == item).FirstOrDefault();
+                                                <a href="javascript:void(0)" onclick="fiterBy('@cat.CategoryID')">@cat.Category</a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <a href="javascript:void(0)">No records</a>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="feature-btn-wrapper feature-btn-sort">
+                                    <a href="javascript:void(0)" class="feature-btn sort_by">
+                                        <i class="fa-solid fa-arrow-down-short-wide"></i> Sort By
+                                    </a>
+                                    @if (filterbyOrdered.Count() > 0)
+                                    {
+                                        <div class="filter-sort sorts">
+                                            <a href="javascript:void(0)" onclick="sortBy('N')">New to oldest</a>
+                                            <a href="javascript:void(0)" onclick="sortBy('O')">Old to newest</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="filter-sort sorts">
+                                            <a href="javascript:void(0)">No records</a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="dashboard-tabs-section-container">
+
+
+
+                <section class="dashboard-tabs-section tab-active" data-id="completed">
+                    <div class="dashboard-tabs-section-main">
+                        <div class="container">
+
+                            <p class="task-notice">
+                                <i class="fa-solid fa-circle-info"></i>
+                                Here, you'll find all previous tasks were completed or cancelled. Use this section to review your archived tasks
+                            </p>
+                            <div id="taskList">
+
+                            </div>
+
+
+
+
+
+                            @*<div class="tasks-wrapper">
+            <div class="task-date">
+                <p>Sep, 24</p>
+            </div>
+            <div class="tasks-task">
+                <div class="task-content-wrapper">
+                    <div class="task-content">
+                        <div class="task-left">
+                            <div class="task-icon-wrapper">
+                                <div class="task-icon">
+                                    <img src="~/Assets/images/tasks/task-cake.png" alt="task-cake">
+                                </div>
+                            </div>
+                            <div class="task-title">
+                                <span class="task-status status-completed"></span>
+                                <h2> Buy christmas present for dad completed</h2>
+                                <div class="task-title-bottom">
+                                    <p class="task-due-date">
+                                        <span class="due-date-title">
+                                            Completed
+                                            by:
+                                        </span><span class="due-date-date">
+                                            Your assistant,
+                                            Amanda
+                                        </span>
+                                    </p>
+                                    <p class="task-categories">
+                                        <span class="category-title">Category:</span><span class="category-category">Events planning</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-right task-button-wrapper">
+                            <a href="javascript:void(0)" class="task-btn" onclick="taskdetails()"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-date">
+                <p>Oct, 24</p>
+            </div>
+            <div class="tasks-task">
+                <div class="task-content-wrapper">
+                    <div class="task-content">
+                        <div class="task-left">
+                            <div class="task-icon-wrapper">
+                                <div class="task-icon">
+                                    <img src="~/Assets/images/tasks/task-cake.png" alt="task-cake">
+                                </div>
+                            </div>
+                            <div class="task-title">
+                                <span class="task-status status-cancelled"></span>
+                                <h2>Buy christmas present for dad</h2>
+                                <div class="task-title-bottom">
+                                    <p class="task-due-date"></p>
+                                    <p class="task-categories">
+                                        <span class="category-title">Category:</span><span class="category-category">Events planning</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="task-right task-button-wrapper">
+                            <a href="javascript:void(0)" class="task-btn" onclick="taskdetails()"></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>*@
+                            @if (completedcount > 10)
+                            {
+                                <div class="task-pagination">
+                                    <div id="pagination"></div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+
+        <div class="dashboard-popup-content dashboard-popups dashboard-popup-background">
+            <section class="task-detail-popup message-handler">
+                <div class="task-detail-popup-main">
+                    <div class="popup-container">
+                        <div class="task-detail-popup-wrapper">
+                            <div class="popup-cross-btn">
+                                <button><i class="fa-solid fa-circle-xmark"></i></button>
+                            </div>
+
+                            <div class="content-wrapper" id="task_details">
+
+                                <div id="details">
+                                    <img src="~/Assets/spinner.gif" height="100" width="100" style="display: block; margin-left: auto; margin-right: auto;" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="dashboard-new-task-popup dashboard-popups dashboard-popup-background" id="list">
+            <div id="preloaded">
+                <img src="~/Assets/spinner.gif" height="100" width="100" style="display: block; margin-left: auto; margin-right: auto;" />
+            </div>
+        </div>
+
+        
+
+       
+
+    </main>
+
+
+    @Html.Partial("dashboard-footer")
+
+    @Html.Partial("js")
+    @Html.Partial("dashboard-script")
+
+
+</body>
+
+</html>
+<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/jquery-1.6.simplePagination.min.js"></script>
+
+
+<script>
+
+    $("#taskList").load("/Task/completed_tasklist", function () { });
+
+		$(".pagination-list").slice(10).hide();
+		$('#pagination').pagination({
+
+			items: '@completedcount',
+			itemsOnPage: 10,
+			onPageClick: function (pageid) {
+                $("#taskList").load("/Task/completed_tasklist", { id: pageid });
+			}
+		});
+</script>
+
+
+<script>
+    var counttasks;
+    var categoryid;
+    var subcategoryid;
+    function fiterBy(id) {
+        categoryid = id;
+
+        debugger
+        $.ajax({
+            type: "Post",
+            url: "/Task/completed_tasklist",
+            data: { catid: id, sortby: subcategoryid },
+            dataType: "html",
+            success: function (data) {
+                debugger
+                $("#taskList").html(data);
+                //alert(counttasks);
+                if (counttasks < 11) {
+                    $('.task-pagination').css('display', 'none');
+                } else {
+                    $('.task-pagination').css('display', 'flex');
+                    $(".pagination-list").slice(10).hide();
+                    $('#pagination').pagination({
+                        items: counttasks,
+
+                        itemsOnPage: 10,
+
+                        onPageClick: function (pageid) {
+                            $("#taskList").load("/Task/completed_tasklist", { id: pageid, catid: id, sortby: subcategoryid });
+
+                        }
+                    });
+                }
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //console.log("not able to");
+                // alert("failed to load questions");
+            }
+        });
+    };
+
+
+    function sortBy(res) {
+        subcategoryid = res;
+        $.ajax({
+            type: "Post",
+            url: "/Task/completed_tasklist",
+            data: { sortby: res, catid: categoryid },
+            dataType: "html",
+            success: function (data) {
+                debugger
+                $("#taskList").html(data);
+                //alert(counttasks);
+                if (counttasks < 11) {
+                    $('.task-pagination').css('display', 'none');
+                } else {
+                    $('.task-pagination').css('display', 'flex');
+                    $(".pagination-list").slice(10).hide();
+                    $('#pagination').pagination({
+                        items: counttasks,
+
+                        itemsOnPage: 10,
+
+                        onPageClick: function (pageid) {
+                            $("#taskList").load("/Task/completed_tasklist", { id: pageid, catid: categoryid, sortby: res });
+
+                        }
+                    });
+                }
+
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                //console.log("not able to");
+                // alert("failed to load questions");
+            }
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        debugger
+        var today = new Date();
+        var cHour = today.getHours();
+
+        if (cHour >= 0 && cHour < 12) {
+            $('#greeting').text("Good Morning");
+        }
+        else if (cHour >= 12 && cHour < 18) {
+            $('#greeting').text("Good Afternoon");
+        }
+        else if (cHour >= 18 && cHour <= 23) {
+            $('#greeting').text("Good Evening");
+
+        }
+
+    });
+</script>

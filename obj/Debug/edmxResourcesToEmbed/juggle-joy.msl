@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="db_jugglejoyModelStoreContainer" CdmEntityContainer="db_jugglejoyEntities">
+    <EntitySetMapping Name="tbl_admin">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_admin">
+        <MappingFragment StoreEntitySet="tbl_admin">
+          <ScalarProperty Name="AdminID" ColumnName="AdminID" />
+          <ScalarProperty Name="FullName" ColumnName="FullName" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+          <ScalarProperty Name="Salt" ColumnName="Salt" />
+          <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+          <ScalarProperty Name="PhoneNo" ColumnName="PhoneNo" />
+          <ScalarProperty Name="PwdResetKey" ColumnName="PwdResetKey" />
+          <ScalarProperty Name="PwdKeyCreatedTime" ColumnName="PwdKeyCreatedTime" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_banner">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_banner">
+        <MappingFragment StoreEntitySet="tbl_banner">
+          <ScalarProperty Name="BannerId" ColumnName="BannerId" />
+          <ScalarProperty Name="BannerImage" ColumnName="BannerImage" />
+          <ScalarProperty Name="BannerText" ColumnName="BannerText" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="UrlLink" ColumnName="UrlLink" />
+          <ScalarProperty Name="SortPreference" ColumnName="SortPreference" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_blogs">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_blogs">
+        <MappingFragment StoreEntitySet="tbl_blogs">
+          <ScalarProperty Name="BlogID" ColumnName="BlogID" />
+          <ScalarProperty Name="BlogTitle" ColumnName="BlogTitle" />
+          <ScalarProperty Name="BlogImage" ColumnName="BlogImage" />
+          <ScalarProperty Name="BlogDescription" ColumnName="BlogDescription" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_contact">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_contact">
+        <MappingFragment StoreEntitySet="tbl_contact">
+          <ScalarProperty Name="ContactID" ColumnName="ContactID" />
+          <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+          <ScalarProperty Name="ContactEmail" ColumnName="ContactEmail" />
+          <ScalarProperty Name="ContactPhone" ColumnName="ContactPhone" />
+          <ScalarProperty Name="ContactSubject" ColumnName="ContactSubject" />
+          <ScalarProperty Name="ContactMsg" ColumnName="ContactMsg" />
+          <ScalarProperty Name="ContactDate" ColumnName="ContactDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_faq">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_faq">
+        <MappingFragment StoreEntitySet="tbl_faq">
+          <ScalarProperty Name="FaqID" ColumnName="FaqID" />
+          <ScalarProperty Name="FaqQuestion" ColumnName="FaqQuestion" />
+          <ScalarProperty Name="FaqAnswer" ColumnName="FaqAnswer" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_subscriber">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_subscriber">
+        <MappingFragment StoreEntitySet="tbl_subscriber">
+          <ScalarProperty Name="SubscriberId" ColumnName="SubscriberId" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="SubscribedDate" ColumnName="SubscribedDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

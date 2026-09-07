@@ -1,0 +1,35 @@
+﻿
+@using juggle_joy.Models
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    int handlerID = Convert.ToInt32(Session["HandlerID"]);
+    var notifications = ctx.tbl_notification.Where(x => x.ReadStatus == "0" && x.ToID == handlerID).OrderByDescending(x => x.NotificationID).ToList().Take(5);
+    var notify_count = ctx.tbl_notification.Where(x => x.ReadStatus == "0" && x.ToID == handlerID).OrderByDescending(x => x.NotificationID).ToList();
+    //var notifications = notificationsa.GroupBy(x => x.Url).Take(5).ToList();
+    //var groupedCustomerList = ctx.tbl_notification
+    //.GroupBy(x => x.Url)
+    //.Select(grp => grp.ToList())
+    //.ToList().Take(5);
+}
+
+
+
+<div class="admin-header-notification-wrapper">
+    @if (notifications.Count() > 0)
+    {
+        <span class="notification-count">
+
+            @notify_count.Count()
+        </span>
+    }
+    <button class="header-notification-btn"><i class="fa-solid fa-bell"></i></button>
+</div>
+
+<div class="admin-header-notification-notifications">
+    <ul>
+        @foreach (var notification in notifications)
+        {
+            <li><a href="#" onclick="ReadStatus(@notification.NotificationID, '@notification.Url')">@notification.Notification</a></li>
+        }
+    </ul>
+</div>

@@ -1,0 +1,96 @@
+﻿@model juggle_joy.Models.tbl_faq_category
+@using juggle_joy.Models
+@{
+	Layout = null;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	var faqcategory = ctx.tbl_faq_category.ToList();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Faq - @MvcApplication.project_name</title>
+
+	@Html.Partial("css")
+
+</head>
+<body class="body-faq-page">
+	@Html.Partial("header")
+    <div class="main faq-page">
+
+
+
+        <section class="banner_section">
+            <div class="container-fluid half-fluid banner_left">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-md-6 banner_image">
+                            <div class="left-half wow fadeInLeft"
+                                 style="background: url('/Assets/images/faq-banner.png') no-repeat center center / cover;">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 banner_content">
+                            <h1 class="wow fadeInUp">We Got Answers</h1>
+                            <div class="wow fadeInUp" data-wow-delay=".1s">
+                                <p>
+                                    Curious about something? Ask away! It’s likely you’ll find answers to the most frequently asked questions
+                                    right here.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq_main faqs_section section-position">
+            <div class="container background-logo">
+                <div class="row">
+                    <div class="col-12 col-md-4 col-lg-3 faq_tabs">
+                        <ul id="tabs">
+
+                            @foreach (var item in faqcategory)
+                            {
+                                <li class="" onclick="receive(@item.Faq_Cat_id)"><a href="">@item.Category</a></li>
+
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="col-12 col-md-8 col-lg-6 faq_tabs_content" id="list">
+
+
+                    </div>
+
+                    <div class="col-0 col-md-0 col-lg-3">
+                    </div>
+                </div>
+                @*<div class="chat-icon">
+                    <h4>Have a burning <br> question?</h4>
+                    <p class="py-1">We would love to chat to you</p>
+                    <a href="#">
+                        <img src="~/Assets/images/chat-icon-1.png" alt="chat-icon">
+                    </a>
+                </div>*@
+            </div>
+        </section>
+
+
+    </div>
+	@Html.Partial("footer")
+
+</body>
+</html>
+@Html.Partial("js")
+
+<script>
+
+	$("#list").load("/Home/Faqlist");
+
+	function receive(id) {
+		$("#list").load("/Home/Faqlist", {id:id});
+	}
+</script>
+
+

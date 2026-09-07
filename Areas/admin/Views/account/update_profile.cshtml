@@ -1,0 +1,78 @@
+﻿@model juggle_joy.Models.UpdateProfileValidation
+
+@{
+	ViewBag.Title = "Update Profile | " + MvcApplication.project_name;
+}
+<ul class="breadcrumb">
+	<li><a href="~/admin/dashboard">Home</a></li>
+	<li class="active">Update Profile</li>
+</ul>
+<div class="page-title">
+	<h2><span class="fa fa-edit"></span> Update Profile</h2>
+</div>
+
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+			@using (Html.BeginForm("update_profile", "account", FormMethod.Post))
+			{
+				<div class="panel panel-default">
+					<p id="lbl_msg" class="panel-title msg">@ViewBag.msg</p>
+					<div class="panel-body">
+						<div class="form-group">
+							<label for="fullname" class="control-label">Name<span class="req"> *</span></label>
+							<div class="input-group">
+								<span class="input-group-addon"><span class="fa fa-user"></span></span>
+								@Html.TextBoxFor(x => x.FullName, new { @class = "form-control", maxlength = "50" })
+							</div>
+							@Html.ValidationMessageFor(x => x.FullName)
+						</div>
+
+						<div class="form-group">
+							<label for="emailid" class="control-label">E-mail ID<span class="req"> *</span></label>
+							<div class="input-group">
+								<span class="input-group-addon"><span class="fa fa-envelope"></span></span>
+								@Html.TextBoxFor(x => x.EmailID, new { @class = "form-control", maxlength = "75" })
+							</div>
+							@Html.ValidationMessageFor(x => x.EmailID)
+						</div>
+
+						<div class="form-group">
+							<label for="emailid" class="control-label">Phone No<span class="req"> *</span></label>
+							<div class="input-group">
+								<span class="input-group-addon"><span class="fa fa-credit-card"></span></span>
+								@Html.TextBoxFor(x => x.PhoneNo, new { @class = "form-control", maxlength = "20" })
+							</div>
+							@Html.ValidationMessageFor(x => x.PhoneNo)
+						</div>
+					</div>
+					<div class="panel-footer">
+						@*<a href="update-profile" class="btn btn-default">Clear Form</a>*@
+						@Html.HiddenFor(x => x.AdminID)
+						<button type="submit" class="btn btn-primary pull-right">Update</button>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+
+<script>
+	$('#lnk_setting,#lnk_update_profile').addClass("active");
+
+    if ('@ViewBag.msg' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+</script>
+
+
+
+
+
+
+
+
+

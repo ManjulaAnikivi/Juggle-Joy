@@ -1,0 +1,107 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_task>
+	@using juggle_joy.Models
+@{
+	Layout = null;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	int assistantid = ViewBag.id;
+	var assistantname = ctx.tbl_user.Where(x => x.UserID == assistantid).FirstOrDefault();
+	var tabletask = ctx.tbl_task.ToList();
+	var totaltasks = tabletask.ToList().Count();
+	var newtasks = tabletask.Where(x => x.AssistantID == null && x.Status == (int)TaskStatus.Received ).ToList().Count();
+	var pendingtasks = Model.Where(x => x.Status == (int)TaskStatus.Received).ToList().Count();
+	var ongoingtasks = Model.Where(x => x.Status == (int)TaskStatus.Ongoing).ToList().Count();
+	var completedtasks = Model.Where(x => x.Status == (int)TaskStatus.Complete).ToList().Count();
+
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    @Html.Partial("assistantHandler_css")
+
+
+</head>
+
+<body class="body-handler-profile-page body-admin-pages">
+	@Html.Partial("handlerheader")
+
+	<main class="main handler-profile-page">
+
+		<section class="handler-profile-section">
+			<div class="handler-profile-main background-panel-color">
+				<div class="handler-profile-container">
+					<h2>Assistant: @assistantname.FirstName</h2>
+
+					<div class="row">
+						<div class="col-lg-4 col-md-12 col-12 pe-5 column-divider">
+							<div class="info-palette-wrapper">
+								<div class="info-palette new-tasks" style="cursor:pointer" onclick="window.location.href='/handler-dashboard'">
+									<p>New Tasks</p>
+									<span>@newtasks</span>
+								</div>
+
+								<div class="info-palette pending-tasks" style="cursor:pointer" onclick="window.location.href='/task-pending/@assistantid'">
+									<p>Pending Tasks</p>
+									<span>@pendingtasks</span>
+								</div>
+
+								<div class="info-palette assigned" style="cursor:pointer" onclick="window.location.href='/task-ongoing/@assistantid'">
+									<p>Assigned</p>
+									<span>@ongoingtasks</span>
+								</div>
+
+								<div class="info-palette solved" style="cursor:pointer" onclick="window.location.href='/task-completed/@assistantid'">
+									<p>Solved</p>
+									<span>@completedtasks</span>
+								</div>
+
+							</div>
+						</div>
+
+
+						<div class="col-lg-8 col-md-12 col-12 ps-5">
+							<div class="handler-profile-review-container background-panel-color">
+								<h3>Reviews</h3>
+
+								<div class="handler-profile-review-wrapper">
+									<div class="review-point">8.5</div>
+									<div class="user-score-wrapper">
+										<h4>User Score</h4>
+										<p>Generally favorable reviews based on <span>CRatings</span></p>
+										<div class="user-review-score-wrapper">
+											<span class="user-review-score rated">1</span>
+											<span class="user-review-score rated">2</span>
+											<span class="user-review-score rated">3</span>
+											<span class="user-review-score rated">4</span>
+											<span class="user-review-score rated">5</span>
+											<span class="user-review-score rated">6</span>
+											<span class="user-review-score rated">7</span>
+											<span class="user-review-score rated">8</span>
+											<span class="user-review-score rated">9</span>
+											<span class="user-review-score">10</span>
+
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</section>
+
+	</main>
+	@Html.Partial("handlerfooter")
+	<script src="~/Assets/js/all.min.js"></script>
+	<script src="~/Assets/js/jquery.min.js"></script>
+	@Html.Partial("js")"
+	<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+	@*<script src="~/Assets/js/admin-dashboard.js"></script>*@
+</body>
+
+</html>

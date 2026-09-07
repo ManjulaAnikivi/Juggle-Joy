@@ -1,0 +1,1342 @@
+﻿@model juggle_joy.Models.UserValidation
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    DateTime timeOfDayGreeting = DateTime.Now;
+
+
+
+    int userid = Convert.ToInt32(Session["Register"]);
+
+    var price = ctx.tbl_price.FirstOrDefault();
+
+
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @Html.Partial("css")
+
+    <title>Register - @MvcApplication.project_name</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #text {
+            display: none;
+            color: #e5756f;
+        }
+
+        .dropdown {
+            width: 100%;
+            height: 50px;
+            border: 1px solid #BCB7AC;
+            border-radius: 10px;
+            background: var(--white-color);
+            padding: 10px 20px;
+            outline: none;
+            color: darkgrey;
+        }
+
+        span.show_hide_password {
+            bottom: 26px !important;
+        }
+
+        .otp_popup {
+            width: 400px;
+            height: 200px;
+            border-radius: 23px;
+            border: 1px solid #00C1AB;
+            margin: 13px;
+            padding: 10px;
+        }
+
+        span.show_hide_password {
+            position: absolute;
+            display: inline;
+            right: 15px;
+            top: 45px;
+            /* bottom: 12px;*/
+            font-size: 16px;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .field_question_mark span.question_mark {
+            position: absolute;
+            display: inline;
+            right: 20px;
+            top: 50px;
+            /* / bottom: 12px;*/
+            font-size: 16px;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+    </style>
+    @*<script id="chatway" async="true" src="https://cdn.chatway.app/widget.js?id=Cw5w8un8s2xi"></script>*@
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=@juggle_joy.Models.GlobalMethods.Google_reCAPTCHA_SiteKey"></script>
+</head>
+<body class="body-register-page">
+
+    @Html.Partial("header")
+    <div class="main register-page">
+
+        <section class="banner_section forms_section">
+            <div class="container-fluid half-fluid">
+                <div class="container-none">
+                    <div class="row">
+
+                        <div class="col-12 col-md-6 banner_content forms_max_width">
+                            <div class="banner_items">
+                                <span class="logo-small"
+                                      style="background: url(/Assets/images/logo-100x100.png) no-repeat center center / contain;"></span>
+                                <div id="carouselExampleIndicators" class="page-form carousel slide"
+                                     data-interval="false">
+                                    <p id="lblmsg" style="font-size: 18px !important; color: #00c1ab">@ViewBag.msg</p>
+                                    <p id="lblmsg1" style="font-size: 18px !important; color: #00c1ab">@ViewBag.contactmsg</p>
+                                    <p id="lblmsg2" style="font-size: 18px !important; color: #00c1ab">@ViewBag.DelegatingMsg</p>
+                                    <p id="lblmsg3" style="font-size: 18px !important; color: #e5756f">@ViewBag.contact</p>
+                                    <p id="log_message" style="font-size: 18px !important; color: #e5756f"></p>
+
+                                    @*<form action="#" id="register_form" name="register_form" class="carousel-inner">*@
+                                    @using (Html.BeginForm("Register", "Home", FormMethod.Post, new { id = "signup-form" }))
+                                    {
+                                        <div class="form_steps form_step_1 carousel-item active">
+                                            <div class="banner_items">
+                                                <h1>Register</h1>
+                                                <h4 class="font-caveat"><span id="greeting"></span>, and Welcome!</h4>
+                                            </div>
+
+                                            @Html.AntiForgeryToken()
+                                            @Html.HiddenFor(x => x.UserGoogleCaptchaToken)
+                                            <fieldset>
+                                                <div class="form_field disable">
+                                                    <label for="register_email_address">Email Address*</label>
+                                                    @Html.TextBoxFor(x => x.EmailID, new { placeholder = "Email Address", @Value = ViewBag.emailbind })
+                                                    @Html.ValidationMessageFor(x => x.EmailID, "", new { @class = "text-danger" })
+                                                    <p id="lbl_message" style="margin-right:auto"></p>
+                                                </div>
+                                                <div class="form_field password_field disable">
+                                                    <label for="register_password">Create a Password*</label>
+                                                    @Html.PasswordFor(x => x.PasswordHash, new { placeholder = "Password", @Value = ViewBag.passwordbind, autocomplete = "off" })
+                                                    <span class="show_hide_password fs">
+                                                        <i class="fa-solid fa-eye"></i>
+                                                        <i class="fa-solid fa-eye-slash"></i>
+                                                    </span>
+                                                    @Html.ValidationMessageFor(x => x.PasswordHash, "", new { @class = "text-danger" })
+                                                    <span id="text">WARNING! Caps lock is ON.</span>
+
+                                                </div>
+                                                @*<div class="form_password_warning">
+                                                        <ul>
+                                                            <li class="correct_wrong">
+                                                                Password must be a minimum of 8
+                                                                characters long
+                                                            </li>
+                                                            <li class="correct_wrong">At least 1 number</li>
+                                                            <li class="correct_wrong">At least 1 special character</li>
+                                                            <li class="correct_wrong wrong">At least 1 Capital letter</li>
+                                                        </ul>
+                                                    </div>*@
+                                                <div class="form_password_warning">
+                                                    <ul>
+                                                        <li class="characters wrong">
+                                                            Password must be a minimum of 8
+                                                            characters long
+                                                        </li>
+                                                        <li class="number wrong">At least 1 number</li>
+                                                        @*<li class="special wrong">At least 1 special character</li>*@
+                                                        <li class="capital wrong">At least 1 Capital letter</li>
+                                                    </ul>
+                                                </div>
+
+                                                <div class="form_step_bullets">
+                                                    <div class="step_bullets">
+                                                        <span data-bs-target="#carouselExampleIndicators"
+                                                              data-bs-slide-to="0" class="bullets active"
+                                                              aria-current="true" aria-label="Slide 1"></span>
+                                                        <span data-bs-target="#carouselExampleIndicators"
+                                                              data-bs-slide-to="1" class="bullets" aria-current="true"
+                                                              aria-label="Slide 2"></span>
+                                                        <span data-bs-target="#carouselExampleIndicators"
+                                                              data-bs-slide-to="2" class="bullets" aria-current="true"
+                                                              aria-label="Slide 3"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form_submit">
+                                                    <input type="submit" value="Create An Account" class="primary-btn input_reg ">
+                                                </div>
+
+
+                                                <div class="form_agreement">
+                                                    <p>
+                                                        By proceeding, you agree to our <a href="/Terms-of-Use">Terms of Service</a> and <a href="/Privacy-Policy">Privacy Policy</a>
+                                                    </p>
+                                                </div>
+                                                <div class="form_bottom">
+                                                    <p>Already a member?</p>
+                                                    <a href="/login">Login here</a>
+                                                </div>
+                                            </fieldset>
+
+                                        </div>
+                                    }
+
+                                    @using (Html.BeginForm("ContactInfo", "Home", FormMethod.Post, new { id = "FormContactInfo" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <div class="form_steps form_step_2 carousel-item">
+                                            <div class="banner_items">
+                                                <h2>Contact info</h2>
+                                            </div>
+                                            <fieldset>
+                                                <div class="form_field">
+                                                    <label for="register_full_name">Full Name*</label>
+                                                    @Html.TextBoxFor(x => x.FirstName, new { placeholder = "Full Name", @Value = ViewBag.firstnamebind })
+                                                    @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form_field field_question_mark">
+                                                    <label for="register_phone">Mobile No*</label>
+                                                    @*<input type="tel" id="register_phone" name="register_phone"
+                                                        placeholder="Mobile No (optional)"
+                                                        pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}">*@
+                                                    @Html.TextBoxFor(x => x.PhoneNo, new { placeholder = "Mobile No used for Two-Factor Authentication", @Value = ViewBag.phonebind })
+                                                    @Html.ValidationMessageFor(x => x.PhoneNo, "", new { @class = "text-danger" })
+
+
+                                                    <span class="question_mark" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="field-tooltip" data-bs-title="Please take a moment to verify your number. This helps us confirm your identity and secure your account.">
+                                                        <i class="fa-solid fa-question"></i>
+                                                    </span>
+
+                                                </div>
+
+                                                <div class="form_field field_question_mark">
+                                                    <label for="register_post_code">Post code*</label>
+                                                    @Html.TextBoxFor(x => x.ZipPostalCode, new { placeholder = "Post code", @Value = ViewBag.zipcodebind })
+                                                    @Html.ValidationMessageFor(x => x.ZipPostalCode, "", new { @class = "text-danger" })
+
+                                                    <span class="question_mark" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="field-tooltip" data-bs-title="Your home address details are collected to assist with future tasks that may require this information.">
+                                                        <i class=" fa-solid fa-question"></i>
+                                                    </span>
+
+                                                </div>
+
+
+                                                <div class="form_field">
+                                                    <label for="Address">Address*</label>
+                                                    @Html.TextBoxFor(x => x.Address, new { placeholder = "Address", @Value = ViewBag.Address })
+                                                    @Html.ValidationMessageFor(x => x.Address, "", new { @class = "text-danger" })
+                                                </div>
+
+
+                                                @*<div class="form_field">
+                                                        <label for="City">City*</label>
+                                                        @Html.TextBoxFor(x => x.City, new { placeholder = "City", @Value = ViewBag.City })
+                                                        @Html.ValidationMessageFor(x => x.City, "", new { @class = "text-danger" })
+                                                    </div>*@
+                                                @*<div class="form_field">
+                                                        <label for="StateName">state*</label>
+                                                        @Html.TextBoxFor(x => x.StateName, new { placeholder = "state", @Value = ViewBag.StateName })
+                                                        @Html.ValidationMessageFor(x => x.StateName, "", new { @class = "text-danger" })
+                                                    </div>*@
+                                                <div class="form_field">
+                                                    <label for="CountryName">Country*</label>
+                                                    @Html.TextBoxFor(x => x.CountryName, new { placeholder = "country", @Value = ViewBag.CountryName })
+                                                    @Html.ValidationMessageFor(x => x.CountryName, "", new { @class = "text-danger" })
+                                                </div>
+
+
+                                                <div class="form_field">
+                                                    <label for="register_hear_about">How did you hear about us?*</label>
+                                                    @Html.DropDownListFor(x => x.HeardFrom, new List<SelectListItem>
+                                                                { new SelectListItem { Text = "Word of mouth", Value = "1" },
+                                                                  new SelectListItem { Text = "Facebook", Value = "2" },
+                                                                  new SelectListItem { Text = "Instagram", Value = "3" },
+                                                                  new SelectListItem { Text = "LinkedIn", Value = "4" },
+                                                                  new SelectListItem { Text = "Search Engines", Value = "5" },
+                                                                  new SelectListItem { Text = "Blog or Publication", Value = "6" },
+                                                                  new SelectListItem { Text = "Other", Value = "7" },
+                                                                  }, "Select Option", new { @class = "select_field" })
+                                                    @Html.ValidationMessageFor(x => x.HeardFrom, "", new { @class = "text-danger" })
+
+                                                </div>
+
+                                                <div class="form_field field_question_mark">
+                                                    <label for="PartnerEmail">Partner’s email address</label>
+                                                    @Html.TextBoxFor(x => x.PartnerEmail, new { placeholder = "Email address", @Value = ViewBag.partneremailbind })
+                                                    @Html.ValidationMessageFor(x => x.PartnerEmail, "", new { @class = "text-danger" })
+                                                    <span class="question_mark" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="field-tooltip" data-bs-title="Enter your partner's email address in this field. We'll send them a special link via email to link your accounts together, enabling both of you to manage household tasks as one.">
+                                                        <i class="fa-solid fa-question"></i>
+                                                    </span>
+                                                </div>
+
+                                                <div class="form_step_bullets">
+                                                    <div class="step_bullets">
+                                                        <span data-bs-target="#carouselExampleIndicators"
+                                                              data-bs-slide-to="0" class="bullets" aria-current="true"
+                                                              aria-label="Slide 1"></span>
+                                                        <span data-bs-target="#carouselExampleIndicators"
+                                                              data-bs-slide-to="1" class="bullets active"
+                                                              aria-current="true" aria-label="Slide 2"></span>
+                                                        <span data-bs-target="#carouselExampleIndicators"
+                                                              data-bs-slide-to="2" class="bullets" aria-current="true"
+                                                              aria-label="Slide 3"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form_submit">
+                                                    <input type="submit" value="Continue " class="primary-btn ContactInfo">
+                                                </div>
+                                            </fieldset>
+
+                                        </div>
+
+
+                                    }
+
+                                    @*@using (Html.BeginForm("Delegating", "Home", FormMethod.Post))
+                                        {*@
+                                    @Html.AntiForgeryToken()
+                                    <div class="form_steps form_step_3 carousel-item">
+                                        <div class="banner_items">
+                                            <h2>Payment details</h2>
+                                        </div>
+
+                                        <fieldset>
+                                            <div class="form_field">
+                                                <label for="register_discount_code">Discount code</label>
+                                                <input type="text" id="register_discount_code"
+                                                       name="register_discount_code"
+                                                       placeholder="Add discount code here">
+                                            </div>
+                                            <p id="log_msg" style="font-size: 16px !important; color: #e5756f; margin-top: -21px;"></p>
+                                            <div style="display:flex">
+                                                <i id="icon_check" class="fa fa-check" aria-hidden="true" style="display: none; width: 16px; background: rgb(0, 193, 171); color: white; padding: 3px; border-radius: 14px; margin-top: -8px; "></i>
+                                                <span id="log_success" style=" color: rgb(0, 193, 171); margin-top: -9px; font-size: 16px !important; display: block; margin-left: 11px; "></span>
+                                            </div>
+                                            <div class="form_billing_info">
+                                                <div class="form_billing">
+                                                    <p class="billing_heading">Total amount due:</p>
+                                                    <span class="billing_amount_stripped text-decoration-line-through" id="ActualPrice">£@price.ActualPrice</span>
+                                                    <span class="billing_amount" id="DiscountedPrice">£@price.DiscountedPrice</span>
+                                                </div>
+                                                <p>
+                                                    You'll be charged <span id="dPrice">£@price.DiscountedPrice</span> monthly until you pause or cancel your
+                                                    subscription. <a href="/pricing">Read more here about subscription.</a>
+                                                </p>
+                                            </div>
+
+                                            <div class="form_payment_method stripeDiv">
+                                                <div class="form_payment_gateway">
+                                                    <a href="#">
+                                                        <span class="payment_gateway">
+                                                            <img src="~/Assets/images/paypal.png" alt="paypal">
+                                                        </span>
+                                                    </a>
+                                                    <a href="#">
+                                                        <span class="payment_gateway">
+                                                            <img src="~/Assets/images/apple-pay.png"
+                                                                 alt="apple-pay">
+                                                        </span>
+                                                    </a>
+                                                    <a href="#">
+                                                        <span class="payment_gateway">
+                                                            <img src="~/Assets/images/google-pay.png"
+                                                                 alt="google-pay">
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                                <div class="form_payment_divider">
+                                                    <div class="content">
+                                                        <span class="divider-line"></span>
+                                                        <p>Or Pay With Card</p>
+                                                        <span class="divider-line"></span>
+                                                    </div>
+                                                </div>
+                                                @*<div class="form_payment_card_details">
+                                                        <div class="form_field">
+                                                            <label for="register_cardholder_name">
+                                                                Cardholder
+                                                                Name
+                                                            </label>
+                                                            <input type="text" id="register_cardholder_name"
+                                                                   name="register_cardholder_name"
+                                                                   placeholder="Name as shown on the card">
+                                                        </div>
+                                                        <div class="form_field">
+                                                            <label for="register_card_number">Card Number</label>
+                                                            <input type="text" id="register_card_number"
+                                                                   name="register_card_number"
+                                                                   placeholder="Enter the long card number">
+                                                        </div>
+
+                                                        <div class="card_expiration_verification">
+                                                            <div class="form_field">
+                                                                <label for="register_card_expiration">
+                                                                    Card Expiration
+                                                                    Date
+                                                                </label>
+                                                                <input type="text" id="register_card_expiration"
+                                                                       name="register_card_expiration"
+                                                                       placeholder="MM/YYYY">
+                                                            </div>
+                                                            <div class="form_field">
+                                                                <label for="register_card_verification">
+                                                                    Card
+                                                                    Verification Code
+                                                                </label>
+                                                                <input type="text" id="register_card_verification"
+                                                                       name="register_card_verification"
+                                                                       placeholder="Enter CVV/CVC">
+                                                            </div>
+                                                        </div>
+                                                    </div>*@
+
+                                                <div id="preloaded">
+                                                    <img src="~/Assets/spinner.gif" height="100" width="100" style="display: block; margin-left: auto; margin-right: auto;" />
+                                                </div>
+                                                <form id="payment-form">
+
+                                                    <div id="payment-message" class="hidden"></div>
+
+                                                    <div id="link-authentication-element">
+                                                        <!--Stripe.js injects the Link Authentication Element-->
+                                                    </div>
+                                                    <div id="payment-element">
+                                                        <!--Stripe.js injects the Payment Element-->
+                                                    </div>
+
+                                                    <div class="form_submit_submit">
+                                                        <button id="submit" class="primary-btn" style="display:none">
+                                                            <div class="spinner hidden" id="spinner"></div>
+                                                            <span id="button-text"><i class="fa fa-credit-card"></i> Pay now</span>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            @*<div class="form_checkbox">
+                                                    <input type="checkbox" id="register_billing_address"
+                                                           name="register_billing_address">
+                                                    <label for="register_billing_address">
+                                                        Billing address is the same as
+                                                        the account address
+                                                    </label>
+                                                </div>*@
+
+                                            <div class="form_step_bullets">
+                                                <div class="step_bullets">
+                                                    <span data-bs-target="#carouselExampleIndicators"
+                                                          data-bs-slide-to="0" class="bullets" aria-current="true"
+                                                          aria-label="Slide 1"></span>
+                                                    <span data-bs-target="#carouselExampleIndicators"
+                                                          data-bs-slide-to="1" class="bullets" aria-current="true"
+                                                          aria-label="Slide 2"></span>
+                                                    <span data-bs-target="#carouselExampleIndicators"
+                                                          data-bs-slide-to="2" class="bullets active"
+                                                          aria-current="true" aria-label="Slide 3"></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="form_submit form_submit_submit delegate" style="display:none">
+                                                <input type="button" value="Start Delegating" class="primary-btn" onclick="startDelegate()">
+                                                @*<a href="/Home/registration_status_msg" class="primary-btn">Start Delegating</a>*@
+                                            </div>
+                                        </fieldset>
+
+                                        <div class="form_bottom_extra">
+                                            <p class="secure_payment_note">
+                                                <i class="fa-solid fa-lock"></i> Payments
+                                                are secure & encrypted
+                                            </p>
+                                            <p class="powered_by_note">
+                                                <a href="javascript:void(0)">
+                                                    powered by <i class="fa-brands fa-stripe"></i>
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    @*}*@
+                                    <!-- <div class="form_step_bullets">
+                                        <div class="step_bullets">
+                                            <span class="bullets active" onclick="currentSlide(1)" ;></span>
+                                            <span class="bullets" onclick="currentSlide(2)" ;></span>
+                                            <span class="bullets" onclick="currentSlide(3)" ;></span>
+                                        </div>
+                                    </div> -->
+                                    @*</form>*@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 banner_image">
+                            <div class="right-half"
+                                 style="background: url('/Assets/images/login/register-banner.png') no-repeat center center / cover;">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="verification-popup" style="display:none" id="mainDivVerification">
+            <div class="verification-popup-main" @*style="height:700px"*@>
+                <div class="verification-popup-container">
+                    <div style="display:flex">
+                        <div>
+                            <label id="lblmsg4" style="font-size: 18px !important; color: #00c1ab">
+                                @ViewBag.mobileMsg
+                            </label>
+                            <label id="lblmsg5" style="font-size: 18px !important; color: #e5756f">
+                                @ViewBag.mobile_Msg
+                            </label>
+                        </div>
+                        <div class="popup-cross-btn">
+                            <button><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+
+                    <form name="verification_2_step" id="verification_2_step" method="post">
+                        <div class="logo">
+                            <img src="~/Assets/images/login/icon-2fa.png" alt="icon-2fa">
+                        </div>
+                        <h4>2-step Verification</h4>
+                        <div class="message">
+                            <p>
+                                A text message with your code has been sent to <span class="user-contact-number">
+                                    @ViewBag.phonebind
+                                </span>
+                            </p>
+                        </div>
+                        <div class="verification-code-container">
+                            <p>Enter 5 digit code received via text</p>
+                            <div class="otp-wrapper">
+
+                                <input type="text" class="otp-input" name="digit_1" id="digit_1">
+                                <input type="text" class="otp-input" name="digit_2" id="digit_2">
+                                <input type="text" class="otp-input" name="digit_3" id="digit_3">
+                                <input type="text" class="otp-input" name="digit_4" id="digit_4">
+                                <input type="text" class="otp-input" name="digit_5" id="digit_5">
+                            </div>
+                            <label id="validatemsglbl" style="color: #E5756F"></label>
+                        </div>
+                        <a href="javascript:void(0)" class="resend-code-btn" style="margin-top:-50px" onclick="ResendOTP();">Resend Verification Code</a>
+
+                        <div class="verification-bottom-btns">
+                            <button type="button" class="change-number-btn" onclick="hideDivVerification()">Change phone number</button>
+                            <button type="submit" class="verify-btn primary-btn verification_btn">Verify</button>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+        </section>
+
+        <section class="verification-popup" style="display:none" id="DivVerification">
+            <div class="verification-popup-main" style="height:395px">
+                <div class="verification-popup-container">
+                    <div class="popup-cross-btn">
+                        <button><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="logo">
+                        <img src="~/Assets/images/login/icon-2fa.png" alt="icon-2fa">
+                    </div>
+                    <h4>Verification done successfully</h4>
+                    <div class="verification-bottom-btns">
+                        <button type="submit" class="verify-btn primary-btn verification_btn" onclick="payment()">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    @Html.Partial("footer")
+
+    <script src="~/Assets/js/bootstrap.bundle.min.js"></script>
+    @Html.Partial("js")
+    <script type="text/javascript">
+
+
+
+// This is your test publishable API key.
+const stripe = Stripe('@GlobalMethods.StripePublishableKey');
+let elements;
+checkStatus();
+document
+    .querySelector("#payment-form")
+    .addEventListener("submit", handleSubmit);
+
+let emailAddress = '';
+// Fetches a payment intent and captures the client secret
+      async function initialize() {
+    var dealprice = $("#txtdealprice").val();
+    const items = [{ id: '@userid' }, { id: PaidPrice }, { id: ActualAmount }, { id: discountcode }];
+    const response = await fetch("/home/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+    });
+    const { clientSecret } = await response.json();
+
+    const appearance = {
+        theme: 'stripe',
+    };
+    elements = stripe.elements({ appearance, clientSecret });
+    const linkAuthenticationElement = elements.create("linkAuthentication");
+    linkAuthenticationElement.mount("#link-authentication-element");
+    linkAuthenticationElement.on('change', (event) => {
+        emailAddress = event.value.email;
+    });
+    const paymentElementOptions = {
+        layout: "tabs",
+    };
+    const paymentElement = elements.create("payment", paymentElementOptions);
+          paymentElement.mount("#payment-element");
+          document.getElementById("preloaded").style.display = "none";
+    document.getElementById("submit").style.display = "block";
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+            // Make sure to change this to your payment completion page
+             return_url: "http://jugglejoy.uptindia.com/home/success",
+             //  return_url: "http://localhost:60600/home/success",
+              //return_url: "http://jugglejoy.com/home/success",
+            receipt_email: emailAddress,
+        },
+    });
+
+    // This point will only be reached if there is an immediate error when
+    // confirming the payment. Otherwise, your customer will be redirected to
+    // your `return_url`. For some payment methods like iDEAL, your customer will
+    // be redirected to an intermediate site first to authorize the payment, then
+    // redirected to the `return_url`.
+    if (error.type === "card_error" || error.type === "validation_error") {
+        showMessage(error.message);
+    } else {
+        alert(error.message);
+        showMessage("An unexpected error occurred.");
+    }
+    setLoading(false);
+}
+
+// Fetches the payment intent status after payment submission
+async function checkStatus() {
+    const clientSecret = new URLSearchParams(window.location.search).get(
+        "payment_intent_client_secret"
+    );
+    if (!clientSecret) {
+        return;
+    }
+    const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+    switch (paymentIntent.status) {
+        case "succeeded":
+            showMessage("Payment succeeded!");
+            break;
+        case "processing":
+            showMessage("Your payment is processing.");
+            break;
+        case "requires_payment_method":
+            showMessage("Your payment was not successful, please try again.");
+            break;
+        default:
+            showMessage("Something went wrong.");
+            break;
+    }
+}
+
+// ------- UI helpers -------
+function showMessage(messageText) {
+    const messageContainer = document.querySelector("#payment-message");
+
+    messageContainer.classList.remove("hidden");
+    messageContainer.textContent = messageText;
+
+    setTimeout(function () {
+        messageContainer.classList.add("hidden");
+        messageContainer.textContent = "";
+    }, 4000);
+}
+
+// Show a spinner on payment submission
+function setLoading(isLoading) {
+    if (isLoading) {
+        // Disable the button and show a spinner
+        document.querySelector("#submit").disabled = true;
+        document.querySelector("#spinner").classList.remove("hidden");
+        document.querySelector("#button-text").classList.add("hidden");
+    } else {
+        document.querySelector("#submit").disabled = false;
+        document.querySelector("#spinner").classList.add("hidden");
+        document.querySelector("#button-text").classList.remove("hidden");
+    }
+}
+    </script>
+
+    <script type="text/javascript">
+          var PaidPrice = '@price.ActualPrice';
+        let ActualAmount = '@price.DiscountedPrice';
+        var discountcode = "";
+    if ('@ViewBag.info' != '') {
+        if ('@ViewBag.info' == 'step1') {
+            $('.form_step_1').removeClass('active');
+            $('.form_step_2').addClass('active');
+            $(".disable").css("opacity", "0.6")
+            $("#EmailID").attr("readonly", true);
+            $("#PasswordHash").attr("readonly", true);
+			//$('.fa-eye-slash').click(function () { return false; });
+            $(".show_hide_password").css("display", "none");
+            $(".input_reg").attr("disabled", true);
+            $('.form_step_1 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+            $('.form_step_2 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+        }
+        else if ('@ViewBag.info' == 'verification') {
+            $('.form_step_1').removeClass('active');
+            $('.form_step_2').addClass('active');
+            $('#mainDivVerification').css('display', 'block');
+            $('.form_step_1 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+            $('.form_step_2 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+        }
+        else if ('@ViewBag.info' == 'step2') {
+            debugger
+            $('.form_step_1').removeClass('active');
+            $('.form_step_2').removeClass('active');
+            $('#DivVerification').css('display', 'none');
+            $('.form_step_3').addClass('active');
+            $(".disable").css("opacity", "0.6")
+            $("#EmailID").attr("readonly", true);
+            $("#PasswordHash").attr("readonly", true);
+			//$('.fa-eye-slash').click(function () { return false; });
+            $(".show_hide_password").css("display", "none");
+            $(".input_reg").attr("disabled", true);
+            initialize();
+        }
+    }
+        if ('@ViewBag.email_exists' != '') {
+
+		 if ('@ViewBag.email_exists' == 'contact-info') {
+         $('.form_step_1').removeClass('active');
+             $('.form_step_2').addClass('active');
+             $(".disable").css("opacity", "0.6");
+             $("#EmailID").attr("readonly", true);
+             $("#PasswordHash").attr("readonly", true);
+			 //$('.fa-eye-slash').click(function () { return false; });
+             $(".show_hide_password").css("display", "none");
+             $(".input_reg").attr("disabled", true);
+             $('.form_step_1 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+             $('.form_step_2 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+
+
+         }
+         else if ('@ViewBag.email_exists' == 'modile-verification') {
+                $('.form_step_1').removeClass('active');
+                $('.form_step_2').addClass('active');
+                $('#mainDivVerification').css('display', 'block');
+                $(".disable").css("opacity", "0.6");
+                $("#EmailID").attr("readonly", true);
+                $("#PasswordHash").attr("readonly", true);
+	         //$('.fa-eye-slash').click(function () { return false; });
+                $(".show_hide_password").css("display", "none");
+             $(".input_reg").attr("disabled", true);
+             $('.form_step_1 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+             $('.form_step_2 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+
+}
+		 else if ('@ViewBag.email_exists' == 'payment-details') {
+         $('.form_step_1').removeClass('active');
+         $('.form_step_2').removeClass('active');
+             $('.form_step_3').addClass('active');
+             $(".disable").css("opacity", "0.6")
+             $("#EmailID").attr("readonly", true);
+             $("#PasswordHash").attr("readonly", true);
+			 //$('.fa-eye-slash').click(function () { return false; });
+             $(".show_hide_password").css("display", "none");
+             $(".input_reg").attr("disabled", true);
+             initialize();
+
+     }
+    }
+
+
+
+ if ('@ViewBag.msg' != "") {
+
+         //$("#lblmsg").fadeOut(10000);
+     }
+     else {
+         $("#lblmsg").fadeOut();
+    }
+
+     if ('@ViewBag.contactmsg' != "") {
+
+         //$("#lblmsg1").fadeOut(10000);
+     }
+     else {
+         $("#lblmsg1").fadeOut();
+    }
+
+     if ('@ViewBag.DelegatingMsg' != "") {
+
+     $("#lblmsg2").fadeOut(10000);
+ }
+ else {
+     $("#lblmsg2").fadeOut();
+    }
+    if ('@ViewBag.contact' != "") {
+    //$("#lblmsg3").fadeOut(10000);
+    }
+   else {
+    $("#lblmsg3").fadeOut();
+   }
+
+
+    if ('@ViewBag.mobileMsg' != "") {
+         //$("#lblmsg4").fadeOut(3000);
+         }
+        else {
+         $("#lblmsg4").fadeOut();
+    }
+
+        if ('@ViewBag.mobile_Msg' != "") {
+     //$("#lblmsg5").fadeOut(3000);
+     }
+    else {
+     $("#lblmsg5").fadeOut();
+}
+
+    </script>
+
+
+
+
+    <script>
+
+        $('#PasswordHash').on('keyup', function () {
+
+            passValue = $(this).val();
+            lenghtValue = $(this).val().length;
+
+
+            if (!passValue.match(/[A-Z]/g)) {
+                $(".capital").addClass('wrong');
+            }
+            else {
+                $(".capital").removeClass('wrong');
+                $(".capital").addClass('correct_wrong');
+            }
+
+            if (!passValue.match(/[0-9]/g)) {
+                $(".number").addClass('wrong');
+            }
+            else {
+                $(".number").removeClass('wrong');
+                $(".number").addClass('correct_wrong');
+            }
+
+            //if (!passValue.match(/[#?!@@$%^&*-]/g)) {
+            //	$(".special").addClass('wrong');
+            //}
+            //else {
+            //	$(".special").removeClass('wrong');
+            //	$(".special").addClass('correct_wrong');
+            //}
+
+            if (lenghtValue == 8 || lenghtValue > 8) {
+
+                $(".characters").removeClass('wrong');
+                $(".characters").addClass('correct_wrong');
+            }
+            else {
+
+                $(".characters").removeClass('correct_wrong');
+                $(".characters").addClass('wrong');
+            }
+
+
+        });
+
+
+    </script>
+
+
+    <script>
+
+
+                $(document).ready(function () {
+
+                debugger
+                var today = new Date();
+                var cHour = today.getHours();
+
+                if (cHour >= 0 && cHour < 12) {
+                    $('#greeting').text("Good Morning");
+                }
+                else if (cHour >= 12 && cHour < 18) {
+                    $('#greeting').text("Good Afternoon");
+                }
+                else if (cHour >= 18 && cHour <= 23) {
+                    $('#greeting').text("Good Evening");
+
+                }
+
+
+
+    if ('@userid' == 0) {
+    //on page load 2nd and 3rd slide should not be active
+    $('.form_step_1 .step_bullets span[data-bs-slide-to="1"],.form_step_1 .step_bullets span[data-bs-slide-to="2"]').css('pointer-events', 'none');
+    }
+
+
+
+    $("#EmailID").change(function () {
+    debugger
+    var email = $("#EmailID").val();
+    $.ajax({
+    type: "post",
+    url: "/Home/EmailExists",
+    data: { id: email },
+    datatype: "json",
+    //traditional: true,
+    success: function (data) {
+    if (data.success) {
+    //not exists
+
+    }
+    else if (data.verification) {
+    $("#log_message").css("display", "block")
+    //$("#log_message").fadeOut(5000);
+    $('html, body').animate({
+    scrollTop: $("#lblmsg").offset().top
+    }, 'fast');
+    $("#log_message").css("color", "#e5756f");
+    $("#log_message").html("Your account is already active you can log in");
+    $("#EmailID").val("");
+    $("#PasswordHash").val("");
+    }
+    else if (data.contact) {
+    var id = "contact-info";
+    window.location.href = 'register/' + id;
+    }
+    else if (data.delgate) {
+    var id = "payment-details";
+    window.location.href = 'register/' + id;
+    }
+    else if (data.modileverification) {
+    var id = "modile-verification";
+    window.location.href = 'register/' + id;
+    }
+    else if (data.subscription) {
+        window.location.href = '/Home/registration_status_msg';
+    }
+    else {
+    $("#lbl_message").css("display", "block")
+    $("#lbl_message").fadeOut(5000);
+    $("#lbl_message").css("color", "#dc3545");
+    $("#lbl_message").html("Failed to register");
+
+    }
+    },
+    });
+    return true;
+    });
+    });
+    </script>
+
+
+    <script>
+
+
+        $('#HeardFrom option[value="@ViewBag.heardfrombind"]').attr("selected", "selected");
+
+    // Get the input field
+    var input = document.getElementById("PasswordHash");
+
+    // Get the warning text
+    var text = document.getElementById("text");
+
+    // When the user presses any key on the keyboard, run the function
+    input.addEventListener("keyup", function (event) {
+
+        // If "caps lock" is pressed, display the warning text
+        if (event.getModifierState("CapsLock")) {
+            text.style.display = "block";
+        } else {
+            text.style.display = "none"
+        }
+    });
+    </script>
+
+    <script>
+        document.querySelectorAll('.otp-input').forEach((element, index, array) => {
+            element.addEventListener('input', function (event) {
+                let inputValue = event.target.value;
+                inputValue = inputValue.replace(/[^0-9]/g, '');
+                inputValue = inputValue.slice(0, 1);
+                event.target.value = inputValue;
+
+                if (inputValue !== '') {
+                    // Move focus to the next input field
+                    if (index < array.length - 1) {
+                        array[index + 1].focus();
+                    }
+                } else {
+                    // Move focus to the previous input field
+                    if (index > 0) {
+                        array[index - 1].focus();
+                    }
+                }
+            });
+
+            // Add a blur event listener to handle cases where the user clicks or tabs away
+            element.addEventListener('blur', function () {
+                // If the input is empty, move focus to the previous input field
+                if (element.value === '' && index > 0) {
+                    array[index - 1].focus();
+                }
+            });
+        });
+
+        //hide verification popup
+        $(".popup-cross-btn button").click(function () {
+            $('.verification-popup').hide();
+        });
+
+        // $('.change-number-btn').on('click', function () {
+        //     $('.verification-popup').hide();
+        // });
+    </script>
+
+    <script>
+        function hideDivVerification() {
+            debugger
+            $('.form_step_1').removeClass('active');
+            $('.form_step_2').addClass('active');
+            $('#mainDivVerification').css('display', 'none');
+        };
+
+        $('.verification_btn').on('click', function (e) {
+            e.preventDefault();
+            debugger
+            var digit1 = $('#digit_1').val();
+            var digit2 = $('#digit_2').val();
+            var digit3 = $('#digit_3').val();
+            var digit4 = $('#digit_4').val();
+            var digit5 = $('#digit_5').val();
+
+
+            if (digit1 == "") {
+                $('#validatemsglbl').html("Please fill all the values.");
+                return false;
+            }
+            else if (digit2 == "") {
+                $('#validatemsglbl').html("Please fill all the values.");
+                return false;
+            }
+            else if (digit3 == "") {
+                $('#validatemsglbl').html("Please fill all the values.");
+                return false;
+            }
+            else if (digit4 == "") {
+                $('#validatemsglbl').html("Please fill all the values.");
+                return false;
+            }
+            else if (digit5 == "") {
+                $('#validatemsglbl').html("Please fill all the values.");
+                return false;
+            }
+            else {
+                  var formData = $('#verification_2_step').serialize() + "&userid=" + @userid  ;
+                      $.ajax({
+                          url: '/Home/mobileVerification',
+                          type: 'POST',
+                          data: formData,
+                          success: function (response) {
+                              debugger
+                              if (response.failedverification) {
+                                  $('#digit_1').val('');
+                                  $('#digit_2').val('');
+                                  $('#digit_3').val('');
+                                  $('#digit_4').val('');
+                                  $('#digit_5').val('');
+                                  $('#validatemsglbl').html("Entered wrong OTP.");
+                                  return false;
+                              } if (response.failedotp) {
+                                  $('#validatemsglbl').html("Verification failed,please try again.");
+                                  return false;
+                              }
+                              else if (response.verified) {
+                                  //window.location.href = '/register';
+                                  $('#mainDivVerification').css('display', 'none');
+                                  $('#DivVerification').css('display', 'block');
+                              }
+                          },
+                          error: function (error) {
+                              window.location.href = '/dashboard';
+                          }
+                      });
+            }
+
+        });
+
+
+        function payment() {
+            $.ajax({
+                url: '/Home/VerifiedContinue',
+                type: 'POST',
+                success: function (response) {
+                    debugger
+                    window.location.href = '/register';
+                },
+                error: function (error) {
+                    window.location.href = '/dashboard';
+                }
+            });
+        }
+    </script>
+
+    <script>
+
+        $("#register_discount_code").on('change', function () {
+
+            debugger
+            discountcode = $("#register_discount_code").val();
+            //alert(discountcode);
+            $.ajax({
+                type: "Post",
+                url: "/Home/discountcode",
+                data: { id: discountcode },
+                dataType: "json",
+                success: function (data) {
+                    debugger
+                    if (data.giftcode) {
+                        $('#log_msg').html('Entered wrong discount code');
+                        $('#log_success').html('');
+                    }
+                    else if (data.couponUsed) {
+                        $('#log_msg').html('Discount code is already used');
+                        $('#log_success').html('');
+                    }
+                    else if (data.paymentDone) {
+                        $('#ActualPrice').html("£" + 0.00);
+                        $('#DiscountedPrice').html("£" + 0.00);
+                        $('#dPrice').html("£" + 0.00);
+                        $('#log_msg').html('');
+                        $('#log_success').css('display', 'block');
+                        $('#log_success').text('Discount code applied successfully');
+                        $('#icon_check').css('display', 'inline-block');
+                        $('.stripeDiv').css('display', 'none');
+                        $('.delegate').css('display', 'block');
+                    }
+                    else if (data.paymentNotDone) {
+                        var ActualAmount = data.ActualPrice;
+                        var PaidPrice = data.DiscountedPrice;
+                        $('#ActualPrice').html("£" + ActualAmount);
+                        $('#DiscountedPrice').html("£" + PaidPrice);
+                        $('#dPrice').html("£" + PaidPrice);
+
+                        $('#log_msg').text('Payment not  done for this Discount code');
+                        $('#log_success').html('');
+
+                    }
+
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    //console.log("not able to");
+                    //alert("failed to load questions");
+                }
+            });
+        });
+
+
+    </script>
+
+
+
+
+    <script>
+        function startDelegate() {
+            debugger
+
+            $.ajax({
+                type: "Post",
+                url: "/Home/Delegating",
+                data: { discountcode: discountcode },
+                dataType: "json",
+                success: function (data) {
+                    debugger
+                    if (data.success) {
+                        window.location.href = '/Home/registration_status_msg';
+                    }
+                    else {
+                        window.location.href = 'register';
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    //console.log("not able to");
+                    //alert("failed to load questions");
+                }
+            });
+        }
+    </script>
+
+
+    <script>
+
+          grecaptcha.ready(function () {
+        grecaptcha.execute('@juggle_joy.Models.GlobalMethods.Google_reCAPTCHA_SiteKey', { action: 'userRegister' }).then(function (token) {
+            $("#UserGoogleCaptchaToken").val(token);
+        });
+    });
+    </script>
+
+
+    <script>
+        function ResendOTP() {
+            $.ajax({
+                type: "Post",
+                url: "/Home/ResendOTP",
+                data: {},
+                dataType: "json",
+                success: function (data) {
+                    debugger
+                    if (data.success) {
+                        $('#validatemsglbl').html("New otp is sent to your mobile number.");
+                    }
+                    else {
+                        window.location.href = 'register';
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    //console.log("not able to");
+                    //alert("failed to load questions");
+                }
+            });
+        };
+    </script>
+
+</body>
+</html>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcyOtnk8ezCBn267zOHYmCiVlfV4I4hNI&libraries=places"></script>
+
+<script>
+    $(document).ready(function () {
+        debugger
+            const apiKey = 'AIzaSyAcyOtnk8ezCBn267zOHYmCiVlfV4I4hNI';
+
+            // Initialize the Google Places Autocomplete
+            const input = document.getElementById('ZipPostalCode');
+
+
+
+
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                /*types: ['postal_code'],*/ // Limit results to postal codes
+                types: ['geocode'],
+                //types: ['address'], // Limit results to geocode (addresses)
+                componentRestrictions: { country: 'uk' } //it limits only to that perticular country
+            });
+
+            autocomplete.addListener('place_changed', function () {
+
+                const place = autocomplete.getPlace();
+                if (place && place.address_components) {
+                    displayAddressComponents(place.address_components);
+                }
+            });
+
+
+
+            function displayAddressComponents(components) {
+                debugger
+                let streetNumber = '';
+                let streetName = '';
+                let locality = '';
+                let region = '';
+                let state = '';
+                let postaltown = '';
+                components.forEach(component => {
+                    debugger
+                    //console.log(component.types);
+                    //console.log(component.long_name);
+
+                    if (component.types.includes("street_number")) {
+                        streetNumber = component.long_name;
+                    } else if (component.types.includes("route")) {
+                        streetName = component.long_name;
+                    } else if (component.types.includes("locality")) {
+                        locality = component.long_name; // City or town
+                    } else if (component.types.includes("administrative_area_level_2")) {
+                        region = component.long_name; // Region or county
+                    } else if (component.types.includes("administrative_area_level_1")) {
+                        state = component.long_name; // State or province
+                    }
+                    else if (component.types.includes("postal_town")) {
+                        postaltown = component.long_name; // State or province
+                    }
+                    else if (component.types.includes("country")) {
+                        $('#CountryName').val(component.long_name); // Country
+                    } else if (component.types.includes("postal_code")) {
+                        $('#ZipPostalCode').val(component.long_name); // Postal code
+                    }
+
+                });
+
+                var fullAddress = `${streetNumber} ${streetName},${postaltown} ${locality}, ${region}, ${state}`.trim();
+                fullAddress = fullAddress
+                    .split(',')
+                    .map(part => part.trim()) // Trim each part individually to remove leading/trailing spaces
+                    .filter(part => part.length > 0) // Remove empty or blank parts
+                    .join(', ');
+
+                $('#Address').val(fullAddress);
+                $('#Address').css('font-size', '11px !important');
+                //console.log('Full Address:', fullAddress);
+            }
+
+            // Optional: Handle keyup if you want to trigger custom logic
+            $('#ZipPostalCode').on('keyup', function () {
+                $('#Address').val('');
+                $('#CountryName').val('');
+                const postalCode = $(this).val().trim();
+
+                addressLocation(postalCode);
+
+            });
+
+            function addressLocation(postalCode) {
+                if (!postalCode) {
+                    $('#addressInfo').html('<p>Please enter a postal code</p>');
+                    return;
+                }
+
+                fetch(`https://maps.googleapis.com/maps/api/geocode/json?components=postal_code:${postalCode}&key=${apiKey}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'OK' && data.results.length > 0) {
+                            const addressComponents = data.results[0].address_components;
+                            displayAddressComponents(addressComponents);
+                        } else if (data.status === 'ZERO_RESULTS') {
+                            $('#addressInfo').html('<p>No results found for this postal code.</p>');
+                        } else {
+                            $('#addressInfo').html(`<p>Error: ${data.status}</p>`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        $('#addressInfo').html('<p>Error fetching address</p>');
+                    });
+            }
+        });
+
+    </script>
+
+
+
+

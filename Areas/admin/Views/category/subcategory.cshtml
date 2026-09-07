@@ -1,0 +1,92 @@
+﻿@model juggle_joy.Models.SubcategoryValidation
+@{
+    ViewBag.Title = "Subcategory | " + MvcApplication.project_name;
+}
+
+<ul class="breadcrumb">
+    <li><a href="~/admin/account/dashboard">Home</a></li>
+    <li class="active">Subcategory</li>
+</ul>
+<style>
+	body {
+		overflow: unset !important;
+	}
+</style>
+
+<div class="page-title">
+
+    @if (Model.CategoryID > 0)
+    {
+        <h2><span class="fa fa-sitemap"></span> Update Sub Category</h2>
+    }
+    else
+    {
+    <h2><span class="fa fa-sitemap"></span> Add Sub Category</h2>
+    }
+</div>
+
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-md-10 col-lg-10">
+            @using (Html.BeginForm("subcategory", "category", FormMethod.Post))
+            {
+                @Html.HiddenFor(x => x.SubCategoryID)
+                <div class="panel panel-default">
+                    <p id="lbl_msg" class="panel-title msg">@ViewBag.subcatmsg</p>
+
+                    <div class="panel-body">
+                        <div class="row">
+
+                            <div class="form-group col-md-6">
+                                <label>Select Category</label>
+                                @Html.DropDownListFor(x => x.CategoryID, null, "Select Category", new { @class = "form-control flat" })
+                                @Html.ValidationMessageFor(x => x.CategoryID, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label>Sub Category Name</label>
+                                @Html.TextBoxFor(x => x.SubCategory, new { @class = "form-control flat", maxlength = "100" })
+                                @Html.ValidationMessageFor(x => x.SubCategory, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+
+                        @if (Model.SubCategoryID == 0)
+                        {
+                            <input type="submit" id="btnaddsubcat" class="btn btn-primary pull-right" value="Add Sub Category" />
+                        }
+                        else
+                        {
+                            <input type="submit" id="btnupdate" class="btn btn-primary pull-right" value="Update Sub Category" />
+                            <input type="button" id="cancelsubcategory" class="btn btn-default" value="Cancel" />
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row" id="list">
+        @*@{Html.RenderAction("subcategorylist", "category");}*@
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#lnk_manage_que,#lnk_category_subcategory').addClass("active");
+
+    if ('@ViewBag.subcatmsg' != "") {
+            $("#lbl_msg").fadeOut(5000);
+        }
+        else {
+            $("#lbl_msg").fadeOut();
+            }
+
+
+    $('#cancelsubcategory').click(function () {
+        window.location.href = "/admin/add-subcategory";
+    });
+
+    $(document).ready(function () {
+        $('#list').load("/admin/category/subcategorylist", { id: 0 })
+    });
+</script>

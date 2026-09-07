@@ -1,0 +1,180 @@
+﻿<footer>
+	<div class="footer-main">
+		<div class="container">
+			<div class="footer-top">
+				<div class="footer-logo text-center">
+					<a href="/">
+						<img src="~/Assets/images/logo-white.png" alt="Jugglejoy-logo">
+					</a>
+				</div>
+
+				<div class="footer-menu row">
+					<div class="footer-column col-lg-3 col-md-6 col-6">
+						<div class="footer-nav">
+							<h6 class="footer-nav-heading">Our Company</h6>
+                            <ul>
+                                <li>
+                                    <a href="/our-story">Our Story</a>
+                                </li>
+                                <li>
+                                    <a href="/press">Press</a>
+                                </li>
+                                <li>
+                                    <a href="/contact-us">Contact us</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="termly-display-preferences">Consent Preferences</a>
+                                </li>
+                                @*<li>
+                                    <a href="/assistant-login">Assistant Login</a>
+                                </li>
+                                <li>
+                                    <a href="/handler-login">Handler Login</a>
+                                </li>*@
+                            </ul>
+						</div>
+					</div>
+					<div class="footer-column col-lg-3 col-md-6 col-6">
+						<div class="footer-nav">
+							<h6 class="footer-nav-heading">The Service</h6>
+							<ul>
+								<li>
+									<a href="/gift-subscription">Send a gift</a>
+								</li>
+								<li>
+									<a href="/faq">FAQ</a>
+								</li>
+								<li>
+									<a href="/">How it works</a>
+								</li>
+								<li>
+									<a href="/pricing">Our Prices</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="footer-column col-lg-6 col-md-12 col-12">
+						<div class="footer-connect-info row">
+							<div class="footer-nav col-lg-6 col-md-6 col-12">
+								<h6 class="footer-nav-heading">Contact information</h6>
+								<ul>
+									<li>
+										<a href="mailto:howdy@jugglejoy.com">howdy@jugglejoy.com</a>
+									</li>
+									<li>
+										<p>124 City Road, <br> London, EC1V 2NX</p>
+									</li>
+								</ul>
+							</div>
+							<div class="footer-nav social-icons col-lg-6 col-md-6 col-12">
+								<h6 class="footer-nav-heading">Follow Us On</h6>
+								<ul>
+									<li>
+										<a href="https://www.facebook.com/jugglejoy" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+									</li>
+									<li>
+										<a href="https://www.instagram.com/wearejugglejoy/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+									</li>
+									<li>
+										<a href="https://www.linkedin.com/company/jugglejoy" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+
+						<div class="footer-subscribe">
+							<p>Sign up to our weekly wisdom delivered straight to your Inbox!</p>
+                            <div class="newsletter-wrapper">
+                                <p id="lbl_messages" style="margin-bottom:-10px;margin-right:auto"></p>
+                                <input type="text" name="newsletteremail" id="newsletter-email"
+                                       placeholder="Enter your email...">
+                                <button type="submit" id="newsletter-btn" class="newsletter-btn" onclick="onSave()"> <span>Subscribe</span><i class="fa-regular fa-paper-plane"></i></button>
+                               
+                            </div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="footer-bottom">
+                <ul>
+                    <li><a href="/Terms-of-Use">Terms of Use</a></li>
+                    <li><a href="/Privacy-Policy">Privacy Policy</a></li>
+                    <li><a href="/Cookie-Policy">Cookie Policy</a></li>
+                    @*<li><a href="/Privacy-Choices">Your Privacy Choices</a></li>*@
+                    <li><a href="/Disclamer">Disclamer</a></li>
+                    <li><a href="/Acceptable-Use-Policy">Acceptable Use Policy</a></li>
+                </ul>
+				<p class="footer-copyright">
+					© @DateTime.Now.Year JuggleJoy Limited. All Rights Reserved. JuggleJoy is a company
+					registered in England and
+					Wales with number 15321782.
+				</p>
+			</div>
+		</div>
+	</div>
+</footer>
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script>
+
+	function onSave() {
+		var email = $("#newsletter-email").val();
+		const regex = /^([a-zA-Z0-9_\.\-\+])+\@@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		if (email == "" || !regex.test(email)) {
+
+			if (email == "") {
+				$("#lbl_messages").css("display", "block")
+				$("#lbl_messages").css("color", "#f35a5a");
+				$("#lbl_messages").fadeOut(5000);
+				$("#lbl_messages").html("Please enter your email");
+				$("#newsletter-email").val("");
+                $('#newsletter-email').focus();
+			}
+			else {
+				$("#lbl_messages").css("display", "block")
+				$("#lbl_messages").css("color", "#f35a5a");
+				$("#lbl_messages").fadeOut(5000);
+				$("#lbl_messages").html("Please enter valid email address");
+				$("#newsletter-email").val("");
+                $('#newsletter-email').focus();
+			}
+			return false;
+		}
+		else {
+			$.ajax({
+				type: "post",
+				url: "/Subscriber/subscriber/",
+				data: { id: email },
+				datatype: "json",
+				//traditional: true,
+				success: function (data) {
+					if (data.success) {
+						$("#lbl_messages").css("display", "block")
+						$("#lbl_messages").fadeOut(5000);
+                        $("#lbl_messages").css("color", "#00c1ab");
+						$("#lbl_messages").html("Subscribed successfully");
+						$("#newsletter-email").val("");
+					}
+					else if (data.error) {
+						$("#lbl_messages").css("display", "block")
+						$("#lbl_messages").fadeOut(5000);
+						$("#lbl_messages").css("color", "#f35a5a");
+						$("#lbl_messages").html("Email already subscribed");
+						$("#newsletter-email").val("");
+					}
+					else {
+						$("#lbl_messages").css("display", "block")
+						$("#lbl_messages").fadeOut(5000);
+						$("#lbl_messages").css("color", "#f35a5a");
+						$("#lbl_messages").html("Failed to subscribe");
+						$("#newsletter-email").val("");
+					}
+				},
+			});
+			return true;
+		}
+	}
+
+</script>
+
+

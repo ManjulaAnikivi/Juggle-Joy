@@ -1,0 +1,109 @@
+﻿@using juggle_joy.Models
+
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var pricing = ctx.tbl_faq_category.Where(x => x.Category.ToLower() == "pricing").FirstOrDefault();
+    //ViewBag.Title = "Pricing";
+    Layout = null;
+
+    var price = ctx.tbl_price.FirstOrDefault();
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - @MvcApplication.project_name</title>
+
+    @Html.Partial("css")
+
+</head>
+<body >
+    @Html.Partial("header")
+    <div class="main pricing-page">
+        <section class="banner_section">
+            <div class="container-fluid half-fluid">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-md-6 banner_content">
+                            <h1 class="wow fadeInUp">
+                                Helping you rediscover life's
+                                extraordinary moments.
+                            </h1>
+                            <div class="price_details">
+                                <p class="font-caveat wow fadeInUp" data-wow-delay=".1s">For the price of your daily coffee</p>
+                                <p class="regular_price wow fadeInUp" data-wow-delay=".2s">£<span>@price.ActualPrice</span></p>
+                                <p class="sale_price wow fadeInUp" data-wow-delay=".3s">£<span>@price.DiscountedPrice<small>/mo</small></span></p>
+                                <h6 class="wow fadeInUp" data-wow-delay=".4s"><span>Limited Time Only</span></h6>
+                                <a href="/register" class="primary-btn wow fadeInUp" data-wow-delay=".5s">Sign up to JuggleJoy</a>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 banner_image">
+                            <div class="right-half wow fadeInRight"
+                                 style="background: url('./assets/images/family.png') no-repeat center center / cover;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="pricing_listing section-position">
+            <div class="container">
+                <div class="pricing_list">
+                    <ul>
+                        <li class="wow fadeInUp">Unlimited task allocation</li>
+                        <li class="wow fadeInUp" data-wow-delay=".1s">Dedicated personal assistant</li>
+                        <li class="wow fadeInUp" data-wow-delay=".2s">Simple & flexible membership plan</li>
+                        <li class="wow fadeInUp" data-wow-delay=".3s">Increased productivity</li>
+                        <li class="wow fadeInUp">Exclusive webinars with family experts</li>
+                        <li class="wow fadeInUp" data-wow-delay=".1s">Exclusive trusted partners only</li>
+                        <li class="wow fadeInUp" data-wow-delay=".2s">Effortless task delegation</li>
+                        <li class="wow fadeInUp" data-wow-delay=".3s">Flexible monthly rolling membership</li>
+                    </ul>
+                </div>
+            </div>
+            @*<div class="chat-icon" style="width: 130px;">
+                <a href="#" >
+                    <img src="~/Assets/images/chat-icon-1.png" alt="chat-icon">
+                </a>
+                <p class="py-1">Got a question?
+Chat to us!</p>
+            </div>*@
+        </section>
+        <section class="pricing_faqs faqs_section">
+            <div class="container background-logo">
+                @if (pricing != null)
+                {
+                    var pricingFaq = ctx.tbl_faq.Where(x => x.Faq_categoryID == pricing.Faq_Cat_id).ToList();
+                    if (pricingFaq.Count() > 0)
+                    {
+                        <h2>Pricing FAQ</h2>
+                        <div class="accordion">
+                            @foreach (var item in pricingFaq)
+                            {
+                                <div class="faq_row">
+                                    <div class="faq_title">
+                                        <span class="faq_title-text">@item.FaqQuestion</span>
+                                    </div>
+                                    <div class="faq_description">
+                                        <p>
+                                            @Html.Raw(item.FaqAnswer)
+                                        </p>
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                }
+            </div>
+        </section>
+
+    </div>
+    @Html.Partial("footer")
+</body>
+</html>
+@Html.Partial("js")

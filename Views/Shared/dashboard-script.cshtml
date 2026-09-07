@@ -1,0 +1,149 @@
+﻿
+<script>
+		$(document).ready(function () {
+
+			//main tabs
+			$('.tab-title').click(function () {
+				$(".dashboard-tabs-section").removeClass('tab-active');
+				$(".dashboard-tabs-section[data-id='" + $(this).attr('data-id') + "']").addClass("tab-active");
+				$(".tab-title").removeClass('active-tab');
+				$(this).parent().find(".tab-title").addClass('active-tab');
+			});
+
+			//popup open and close
+			let dashboardBody = $(".body-dashboard-page");
+			$(".add_new_task").click(function () {
+				dashboardBody.addClass("new-task-modal-active");
+			});
+			$(".task-btn").click(function () {
+				dashboardBody.addClass("task-modal-active");
+			});
+			$(".popup-cross-btn button").click(function () {
+				dashboardBody.removeClass("task-modal-active");
+				dashboardBody.removeClass("new-task-modal-active");
+			});
+			$(document).on("click", function (ev) {
+				let target = $(ev.target);
+				if ((target.hasClass('dashboard-popup-background'))) {
+					dashboardBody.removeClass("task-modal-active");
+					dashboardBody.removeClass("new-task-modal-active");
+					dashboardBody.removeClass("feedback-popup-active");
+					dashboardBody.removeClass("social-share-popup-active");
+				}
+			});
+
+			//popup tabs
+			$('.popup-tab-title').click(function () {
+				$(".popup-tabs-section").removeClass('tab-active');
+				$(".popup-tabs-section[data-id='" + $(this).attr('data-id') + "']").addClass("tab-active");
+				$(".popup-tab-title").removeClass('active-tab');
+				$(this).parent().find(".popup-tab-title").addClass('active-tab');
+
+				if ($(".popup-tabs-section[data-id='message-handler']").hasClass("tab-active")) {
+					$(".popup-task-button-wrapper.task-button-wrapper").addClass("show-btn");
+					$(".popup-task-button-wrapper.task-button-wrapper").removeClass("hide-btn");
+				}
+				else {
+					$(".popup-task-button-wrapper.task-button-wrapper").removeClass("show-btn");
+					$(".popup-task-button-wrapper.task-button-wrapper").addClass("hide-btn");
+				}
+			});
+
+			////////////////////////////////////////////
+            // view mini task accordion
+            $(".view-mini-task-main .mini-task-box-toggle").on("click", function (e) {
+                e.preventDefault();
+                var $this = $(this);
+                if (!$this.hasClass("toggle-active")) {
+                    $(".view-mini-task-main .mini-task-box-details").slideUp(400);
+                    $(".view-mini-task-main .mini-task-box-toggle").removeClass("toggle-active");
+                    $(".view-mini-task-main .mini-task-box-toggle").removeClass("active");
+                    $(".view-mini-task-main .mini-task-box-toggle").parent().removeClass("active__row");
+                }
+                $this.toggleClass("toggle-active");
+                $this.parent().toggleClass("active__row");
+                $this.next().next().slideToggle();
+			});
+
+            $(".mini-task-box .acc-toggle").on("click", function (e) {
+                e.preventDefault();
+                var $this = $(this);
+                if ($this.hasClass("toggle-active")) {
+                    $(".mini-task-box .task-review-box-details").slideUp(400);
+                    $(".mini-task-box .acc-toggle").removeClass("toggle-active");
+                    $(".mini-task-box .acc-toggle").removeClass("active");
+                    $(".mini-task-box .acc-toggle").parent().removeClass("active__row");
+                } else {
+                    $(".mini-task-box .task-review-box-details").slideUp(400);
+                    $(".mini-task-box .acc-toggle").removeClass("toggle-active");
+                    $(".mini-task-box .acc-toggle").removeClass("active");
+                    $(".mini-task-box .acc-toggle").parent().removeClass("active__row");
+                    $this.toggleClass("toggle-active");
+                    $this.parent().find('.task-review-box-details').slideToggle(400, function () {
+                        $this.parent().toggleClass("active__row");
+                    });
+                }
+            });
+
+			///////////////////////////////////////////
+
+            // Recommendation accordion
+            $(".popup-task-review-wrapper .acc-toggle").on("click", function (e) {
+                e.preventDefault();
+                var $that = $(this);
+                if ($that.hasClass("toggle-active")) {
+                    $(".popup-task-review-wrapper .acc-toggle").parent().removeClass("active__row");
+                    $(".popup-task-review-wrapper .task-review-box-details").slideUp(400);
+                    $(".popup-task-review-wrapper .acc-toggle").removeClass("toggle-active");
+                    $(".popup-task-review-wrapper .acc-toggle").removeClass("active");
+                } else {
+                    $(".popup-task-review-wrapper .acc-toggle").parent().removeClass("active__row");
+                    $(".popup-task-review-wrapper .task-review-box-details").slideUp(400);
+                    $(".popup-task-review-wrapper .acc-toggle").removeClass("toggle-active");
+                    $(".popup-task-review-wrapper .acc-toggle").removeClass("active");
+                    $that.toggleClass("toggle-active");
+                    $that.parent().find('.task-review-box-details').slideToggle(400, function () {
+                        $that.parent().toggleClass("active__row");
+                    });
+                }
+			});
+
+			//add new task quantity
+			var buttonPlus = $(".qty-btn-plus");
+			var buttonMinus = $(".qty-btn-minus");
+			var incrementPlus = buttonPlus.click(function () {
+				var $n = $(this).parent(".qty-container").find(".input-qty");
+				$n.val(Number($n.val()) + 1);
+			});
+			var incrementMinus = buttonMinus.click(function () {
+				var $n = $(this).parent(".qty-container").find(".input-qty");
+				var amount = Number($n.val());
+				if (amount > 0) {
+					$n.val(amount - 1);
+				}
+			});
+
+
+			//----------------------------------------//
+			// Task List Filter
+			$('.filter-sort.filters a').on('click', function () {
+				//$(this).toggleClass('active');
+				$('.filter-sort.filters a').removeClass('active');
+				$(this).addClass('active');
+				$('.feature-btn-filter>a').text($(this).text());
+			})
+
+			$('.filter-sort.sorts a').on('click', function () {
+				$('.filter-sort.sorts a').removeClass('active');
+				$(this).addClass('active');
+				$('.feature-btn-sort>a').text($(this).text());
+			})
+
+
+			$('.new-task-input-box select').customSelectBox().change(function () {
+				// Do something with `$(this).val()` !!
+			});
+
+		});
+</script>
+

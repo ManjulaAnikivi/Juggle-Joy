@@ -1,0 +1,48 @@
+﻿
+@if (Session["HandlerID"] != null)
+{
+    @*<div class="col-xl-3 col-lg-3 col-md-12 col-12 side-content">
+        <ul>
+            <li class="" id="ink_dashboard"><a href="/handler-dashboard">Dashboard</a></li>
+            <li class="" id="ink_assistant"><a href="/add-assistants">Add Assistants</a></li>
+            <li class="" id="ink_mngassistant"><a href="/manage-assistant">Manage Assistants</a></li>
+            <li class="" id="profile"><a href="/handler-profile">My Profile</a></li>
+            <li class="" id="change_pass"><a href="/handler-change-password">Change Password</a></li>
+            <li class=""><a href="/Handlers/handler_logout">Logout</a></li>
+        </ul>
+    </div>*@
+
+    <div class="col-xl-3 col-lg-3 col-md-12 col-12 side-content">
+        <div class="side-content-container">
+            <div class="side-content-mobile-menu">
+                <h2>Navigation</h2>
+                <div class="side-menu-bars">
+                    <span class="side-menu-bar"></span>
+                    <span class="side-menu-bar"></span>
+                    <span class="side-menu-bar"></span>
+                </div>
+            </div>
+            <ul>
+                <li class="" id="ink_dashboard"><a href="/handler-dashboard">Dashboard</a></li>
+                <li class="" id="ink_assistant"><a href="/add-assistants">Add Assistants</a></li>
+                <li class="" id="ink_mngassistant"><a href="/manage-assistant">Manage Assistants</a></li>
+                <li class="" id="profile"><a href="/handler-profile">My Profile</a></li>
+                <li class="" id="change_pass"><a href="/handler-change-password">Change Password</a></li>
+                <li class=""><a href="/Handlers/handler_logout">Logout</a></li>
+
+            </ul>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+
+
+
+        $(".side-content-mobile-menu .side-menu-bars").click(function () {
+            $(".my-profile-main .side-content ul").slideToggle("fast");
+        });
+
+    })
+</script>

@@ -1,0 +1,200 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_task>
+@using juggle_joy.Models;
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var receivedcount = ctx.tbl_task.Where(x => x.Status == (int)TaskStatus.Received).Count();
+    var ongoingcount = ctx.tbl_task.Where(x => x.Status == (int)TaskStatus.Ongoing).Count();
+    var completedcount = ctx.tbl_task.Where(x => x.Status == (int)TaskStatus.Complete).Count();
+
+    ViewBag.Title = "Ongoing Tasks  | " + MvcApplication.project_name;
+}
+<ul class="breadcrumb">
+    <li><a href="~/admin/dashboard">Home</a></li>
+    <li class="active">Ongoing Tasks</li>
+</ul>
+<div class="page-title">
+    <h2><span class="fa fa-users"></span> Ongoing Tasks </h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12 col-md-12 col-xs-12 col-sm-12">
+            <div class="panel panel-default tabs" style="border:0px;">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li><a href="/admin/tasks/received">Received Tasks (@receivedcount)</a></li>
+                    <li  class="active"><a>Ongoing Tasks (@ongoingcount)</a></li>
+                    <li><a href="/admin/tasks/completed">Completed Tasks (@completedcount)</a></li>
+                </ul>
+                <div class="panel-body tab-content table-responsive">
+                    <div class="panel panel-default table-responsive">
+                        <span id="lbl_msg" style="padding:unset !important">@ViewBag.ongoingMsg</span>
+                        @if (Model.Count() > 0)
+                        {
+                            using (Html.BeginForm("action", "userManagement", FormMethod.Post))
+                            {
+                                <table id="TblIncompleteRegList" class="table table-hover table-striped" style="border:1px solid lightgrey;font-size: 14px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="background-position: center left;">User Name</th>
+                                            <th style="background-position: center left;">Task Title</th>
+                                            <th style="background-position: center left;">Category</th>
+                                            <th style="background-position: center left;">Subcategory</th>
+                                            <th style="background-position: center left;">Assistant</th>
+                                            <th style="background-image:none; text-align:center" align="center">View</th>
+                                            @*<th style="background-image:none;text-align:center" align="center"><input type="checkbox" id="chkall" style="margin-left: 8px;" /></th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            var tbluser = ctx.tbl_user.ToList();
+                                            var user = tbluser.Where(x => x.UserID == item.FromID).FirstOrDefault();
+                                            var assistant = tbluser.Where(x => x.UserID == item.AssistantID).FirstOrDefault();
+                                            var cat = ctx.tbl_category.Where(x => x.CategoryID == item.CategoryID).FirstOrDefault();
+                                            var subcat = ctx.tbl_subcategory.Where(x => x.SubCategoryID == item.SubCategoryID).FirstOrDefault();
+                                            <tr>
+
+                                                <td>@user.FirstName @user.LastName</td>
+                                                <td>@item.TaskTitle</td>
+                                                <td>@cat.Category</td>
+                                                @if (subcat != null)
+                                                {
+                                                    <td>@subcat.SubCategory</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>-----</td>
+                                                }
+                                                <td>@assistant.UserName</td>
+                                                <td style="text-align:center;cursor:pointer;" align="center"><a onclick="task_details(@item.TaskID)"><i class="fa fa-eye"></i></a></td>
+                                                @*<td align="center"><input type="checkbox" name="Ids" value='@item.TaskID' style="margin-left: 8px;cursor:pointer" /></td>*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    @*<tr>
+                                            <td align="right" colspan="6">
+                                                <input type="submit" id="btnactive" name="action" value="Activate" class="btn btn-success" />
+                                                <input type="submit" id="btndelete" name="action" value="Delete" class="btn btn-danger" />
+                                            </td>
+                                        </tr>*@
+                                </table>
+                            }
+                        }
+                        else
+                        {
+                            <table width="90%" border="0" align="left" cellpadding="3" cellspacing="3">
+                                <tr>
+                                    <td>
+                                        <div style="color: Red">
+                                            No records found
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        }
+                    </div>
+                </div>
+                <div class="box box-body " style="border:0px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" style=" display:none;background: #808080b8;overflow:scroll;" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="modal_content">
+                <div class="modal-header" style="background:#ab7009;color:white;font-size:14px; background: rgba(0, 0, 0, 0.31);color: white;font-size: 14px;">
+                    <span style="font-size:20px;">
+                        Task Details
+                    </span>
+                    <button type="button" id="mclose1" class="close" data-dismiss="modal" style="color:white;opacity:initial"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <center>
+                        <span id="Loader">
+                            <img src="/admin_assets/img/ajax-loader-small.gif" alt="Loading" />&nbsp;Loading..
+                        </span>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#lnk_task').addClass("active");
+    });
+    if ('@ViewBag.IncompleteRegListMsg' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+    $('#TblIncompleteRegList').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        "ordering": false,
+    });
+    function task_details(id) {
+        id = "/admin/tasks/task_details/" + id;
+        $('html, body').css({
+            'overflow': 'auto',
+            'height': '100%'
+        });
+        $("#myModal").css("display", "block")
+        $("#Loader").css("display", "block");
+
+        $("#modal-body").load(id, null, function (responseTxt, statusTxt, xhr) {
+            if (statusTxt == "success") {
+                $("#Loader").hide();
+                $("#modal-body").show();
+                $("#myModal").slideDown(500);
+            }
+        });
+
+    }
+
+    $('#mclose1').click(function () {
+        $("#myModal").css("display", "none")
+    });
+
+    $('#btndelete').click(function () {
+        if ($("input[name='Ids']:checked").length == 0) {
+            alert("Please select record to delete.");
+            return false;
+        }
+        else {
+            var count = $("input[name='Ids']:checked").length;
+            return confirm("Are you sure want to delete " + count + " record(s).");
+        }
+	});
+
+
+	$('#btnactive').click(function () {
+		if ($("input[name='Ids']:checked").length == 0) {
+			alert("Please select record to activate.");
+			return false;
+		}
+		else {
+			var count = $("input[name='Ids']:checked").length;
+			return confirm("Are you sure want to activate " + count + " record(s).");
+		}
+	});
+
+
+    $("#chkall").change(function () {
+        $("input[name='Ids']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='Ids']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='Ids']:checked").length == $("input[name='Ids']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+</script>

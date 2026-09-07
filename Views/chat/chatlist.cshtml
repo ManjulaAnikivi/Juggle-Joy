@@ -1,0 +1,141 @@
+﻿
+@model IEnumerable<juggle_joy.Models.tbl_chat>
+@using juggle_joy.Models;
+@using System.Text.RegularExpressions;
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    HttpCookie aCookie = Request.Cookies["Name"];
+    int? fromid = 0;
+    int? assistantid = 0;
+    if (aCookie != null)
+    {
+        fromid = Convert.ToInt32(aCookie.Value);
+    }
+    if (Session["UserID"] != null)
+    {
+        fromid = Convert.ToInt32(Session["UserID"]);
+    }
+    if (Session["HandlerID"] != null)
+    {
+        fromid = Convert.ToInt32(Session["HandlerID"]);
+    }
+    if (Session["AssistantID"] != null)
+    {
+        fromid = Convert.ToInt32(Session["AssistantID"]);
+
+    }
+    int taskid = Convert.ToInt32(ViewBag.taskid);
+
+}
+
+@if (Model.Count() > 0)
+{
+    <div class="message-view-box" style="max-height: 50vh !important; height: fit-content !important;">
+        <div class="message-view-wrapper">
+            @foreach (var items in Model)
+            {
+                var filename = ctx.tbl_chatfile.Where(x => x.ChatId == items.ChatID).FirstOrDefault();
+                string ext = "";
+                if (filename != null)
+                {
+                    ext = Path.GetExtension(filename.FileName);
+                }
+                if (items.FromId == fromid)
+                {
+                    //color = "background:#d1cec6f2 !important;";
+
+                    var user = ctx.tbl_user.Where(x => x.UserID == items.FromId).FirstOrDefault();
+                    var lastname = "";
+                    if (user.LastName != null)
+                    {
+                        lastname = user.LastName.Substring(0, 1);
+                    }
+                    var username = user.FirstName.Substring(0, 1) + lastname;
+                    username = username.ToUpper();
+
+                    <div class="message-bubble message-bubble-send">
+                        <div class="message-bubble-wrapper">
+                            <div class="send-message-wrapper">
+                                <p class="send-message chat-message">
+                                    @if (ext.ToLower() == ".pdf" && filename != null)
+                                    {
+                                        <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/pdficon.png"> &nbsp;<i class="fa fa-download"></i></a>
+
+                                    }
+                                    else if (ext.ToLower() == ".doc" || ext.ToLower() == ".docx" && filename != null)
+                                    {
+                                        <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/wordicon.png"> &nbsp;<i class="fa fa-download"></i></a>
+
+                                    }
+                                    else if (filename != null)
+                                    {
+                                        <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/fileicon.png"> &nbsp;<i class="fa fa-download"></i></a>
+
+                                    }
+                                    @if (items.ChatText != "")
+                                    {
+                                        <span>@Html.Raw(items.ChatText)</span>
+
+                                    }
+                                    else if (filename != null)
+                                    {
+                                        <span>@filename.FileName</span>
+                                    }
+                                </p>
+                                <span class="send-time chat-time">@GlobalMethods.Convert12HrsTime(items.ChatDate)</span>
+                            </div>
+                            <a class="send-avatar message-avatar">
+                                <span class="send-avatar-text" style="text-transform: uppercase;">@username</span>
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    var user = ctx.tbl_user.Where(x => x.UserID == items.FromId).FirstOrDefault();
+                    var lastname = "";
+                    if (user.LastName != null)
+                    {
+                        lastname = user.LastName.Substring(0, 1);
+                    }
+                    var username = user.FirstName.Substring(0, 1) + lastname;
+                    username = username.ToUpper();
+                    <div class="message-bubble message-bubble-receive">
+                        <div class="message-bubble-wrapper">
+                            <a class="receive-avatar message-avatar">
+                                <span class="receive-avatar-text" style="text-transform: uppercase;">@username</span>
+                            </a>
+                            <div class="receive-message-wrapper">
+                                <p class="receive-message chat-message">
+                                    @if (ext.ToLower() == ".pdf" && filename != null)
+                                    {
+                                        <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/pdficon.png"> &nbsp;<i class="fa fa-download"></i></a>
+                                    }
+                                    else if (ext.ToLower() == ".doc" || ext.ToLower() == ".docx" && filename != null)
+                                    {
+                                        <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/wordicon.png"> &nbsp;<i class="fa fa-download"></i></a>
+                                    }
+                                    else if (filename != null)
+                                    {
+                                        <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/fileicon.png"> &nbsp;<i class="fa fa-download"></i></a>
+                                    }
+                                    @if (items.ChatText != "")
+                                    {
+                                        <span>@Html.Raw(items.ChatText)</span>
+
+                                    }
+                                    else if (filename != null)
+                                    {
+                                        <span>@filename.FileName</span>
+                                    }
+                                </p>
+                                <span class="receive-time chat-time">@GlobalMethods.Convert12HrsTime(items.ChatDate)</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}

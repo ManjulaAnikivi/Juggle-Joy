@@ -1,0 +1,475 @@
+﻿@*@model juggle_joy.Models.UpdateUProfileValidation*@
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    var userid = Convert.ToInt32(Session["UserID"]);
+
+    var tbluser = ctx.tbl_user.Where(x => x.UserID == userid).FirstOrDefault();
+
+    var tblsubscription = ctx.tbl_subscription.Where(x => x.UserID == userid).FirstOrDefault();
+
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    @Html.Partial("dashboard_css")
+    <style>
+        .mainDiv {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .subDiv {
+            width: 250px;
+            background: white;
+            padding: 12px;
+            margin: 3px;
+        }
+
+        .inDiv {
+            padding-top: 11px;
+            padding-bottom: 5px;
+            color: #b6b2a6;
+            font-size: 13px;
+        }
+
+        table {
+            width: 580px;
+            background: white;
+            margin-top: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-collapse: separate;
+            border-spacing: 0 1em;
+        }
+
+        .cancelmsg {
+            font-size: 13px;
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        @@media(max-width: 768px) {
+            .inDiv .Renewaldate {
+                margin-left: 11px;
+            }
+
+            .planbtn {
+                font-size: 13px;
+            }
+
+            .CancelPlan {
+                margin: 12px;
+            }
+
+            table {
+                width: 100%;
+            }
+        }
+
+
+        @@media(max-width: 769px) {
+            .mainDiv {
+                flex-direction: column;
+            }
+
+            .subDiv {
+                width: 310px;
+                margin: auto;
+                margin-bottom: 10px;
+            }
+
+            .CancelPlan {
+                margin: 0px !important;
+            }
+
+            .atag {
+                font-size: 15px;
+                font-weight: 600;
+                padding: 3px;
+            }
+        }
+
+        @@media(max-width: 576px) {
+            .mainDiv {
+                flex-direction: column;
+            }
+
+            .subDiv {
+                margin: auto;
+                margin-bottom: 10px;
+            }
+
+            .CancelPlan {
+                margin: 0px !important;
+            }
+
+            .inDiv .Renewaldate {
+                margin-left: 11px;
+            }
+        }
+
+        @@media(max-width: 436px) {
+            .mainDiv {
+                flex-direction: column;
+            }
+
+            .subDiv {
+                margin: auto;
+                margin-bottom: 10px;
+            }
+
+            .CancelPlan {
+                margin: 0px !important;
+            }
+
+            tbody {
+                font-size: 10px !important;
+            }
+
+            thead {
+                font-size: 12px !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="body-my-profile-page">
+    @Html.Partial("dashboard-header")
+
+    <main class="main my-profile-page">
+        <div class="dashboard-background">
+
+            <section class="my-profile">
+                <div class="my-profile-main">
+                    <div class="container">
+                        <div class="content-wrapper">
+                            <div class="row">
+
+
+
+                                @Html.Partial("sidebar")
+
+                                <div class="col-xl-9 col-lg-9 col-md-12 col-12 main-content" style=" background: #f5f3f0; padding: 20px; border-radius: 5px;">
+                                    <p id="lbl_messages"></p>
+
+                                    <p class="task-notice lbl_msg" id="lbl_resumed" style="border-radius: 10px; padding: 14px 20px; color: white; font-size: 16px !important; display: none; background: rgb(0, 193, 171); opacity: 0.7; ">
+                                        <i class="fa fa-check-circle-o" style="color:white;"></i> Your current plan is resumed successfully.
+                                        <span class="pop-off" id='pop-off' style=" position: relative; left: 53%; cursor: pointer "> <i class='fa-solid fa-circle-xmark' style="color:white;"></i></span>
+                                    </p>
+                                    <p class="task-notice lbl_msg" id="lbl_pause" style="border-radius: 10px; padding: 14px 20px; color: white; font-size: 16px !important; display: none; background: rgb(0, 193, 171); opacity: 0.7; ">
+                                        <i class="fa fa-check-circle-o" style="color:white;"></i>@ViewBag.pausemsg @ViewBag.cancelmsg
+                                        <span class="pop-off" id='pop-off' style=" position: relative; left: 57%; cursor: pointer "> <i class='fa-solid fa-circle-xmark' style="color:white;"></i></span>
+                                    </p>
+
+                                    <p class="task-notice lbl_msg" id="lbl_paused" style="border-radius: 10px; padding: 14px 20px; color: white; font-size: 16px !important; display: none; background: rgb(0, 193, 171); opacity: 0.7; ">
+                                        <i class="fa fa-check-circle-o" style="color:white;"></i> Your current plan is paused successfully.
+                                        <span class="pop-off" id='pop-off' style=" position: relative; left: 54%; cursor: pointer "> <i class='fa-solid fa-circle-xmark' style="color:white;"></i></span>
+                                    </p>
+
+                                    <h2>
+                                        Subscription
+                                    </h2>
+                                    <div class="mainDiv">
+                                        <div class="subDiv">
+                                            <p style=" font-weight: bold;">Current Plan</p>
+                                            <div class="inDiv">
+                                                <label>Price:<span style="color: black; font-size: 12px; font-weight: bold;"> £ @tblsubscription.SubscriptionFee</span></label><br />
+                                                <label>Next Renewal date:<span class="Renewaldate" style="color: black; font-size: 12px; font-weight: bold;">@tblsubscription.ExpirationDate.Value.ToString("dd MMMM yyyy")</span></label>
+                                            </div>
+
+                                            @if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Active || tbluser.SubscriptionStatus == (int)SubscriptionStatus.Resumed)
+                                            {
+
+                                                <div class="task-edit-btn " id="pause" style="display: flex; justify-content: space-around; margin-top: 15px;margin-left: 0 !important;">
+                                                    <a class="atag" style="cursor: pointer;color: #00c1ab; background: white;" onclick="activeSubscriptionPlan('@tbluser.SubscriptionId','pause')">
+                                                        <span>Pause Plan</span>
+                                                    </a>
+
+                                                    <p class="CancelPlan">or</p>
+
+
+                                                    <a class="atag" href="/Before-cancelSubscription" style="color: #00c1ab; background: white;" @*onclick="activeSubscriptionPlan('@tbluser.SubscriptionId','cancel')"*@>
+                                                        <span>Cancel Plan</span>
+                                                    </a>
+                                                </div>
+
+                                            }
+                                            else if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Paused)
+                                            {
+
+
+                                                <div class="task-edit-btn" id="resume" style="margin-left: 0 !important ;margin-top: 15px">
+                                                    <a class="atag" style="cursor: pointer; color: #00c1ab; background: white;" onclick="activeSubscriptionPlan('@tbluser.SubscriptionId','resume')">
+                                                        <span>Resume Plan</span>
+                                                    </a>
+                                                </div>
+
+
+                                            }
+                                            else if (tbluser.SubscriptionStatus == (int)SubscriptionStatus.Canceled)
+                                            {
+                                                @*<span class="cancelmsg">Your current plan is cancelled</span>*@
+                                                <div class="task-edit-btn " style="margin-left: 0 !important; margin-top: 15px">
+                                                    <a href="/Home/cancelSubscription_checkout" class="atag" style="color: #00c1ab; background: white;">
+                                                        <span>Resume Plan</span>
+                                                    </a>
+                                                </div>
+                                            }
+
+                                            <div id="paused" style="display:none">
+                                                <div class="task-edit-btn " style="display: flex; justify-content: space-around; margin-top: 15px;margin-left: 0 !important;">
+                                                    <a class="atag" style="cursor: pointer;color: #00c1ab; background: white;" onclick="activeSubscriptionPlan('@tbluser.SubscriptionId','pause')">
+                                                        <span>Pause Plan</span>
+                                                    </a>
+
+                                                    <p class="CancelPlan">or</p>
+
+
+                                                    <a class="atag" href="/Home/Subcancel" style="color: #00c1ab; background: white;" @*onclick="activeSubscriptionPlan('@tbluser.SubscriptionId','cancel')"*@>
+                                                        <span>Cancel Plan</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+
+                                            <div id="resumed" style="display:none">
+                                                <div class="task-edit-btn resume" style="margin-left: 0 !important ;margin-top: 15px">
+                                                    <a class="atag" style="cursor: pointer; color: #00c1ab; background: white;" onclick="activeSubscriptionPlan('@tbluser.SubscriptionId','resume')">
+                                                        <span>Resume Plan</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="subDiv">
+                                            <p style=" font-weight: bold;">Payment Method</p>
+                                            <div class="inDiv">
+                                                <label>Price:<span style="color: black; font-size: 12px; font-weight: bold;"> £ @tblsubscription.SubscriptionFee</span></label><br />
+                                                <label>Next Renewal date:<span class="Renewaldate" style="color: black; font-size: 12px; font-weight: bold;"> @tblsubscription.ExpirationDate.Value.ToString("dd MMMM yyyy")</span></label>
+                                            </div>
+                                            <div class="task-edit-btn " style="margin-left: 0 !important ;margin-top: 15px">
+                                                <a href="#" class="atag" style="color: #00c1ab; background: white;">
+                                                    <span>Replace Card</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="subDiv">
+                                            <p style=" font-weight: bold;">Billing Address</p>
+                                            <div class="inDiv">
+                                                <span style="color: black; font-size: 12px; font-weight: bold;">
+                                                    @if (tbluser.Address != null && tbluser.City != null && tbluser.State != null && tbluser.CountryID != null)
+                                                    {
+                                                        <span>@tbluser.Address,</span> <span>@tbluser.City</span>
+                                                        <br />
+                                                        <span>@tbluser.tbl_state.State</span> <span>@tbluser.tbl_country.Country</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div style="margin-bottom: 21px;">
+                                                            <span>Please complete your profile</span>
+                                                        </div>
+
+
+                                                    }
+
+                                                </span>
+
+                                            </div>
+                                            <div class="task-edit-btn " style="margin-left: 0 !important; margin-top: 15px">
+                                                <a href="/my-profile" class="atag" style="color: #00c1ab; background: white;">
+                                                    <span>Update Billing</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style=" margin-top: 30px; max-width:580px">
+                                        <h4>
+                                            Order History
+                                        </h4>
+                                        <p style="color: #b6b2a6; font-size: 14px;">
+                                            Below are your receipts from the last 12 months.If you have
+                                            additional receipts you would like to see please contact us directly via our online chat.
+                                        </p>
+                                        <table>
+                                            <thead style="color: #b6b2a6; font-size: 14px; ">
+                                                <tr>
+                                                    <th>DATE</th>
+                                                    <th>PLAN</th>
+                                                    <th>PAYMENT</th>
+                                                    <th>RECEIPT</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody style="font-size: 13px; font-weight: bold;">
+                                                <tr>
+                                                    <td>@tblsubscription.ExpirationDate.Value.ToString("dd MMMM yyyy")</td>
+                                                    <td>Monthly sub</td>
+                                                    <td>£ @tblsubscription.SubscriptionFee</td>
+                                                    <td>
+                                                        <span class="task-edit-btn" style="margin-left: 0 !important;">
+                                                            <a href="#" style="color: #00c1ab; background: white;">
+                                                                <span>View Invoice</span>
+                                                            </a>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>@tblsubscription.ExpirationDate.Value.ToString("dd MMMM yyyy")</td>
+                                                    <td>Monthly sub</td>
+                                                    <td>£ @tblsubscription.SubscriptionFee</td>
+                                                    <td>
+                                                        <div class="task-edit-btn" style="margin-left: 0 !important;">
+                                                            <a href="#" style="color: #00c1ab; background: white;">
+                                                                <span>View Invoice</span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>@tblsubscription.ExpirationDate.Value.ToString("dd MMMM yyyy")</td>
+                                                    <td>Monthly sub</td>
+                                                    <td>£ @tblsubscription.SubscriptionFee</td>
+                                                    <td>
+                                                        <div class="task-edit-btn" style="margin-left: 0 !important; ">
+                                                            <a href="#" style="color: #00c1ab; background: white;">
+                                                                <span>View Invoice</span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                             
+                                   
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    @Html.Partial("dashboard-footer")
+
+    @Html.Partial("js")
+
+
+
+</body>
+
+</html>
+
+<script>
+    $("#subscription").addClass("active");
+
+    $(".pop-off").on("click", function () {
+        $(".lbl_msg").css("display", "none");
+    })
+
+    if ('@ViewBag.pausemsg' != "" || '@ViewBag.cancelmsg'!="")
+  {
+          $("#lbl_pause").css("display","block");
+    }
+</script>
+
+<script>
+    function activeSubscriptionPlan(sid, sStatus) {
+        debugger
+        var subscriptionId = sid;
+        var SubscriptionStatus = sStatus;
+
+        if (SubscriptionStatus == "resume") {
+            $.ajax({
+                url: '/Home/ResumelSubscription',
+                type: 'POST',
+                data: { subscriptionId: subscriptionId },
+                dataType: "json",
+                success: function (data) {
+                    debugger
+                    if (data.resumed) {
+                        $("#lbl_pause").css("display", "none");
+                        $("#lbl_paused").css("display", "none");
+                        $("#lbl_resumed").css("display", "block");
+                        $("#resume").css("display", "none");
+                        $("#resumed").css("display", "none");
+                        $("#paused").css("display", "block");
+                    }
+                    else if (data.resumefailed) {
+                        $("#lbl_messages").css("display", "block")
+                        $("#lbl_messages").css("color", "#f35a5a");
+                        //$("#lbl_messages").fadeOut(5000);
+                        $("#lbl_messages").html("Your current plan can't be resumed");
+                    }
+                    else {
+                        $("#lbl_messages").css("display", "block")
+                        $("#lbl_messages").css("color", "#f35a5a");
+                        $("#lbl_messages").fadeOut(5000);
+                        $("#lbl_messages").html("Something went wrong");
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    $("#lbl_messages").css("display", "block")
+                    $("#lbl_messages").css("color", "#f35a5a");
+                    $("#lbl_messages").fadeOut(5000);
+                    $("#lbl_messages").html("Something went wrong");
+                }
+            });
+        }
+        else if (SubscriptionStatus == "pause") {
+            $.ajax({
+                url: '/Home/PauseSubscription',
+                type: 'POST',
+                data: { subscriptionId: subscriptionId },
+                dataType: "json",
+                success: function (data) {
+                    debugger
+                    if (data.paused) {
+                        $("#lbl_pause").css("display", "none");
+                        $("#lbl_resumed").css("display", "none");
+                        $("#lbl_paused").css("display", "block");
+                        $("#pause").css("display", "none");
+                        $("#paused").css("display", "none");
+                        $("#resumed").css("display", "block");
+                    }
+                    else if (data.pausefailed) {
+                        $("#lbl_messages").css("display", "block")
+                        $("#lbl_messages").css("color", "#f35a5a");
+                        //$("#lbl_messages").fadeOut(5000);
+                        $("#lbl_messages").html("Your current plan can't be paused");
+                    }
+                    else {
+                        $("#lbl_messages").css("display", "block")
+                        $("#lbl_messages").css("color", "#f35a5a");
+                        $("#lbl_messages").fadeOut(5000);
+                        $("#lbl_messages").html("Something went wrong");
+                    }
+
+                },
+                error: function (error) {
+                    console.log(error);
+                    $("#lbl_messages").css("display", "block")
+                    $("#lbl_messages").css("color", "#f35a5a");
+                    $("#lbl_messages").fadeOut(5000);
+                    $("#lbl_messages").html("Something went wrong");
+                }
+            });
+        }
+        //else if (SubscriptionStatus == "cancel") {
+        //    window.location.href = '/Home/Subcancel/';
+        //}
+
+
+    };
+</script>

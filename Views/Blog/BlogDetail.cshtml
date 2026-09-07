@@ -1,0 +1,412 @@
+﻿@model juggle_joy.Models.BlogValidation
+@using juggle_joy.Models
+@using System.Text.RegularExpressions;
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var blglist = ctx.tbl_blogs.Where(x => x.BlogID != Model.BlogID && x.CategoryID == Model.CategoryID).ToList().Take(8);
+    Url_formating url = new Url_formating();
+    //ViewBag.Title = Model.BlogTitle;
+
+    //views
+    var tblviews = ctx.tbl_blogviews.Where(x => x.BlogID == Model.BlogID).ToList().Count();
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph meta tags -->
+    <meta name="title" property="og:title" content="@Model.BlogTitle" />
+    <meta name="description" property="og:description" content="Check out these exciting ways to add some spice to your life and make it more interesting." />
+
+
+    <title>@Model.BlogTitle - @MvcApplication.project_name</title>
+
+
+
+
+    @Html.Partial("css")
+    <style>
+        .sharelinktop {
+            box-shadow: rgba(0, 0, 0, 1.35) 0px 5px 15px;
+            z-index: 1;
+            position: absolute;
+            left: 544px;
+            background: white;
+            width: 187px;
+            padding: 8px;
+            border-radius: 10px;
+        }
+
+        .sharetopTriDiv {
+            position: absolute;
+            z-index: 1;
+            left: 526px;
+            border-right: 9px solid white;
+            border-bottom: 9px solid transparent;
+            border-left: 9px solid transparent;
+            border-top: 9px solid transparent;
+        }
+
+        .sharelinkbottom {
+            box-shadow: rgba(0, 0, 0, 1.35) 0px 5px 15px;
+            z-index: 1;
+            position: absolute;
+            left: 424px;
+            background: white;
+            width: 187px;
+            padding: 8px;
+            border-radius: 10px;
+        }
+        .sharebottomTriDiv {
+            position: absolute;
+            z-index: 1;
+            left: 406px;
+            border-right: 9px solid white;
+            border-bottom: 9px solid transparent;
+            border-left: 9px solid transparent;
+            border-top: 9px solid transparent;
+        }
+
+        @@media(max-width: 775px) {
+            .sharelinktop {
+                left: 0px;
+            }
+            .sharetopTriDiv {
+                left: 0px;
+            }
+            .sharelinkbottom {
+                left: 0px;
+            }
+
+            .sharebottomTriDiv {
+                left: 0px;
+            }
+        }
+    </style>
+
+</head>
+
+
+<body class="body-blog-detail-page">
+
+    @Html.Partial("header")
+
+    <div class="main blog-detail-page">
+
+        <div class="blog-detail blog-archive">
+            <div class="blog-detail-main blog-archive-main">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 detail-col">
+                            <div class="blog-title-wrapper">
+                                <h1>@Model.BlogTitle</h1>
+                                <div class="blog-read-comment-share">
+                                    <span class="blog-reading-time">5 min read</span>
+                                    <span class="blog-reading-count"><span style="cursor: auto;">@tblviews</span></span>
+                                    <!--<span class="blog-share-icon">
+                                    <button>Share</button>-->
+                                    @*anchor tag (<a>Share</a>) also got same styles, anchor tag can be also used instead of a button*@
+                                    <!--</span>-->
+                                    @*<span class="share-container">
+                                            <span class="blog-share-icon">
+                                                <button class="shareButtons">Share</button>
+                                            </span>
+                                                <div class="tooltips" style="display: none; box-shadow: rgba(0, 0, 0, 1.35) 0px 5px 15px; z-index:1; position: absolute; left: 544px;  background: white; width: 187px; padding: 8px; border-radius: 10px; ">
+                                                    <button class="share-whatsapps" style="color: #16e316; font-size: 36px; margin: 4px "><i class="fab fa-whatsapp"></i></button>
+                                                    <button class="share-facebooks" style="color: blue; font-size: 36px" ; margin: 4px><i class="fab fa-facebook"></i></button>
+                                                    <button class="share-twitters" style="color: #03A9F4; font-size: 36px; margin: 4px "><i class="fa-brands fa-twitter"></i></button>
+                                                    <button class="share-linkedins" style="color: #0077B5; font-size: 36px" ; margin: 4px><i class="fa-brands fa-linkedin-in"></i></button>
+                                                </div>
+                                                <div class="tooltiptriDivs" style="display: none; position: absolute; z-index: 1; left: 526px; border-right: 9px solid white; border-bottom: 9px solid transparent; border-left: 9px solid transparent; border-top:9px solid transparent; "></div>
+
+
+
+                                        </span>*@
+
+                                    <span class="blog-share-icon">
+                                        <button class="shareButtons">Share</button>
+                                    </span>
+
+                                    <div class="tooltips sharelinktop" style="display: none;">
+                                        <button class="share-whatsapps" style="color: #16e316; font-size: 36px; margin: 4px "><i class="fab fa-whatsapp"></i></button>
+                                        <button class="share-facebooks" style="color: blue; font-size: 36px" ; margin: 4px><i class="fab fa-facebook"></i></button>
+                                        <button class="share-twitters" style="color: #03A9F4; font-size: 36px; margin: 4px "><i class="fa-brands fa-twitter"></i></button>
+                                        <button class="share-linkedins" style="color: #0077B5; font-size: 36px" ; margin: 4px><i class="fa-brands fa-linkedin-in"></i></button>
+                                    </div>
+                                    <div class="tooltiptriDivs sharetopTriDiv" style="display: none; "></div>
+
+                                </div>
+                            </div>
+                            <div class="progress-sticky">
+                                <div class="blog-reading-progress">
+                                    <span class="blog-reading-progress-bar" role="progressbar"></span>
+                                </div>
+                                <div class="progress-sm">
+                                    <svg class="progress-circle" viewBox="0 0 100 100">
+                                        <circle class="progress-background" cx="50" cy="50" r="45"></circle>
+                                        <circle class="progress-circle-bar" cx="50" cy="50" r="45" style="stroke-dashoffset: 283;"></circle>
+                                    </svg>
+                                    <div class="scroll-to-top" style="opacity: 0;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 19V5M5 12l7-7 7 7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="blog-content-wrapper">
+                                <div class="blog-featured-image blog-posts">
+                                    <div class="blog-featured-image-inner">
+                                        @if (Model.BlogImage != null)
+                                        {
+                                            <img src="~/Assets/Blogs/Images/@Model.BlogImage" alt="blog-banner-image">
+                                        }
+                                        else
+                                        {
+                                            <img src="~/Assets/images/no-img.png" alt="No Image">
+                                        }
+                                    </div>
+                                </div>
+                                <div class="blog-content">
+                                    <div class="description">
+                                        <p class="medium-p">
+                                            @Html.Raw(Model.BlogDescription)
+                                        </p>
+
+                                    </div>
+                                    <div class="blog-read-comment-share">
+
+                                        <span class="blog-reading-count"><span style="cursor: auto;">@tblviews</span></span>
+                                        @*<span class="share-container">*@
+                                        <span class="blog-share-icon">
+                                            <button class="shareButtons">Share</button>
+
+                                        </span>
+
+                                        <div class="tooltips sharelinkbottom" style="display: none; ">
+                                            <button class="share-whatsapps" style="color: #16e316; font-size: 36px; margin: 4px "><i class="fab fa-whatsapp"></i></button>
+                                            <button class="share-facebooks" style="color: blue; font-size: 36px" ; margin: 4px><i class="fab fa-facebook"></i></button>
+                                            <button class="share-twitters" style="color: #03A9F4; font-size: 36px; margin: 4px "><i class="fa-brands fa-twitter"></i></button>
+                                            <button class="share-linkedins" style="color: #0077B5; font-size: 36px" ; margin: 4px><i class="fa-brands fa-linkedin-in"></i></button>
+                                        </div>
+                                        <div class="tooltiptriDivs sharebottomTriDiv" style="display: none; "></div>
+                                        @*</span>*@
+                                    </div>
+
+                                    <div class="blog-more-article view-all-posts">
+                                        @{
+                                            var catname = ctx.tbl_blogcategory.Where(x => x.CategoryID == Model.CategoryID).FirstOrDefault();
+                                        }
+                                        <a href="/blog-category/@url.encode_url(catname.Category)/@Model.CategoryID">More Article...</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 detail-others">
+                            @if (blglist.Count() > 0)
+                            {
+
+
+                                <div class="view-all-posts">
+                                    <h5 class="text-center">Most Recent Posts</h5>
+                                    <a href="/blog-category/@url.encode_url(catname.Category)/@Model.CategoryID">View All Posts</a>
+                                </div>
+                                <div class="blog-posts-thumbnail blog-recent-posts">
+                                    <div class="blog-posts-grid">
+                                        @foreach (var item in blglist)
+                                        {
+                                            <div class="blog-posts">
+
+                                                <a href="/blog-details/@url.encode_url(item.BlogTitle)/@item.BlogID" class="blog-post-link blog-post-image-link">
+                                                    @if (item.BlogImage != null)
+                                                    {
+                                                        <img src="~/Assets/Blogs/Images/@item.BlogImage" alt="blog-page-1">
+                                                    }
+                                                    else
+                                                    {
+                                                        <img src="~/Assets/images/no-img.png" alt="No Image">
+                                                    }
+                                                </a>
+                                                <div class="blog-post-title-text">
+                                                    <div class="blog-post-title">
+                                                        <h5>@item.tbl_blogcategory.Category</h5>
+                                                        <a href="/blog-details/@url.encode_url(item.BlogTitle)/@item.BlogID" class="blog-post-link">
+                                                            <h4>@item.BlogTitle</h4>
+                                                        </a>
+                                                    </div>
+                                                    <div class="blog-post-content">
+                                                        @if (item.BlogDescription != null)
+                                                        {
+                                                            string noHTML = Regex.Replace(item.BlogDescription, @"<[^>]+>|&nbsp;", "").Trim();
+                                                            string noHTMLNormalised = Regex.Replace(noHTML, @"\s{2,}", " ");
+                                                            if (noHTMLNormalised.Length > 110)
+                                                            {
+                                                                <span class="desctxt">@noHTMLNormalised.Substring(0, 110)</span><span>...</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="desctxt">@noHTMLNormalised</span>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        }
+
+
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    @Html.Partial("footer")
+</body>
+</html>
+@Html.Partial("js")
+
+<script>
+
+    const post = document.querySelector(".blog-content");
+    const readingTimeSummary = document.querySelector(".blog-reading-time");
+    const avgWordsPerMin = 225;
+
+    setReadingTime();
+
+    function setReadingTime() {
+        let count = getWordCount();
+        let time = Math.ceil(count / avgWordsPerMin);
+
+        readingTimeSummary.innerText = time + " min read";
+    }
+
+    function getWordCount() {
+        return post.innerText.match(/\w+/g).length;
+    }
+
+</script>
+<script>
+
+
+    $(document).mouseup(function (e) {
+        var container = $(".shareButtons");
+        var shareButton = $(".tooltips");
+        var tooltiptriDiv = $(".tooltiptriDivs");
+        // if the target of the click isn't the container nor a descendant of the container
+        if (!container.is(e.target) && container.has(e.target).length === 0) {
+            shareButton.hide();
+            tooltiptriDiv.hide()
+        }
+
+    });
+
+</script>
+
+<script>
+
+
+    // Add event listener to all elements with the class 'shareButton'
+    document.querySelectorAll('.shareButtons').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var container = button.closest('.blog-read-comment-share');
+            var tooltip = container.querySelector('.tooltips');
+            var tooltiptriDiv = container.querySelector('.tooltiptriDivs');
+
+            if (tooltip.style.display === 'block') {
+                tooltip.style.display = 'none';
+            } else {
+                tooltip.style.display = 'block';
+            }
+
+            if (tooltiptriDiv.style.display === 'block') {
+                tooltiptriDiv.style.display = 'none';
+            } else {
+                tooltiptriDiv.style.display = 'block';
+            }
+        });
+    });
+
+    // Function to fetch content of meta tag
+    function getMetaContent(property) {
+        const metaTag = document.querySelector(`meta[property='${property}']`);
+        return metaTag ? metaTag.getAttribute('content') : '';
+    }
+
+
+    // Add event listener for WhatsApp share buttons
+    document.querySelectorAll('.share-whatsapps').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var title = getMetaContent('og:title');
+            var description = getMetaContent('og:description');
+            var url = encodeURIComponent(window.location.href);
+            var text = encodeURIComponent(`Check out this blog: ${title}\n${description}\n`);
+            var whatsappUrl = `https://wa.me/?text=${text}${url}`;
+            window.open(whatsappUrl, '_blank');
+        });
+    });
+
+    // Add event listener for Facebook share buttons
+    document.querySelectorAll('.share-facebooks').forEach(function (button) {
+        button.addEventListener('click', function () {
+            //var title = getMetaContent('og:title');
+            //var description = getMetaContent('og:description');
+            //var combinedDescription = encodeURIComponent(`Check out this blog: ${title}\n${description}\n`);
+            var url = encodeURIComponent(window.location.href);
+            var facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            window.open(facebookUrl, '_blank');
+        });
+    });
+
+    // Add event listener for Twitter share buttons
+    document.querySelectorAll('.share-twitters').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var title = getMetaContent('og:title');
+            var description = getMetaContent('og:description');
+            var url = encodeURIComponent(window.location.href);
+            var text = encodeURIComponent(`Check out this blog: ${title}\n\n${description}\n`);
+            var twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+            window.open(twitterUrl, '_blank');
+        });
+    });
+
+    //// Add event listener for LinkedIn share buttons
+
+    document.querySelectorAll('.share-linkedins').forEach(function (button) {
+        button.addEventListener('click', function () {
+
+            var url = encodeURIComponent(window.location.href);
+
+            var linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${url}`;
+            window.open(linkedinUrl, '_blank');
+        });
+    });
+
+    //below code to over ride title and description
+    //but linkedin only accepting title that to from meta tag by default
+    //Note:-
+    //LinkedIn by default retrieves the title from the meta tags of the shared page and
+    //may not accept custom titles and descriptions passed directly via URL parameters as in your code.
+
+    //document.querySelectorAll('.share-linkedins').forEach(function (button) {
+    //    button.addEventListener('click', function () {
+    //        var title = "Juggle joy"; // Your custom title
+    //        var description = "Check out"; // Your custom description
+    //        var url = encodeURIComponent(window.location.href);
+
+    //        var linkedinUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description)}`;
+    //        window.open(linkedinUrl, '_blank');
+    //    });
+    //});
+</script>

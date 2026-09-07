@@ -1,0 +1,250 @@
+﻿@model juggle_joy.Models.BlogValidation
+
+
+@{
+    ViewBag.Title = "Blog | " + MvcApplication.project_name;
+}
+<style>
+    #imgbtn_close {
+        margin-top: -24px;
+    }
+    #errormsg {
+        font-weight: 200;
+    }
+
+</style>
+
+<ul class="breadcrumb">
+    <li><a href="~/admin/dashboard">Home</a></li>
+    <li class="active">Blog</li>
+</ul>
+
+<div class="page-title">
+    @if (Model.BlogID > 0)
+    {
+        <h2><span class=""></span> Update Blog</h2>
+    }
+    else
+    {
+        <h2><span class=""></span> Add Blog</h2>
+    }
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			
+
+            @using (Html.BeginForm("addblog", "Blogs", FormMethod.Post, new { id = "addblog", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="row">
+
+                            <div class="col-sm-4 col-md-4 col-lg-4">
+                                <div class="form-group">
+                                    <label for="CategoryID">Select Blog Category</label>
+                                    @Html.DropDownListFor(x => x.CategoryID, null, "Select Blog Category", new { @class = "form-control flat" })
+                                    @Html.ValidationMessageFor(x => x.CategoryID, "", new { @class = "text-danger" })
+                                </div>
+                             </div>
+
+                                <div class="col-sm-4 col-md-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="BlogTitle" class="control-label">Blog Title</label>
+                                        @Html.TextBoxFor(x => x.BlogTitle, new { @class = "form-control flat", maxlength = "200" })
+                                        @Html.ValidationMessageFor(x => x.BlogTitle)
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-4 col-md-4 col-lg-4">
+                                    @if (Model.BlogImage != null)
+                                    {
+                                        <div class="form-group">
+                                            <label>Image <span class="req"> </span></label>
+                                            @Html.TextBoxFor(x => x.BlogImage, new { @class = "form-control", type = "file", id = "Logo", accept = ".jpg,.png,.jpeg", Style = "", onchange = "showimagepreview2(this);" })
+                                            @Html.ValidationMessageFor(x => x.BlogImage)
+                                            @Html.HiddenFor(x => x.BlogImage)
+                                            <span id="val_oi" style="color:darkgray;">(Please choose image size greater than or equal to width: 1000px and height: 600px)</span>
+                                        </div>
+
+                                    }
+                                    else
+                                    {
+                                        <div class="form-group">
+                                            <label>Image <span class="req">  </span></label>
+                                            @Html.TextBoxFor(x => x.BlogImage, new { @class = "form-control", type = "file", id = "Logo", accept = ".jpg,.png,.jpeg", Style = "", onchange = "showimagepreview2(this);" })
+                                            <span id="val_oi" style="color: #e80c4d;"> @Html.ValidationMessageFor(x => x.BlogImage)</span>
+                                            @*<span id="val_oi" style="color:darkgray;">(Please choose image size greater than or equal to width: 1000px and height: 600px)</span>*@
+                                            <label id="errormsg" style="color:#e80c4d;"></label>
+                                        </div>//form group
+                                    }
+
+                                    @if (Model.BlogImage != null)
+                                    {
+                                        <div style="text-align:center;">
+                                            <div id="div2" style="display:block">
+                                                <img src="~/assets/Blogs/Icons/@Model.BlogImage" id="imagepreview3" height="100" width="200" />
+                                                <br /><br />
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div style="text-align:center;">
+                                            <div id="div2" style="display:none">
+                                                <img src="" id="imagepreview2" height="100" width="200" />
+                                                <br /><br />
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-12">
+                                <div class="form-group">
+                                    <label for="BlogDescription" class="control-label">Blog Description</label>
+                                    @Html.TextAreaFor(x => x.BlogDescription, new { @id = "pagecontent", @class = "form-control" })
+                                    @Html.ValidationMessageFor(x => x.BlogDescription)
+                                    <span id="desc_error" style="color:#e80c4d"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        @Html.HiddenFor(x => x.BlogID)
+
+                        @if (Model.BlogID == 0)
+                        {
+                            <input type="submit" id="btnaddbanner" class="btn btn-primary pull-right" value="Add Blog" />
+                        }
+                        else
+                        {
+                            <input type="submit" id="btnupdate" class="btn btn-primary pull-right" value="Update Blog" />
+                            <input type="button" id="cancelblog" class="btn btn-default" value="Cancel" />
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script src="~/admin_assets/tinymce/tinymce.min.js"></script>
+
+<script type="text/javascript">
+    if (@Model.BlogID > 0) {
+		$("#Logo").attr("data-val", "false");
+    }
+    tinymce.init({
+        selector: "textarea#pagecontent",
+        convert_fonts_to_spans: false,
+        plugins: ["advlist autolink lists link charmap print preview anchor textcolor ", "searchreplace visualblocks code fullscreen", "image", "table"],
+        toolbar: "image | insertfile undo redo | fontselect | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | forecolor backcolor|table tabledelete | tableprops tablerowprops tablecellprops | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol",
+        menubar: false,
+        height: "300",
+        statusbar: false,
+        setup: function (ed) {
+            ed.on('init', function () {
+                //this.getDoc().body.style.fontSize = '12';
+                this.getDoc().body.style.fontFamily = 'DM Sans';
+            });
+        },
+    });
+</script>
+
+<script type="text/javascript">
+
+    $("#addblog").submit(function () {
+        var editorblogtinfo = tinyMCE.get('pagecontent').getContent();
+        if (editorblogtinfo == '') {
+            $("#desc_error").html("Please enter description");
+            $('#desc_error').focus();
+            $("#desc_error").fadeIn(500).fadeOut(3000);
+            return false;
+        }
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#lblmsg3").fadeOut(3000);
+    });
+    $(document).ready(function () {
+        $("#lblmsg4").fadeOut(3000);
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#lnk_manage_Blogs,#manage_Blogs').addClass("active");
+    });
+
+    $('.note-editable').find('p').remove();
+    $('.note-editable p').remove();
+    $(".dmessage").fadeIn().fadeOut(5000);
+    $(".message").fadeIn().fadeOut(5000);
+    $('#cancelblog').click(function () {
+        window.location.href = "/admin/manage-blog";
+    });
+</script>
+
+<script type="text/javascript">
+    function showimagepreview2(input) {
+        if (input.files && input.files[0]) {
+            var filerdr = new FileReader();
+            $('#div2').css("display", "block");
+            filerdr.onload = function (oFREvent) {
+                var image1 = new Image();
+                image1.src = oFREvent.target.result;
+                image1.onload = function () {
+                    var width = image1.width;
+                    var height = image1.height;
+                    if (width >= 300 && height >= 200) {
+                        $('#div2').css("display", "block");
+                        $('#imagepreview2').show();
+                        $('#imagepreview2').attr('src', oFREvent.target.result);
+                        $('#imagepreview3').attr('src', oFREvent.target.result);
+
+                        $("#errormsg").css("display","none")
+                      /*  $("#imgbtn_close").removeClass("hide_close").addClass("show_close");*/
+                        $("#imgbtn_close").removeClass("show_close").addClass("hide_close");
+                        $('#imagepreview2').attr('src', e.target.result);
+                        return true;
+                    }
+                    else {
+                        $('#imagepreview2').hide();
+                        $('#Logo').val('');
+                        $('#Image').val('');
+                        /*           $("#errormsg").html("Please choose image size greater than or equal to width: 1000px and height: 600px");*/
+                        $("#errormsg").html("Please choose image size greater than or equal to width: 300px and height: 200px");
+                        $("#errormsg").fadeIn(500).fadeOut(8000);
+                        $("#div2").hide();
+                        return false;
+                    }
+                }
+
+            }
+            filerdr.readAsDataURL(input.files[0])
+        }
+    }
+
+    $("#btnaddbanner").submit(function () {
+        $("#val_oi").text("");
+    });
+
+</script>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,88 @@
+﻿@{
+	Layout = null;
+	//ViewBag.Title = "Account verified";
+
+}
+@Html.Partial("css")
+
+<title>Account verified - @MvcApplication.project_name</title>
+
+<style>
+	.forms_max_width .banner_items {
+		width: 457px !important;
+	}
+</style>
+@Html.Partial("header")
+<div class="main register-page">
+	<section class="banner_section forms_section">
+		<div class="container-fluid half-fluid">
+			<div class="container-none">
+				<div class="row">
+
+					<div class="col-12 col-md-6 banner_content forms_max_width">
+						<div class="banner_items">
+							<span class="logo-small"
+								  style="background: url(/Assets/images/logo-100x100.png) no-repeat center center / contain;"></span>
+							<div id="carouselExampleIndicators" class="page-form carousel slide"
+								 data-interval="false">
+
+
+								<div class="form_steps form_step_1 carousel-item active">
+
+									@if (ViewBag.msg == "Account verified successfully")
+									{
+										<div class="banner_items" style="width: 480px !important;">
+											<h2 style="text-align:center">Account Verified Successfully</h2>
+										</div>
+										<h3 style="text-align:center">Dear @ViewBag.username</h3>
+										<i class="fa fa-check-circle" style="font-size: 35px; margin-left: 203px;"></i>
+										<br />
+										<p style="text-align:center">Thank you for verifying your account</p>
+										<br />
+										<a href="/login" class="primary-btn" style=" margin-left: 140px;">Go to Login here</a>
+
+
+
+									}
+									else
+									{
+										<br />
+										<i class="fa fa-warning" style="font-size: 35px; margin-left: 203px;"></i>
+										<br />
+										<br />
+										<h4 style="text-align:center">@ViewBag.msg</h4><br />
+										<br />
+										<a href="/register" class="primary-btn" style=" margin-left: 160px;">Home</a>
+
+									}
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+					<div class="col-12 col-md-6 banner_image">
+						<div class="right-half"
+							 style="background: url('/Assets/images/login/register-banner.png') no-repeat center center / cover;">
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</section>
+
+</div>
+@Html.Partial("footer")
+<script src="~/Assets/js/bootstrap.bundle.min.js"></script>
+@Html.Partial("js")
+
+
+
+
+
+
+
+
+
+

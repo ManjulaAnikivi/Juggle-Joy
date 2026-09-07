@@ -1,0 +1,179 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_contact>
+@{
+	ViewBag.Title = "Contacts Received | " + MvcApplication.project_name;
+}
+
+<ul class="breadcrumb">
+	<li><a href="~/admin/dashboard">Home</a></li>
+	<li class="active">Contacts Received</li>
+</ul>
+<div class="page-title">
+	<h2><span class="fa fa-phone"></span> Contacts Received</h2>
+</div>
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			@using (Html.BeginForm("delete_contact_list", "contact", FormMethod.Post))
+			{
+				<div class="panel panel-default">
+					<p id="lbl_msg" class="panel-title msg">@ViewBag.msg</p>
+					<div class="panel-body table-responsive">
+						<table id="tblcontactlist" class="table dataTable table-hover table-striped">
+							<thead>
+								<tr>
+									<th style="background-position: center left;">Name</th>
+									<th style="background-position: center left;">Phone</th>
+									<th style="background-position: center left;">Email-ID</th>
+									@*<th style="background-position: center left;">Subject</th>*@
+									<th style="background-position: center left;">Rec. Date</th>
+									<th style="background-position: center left;">View</th>
+									<th style="background-image:none;text-align:center" align="center"><input type="checkbox" id="chkall" />
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model)
+								{
+									<tr>
+										<td>@item.ContactName</td>
+										<td>@item.ContactPhone</td>
+										<td>@item.ContactEmail</td>
+										@*<td>@item.ContactSubject</td>*@
+										<td>@juggle_joy.Models.GlobalMethods.ConvertToDate(item.ContactDate)</td>
+										<td><a onclick="contactdetails(@item.ContactID)"><i class="fa fa-eye" style="cursor:pointer"></i></a></td>
+										<td align="center"><input type="checkbox" name="IdsToDelete" value='@item.ContactID' /></td>
+									</tr>
+								}
+							</tbody>
+							<tr>
+								<td align="right" colspan="6" style="padding-right:12px;">
+									<input type="submit" id="btndelete" value="Delete" class="btn btn-danger" />
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+<div class="modal" style=" display:none;" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content" id="modal_content">
+			<div class="modal-header">
+				<span id="headername" style="font-size:17px;font-weight:bold;">
+					Contact Details
+					<button type="button" id="mclose1" class="close" data-dismiss="modal" style="color:white;opacity:initial">
+						<span aria-hidden="true" style="color:black">×</span><span class="sr-only">Close</span>
+					</button>
+				</span>
+			</div>
+			<div class="modal-body" id="modal-body">
+				<center>
+					<span id="Loader">
+						<img src="~/admin_assets/img/ajax-loader-small.gif" alt="Loading" />&nbsp;Loading..
+					</span>
+				</center>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    $('#lnk_contact').addClass("active");
+
+    if ('@ViewBag.msg' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+
+    function contactdetails(id) {
+
+        id = "/admin/contact/contact_details/" + id;
+        $('html, body').css({
+            'overflow': 'auto',
+            'height': '100%'
+        });
+        $("#myModal").css("display", "block")
+        $("#Loader").css("display", "block");
+
+        $("#modal-body").load(id, null, function (responseTxt, statusTxt, xhr) {
+            if (statusTxt == "success") {
+                $("#Loader").hide();
+                $("#modal-body").show();
+                $("#myModal").css("overflow-y", "scroll");
+                $("#myModal").slideDown(500);
+            }
+        });
+
+    }
+    $('#mclose1').click(function () {
+        $("#myModal").css("display", "none")
+    });
+
+    $(document).ready(function (e) {
+        $('#btndelete').click(function () {
+            if ($("input[name='IdsToDelete']:checked").length == 0) {
+                alert("Please select record to delete.");
+                return false;
+            }
+            else {
+                var count = $("input[name='IdsToDelete']:checked").length;
+                return confirm("Are you sure want to delete " + count + " record(s).");
+            }
+        });
+    });
+
+
+
+    $("#chkall").change(function () {
+        $("input[name='IdsToDelete']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='IdsToDelete']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='IdsToDelete']:checked").length == $("input[name='IdsToDelete']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+
+    $('#tblcontactlist').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        //"ordering": false,
+        //"aoColumns": [{ "bSearchable": true }, { "bSearchable": true }, { "bSearchable": false }, { "bSearchable": false }],
+        "columns": [
+            {
+                "sortable": false
+            },
+            {
+                "sortable": false
+            },
+            {
+                "sortable": false
+            },
+            {
+                "sortable": true
+            },
+            {
+                "sortable": false
+            },
+            {
+                "sortable": false
+            }
+        ]
+        //"columnDefs": [{
+        //    'targets': [2, 3], // column index (start from 0)
+        //    'orderable': false, // set orderable false for selected columns
+        //}]
+    });
+
+
+</script>

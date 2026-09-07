@@ -1,0 +1,466 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="db_jugglejoyModelStoreContainer" CdmEntityContainer="db_jugglejoyEntities">
+    <EntitySetMapping Name="tbl_admin">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_admin">
+        <MappingFragment StoreEntitySet="tbl_admin">
+          <ScalarProperty Name="AdminID" ColumnName="AdminID" />
+          <ScalarProperty Name="FullName" ColumnName="FullName" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+          <ScalarProperty Name="Salt" ColumnName="Salt" />
+          <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+          <ScalarProperty Name="PhoneNo" ColumnName="PhoneNo" />
+          <ScalarProperty Name="PwdResetKey" ColumnName="PwdResetKey" />
+          <ScalarProperty Name="PwdKeyCreatedTime" ColumnName="PwdKeyCreatedTime" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_blogs">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_blogs">
+        <MappingFragment StoreEntitySet="tbl_blogs">
+          <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+          <ScalarProperty Name="BlogID" ColumnName="BlogID" />
+          <ScalarProperty Name="BlogTitle" ColumnName="BlogTitle" />
+          <ScalarProperty Name="BlogImage" ColumnName="BlogImage" />
+          <ScalarProperty Name="BlogDescription" ColumnName="BlogDescription" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_category">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_category">
+        <MappingFragment StoreEntitySet="tbl_category">
+          <ScalarProperty Name="CategoryImage" ColumnName="CategoryImage" />
+          <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+          <ScalarProperty Name="Category" ColumnName="Category" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_contact">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_contact">
+        <MappingFragment StoreEntitySet="tbl_contact">
+          <ScalarProperty Name="ContactID" ColumnName="ContactID" />
+          <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+          <ScalarProperty Name="ContactEmail" ColumnName="ContactEmail" />
+          <ScalarProperty Name="ContactPhone" ColumnName="ContactPhone" />
+          <ScalarProperty Name="ContactSubject" ColumnName="ContactSubject" />
+          <ScalarProperty Name="ContactMsg" ColumnName="ContactMsg" />
+          <ScalarProperty Name="ContactDate" ColumnName="ContactDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_faq">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_faq">
+        <MappingFragment StoreEntitySet="tbl_faq">
+          <ScalarProperty Name="SortPreference" ColumnName="SortPreference" />
+          <ScalarProperty Name="Faq_categoryID" ColumnName="Faq_categoryID" />
+          <ScalarProperty Name="FaqID" ColumnName="FaqID" />
+          <ScalarProperty Name="FaqQuestion" ColumnName="FaqQuestion" />
+          <ScalarProperty Name="FaqAnswer" ColumnName="FaqAnswer" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_options">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_options">
+        <MappingFragment StoreEntitySet="tbl_options">
+          <ScalarProperty Name="Placeholder" ColumnName="Placeholder" />
+          <ScalarProperty Name="OptionType" ColumnName="OptionType" />
+          <ScalarProperty Name="OptionID" ColumnName="OptionID" />
+          <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+          <ScalarProperty Name="Question" ColumnName="Question" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_question">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_question">
+        <MappingFragment StoreEntitySet="tbl_question">
+          <ScalarProperty Name="Placeholder" ColumnName="Placeholder" />
+          <ScalarProperty Name="OptionType" ColumnName="OptionType" />
+          <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+          <ScalarProperty Name="Question" ColumnName="Question" />
+          <ScalarProperty Name="SubCategoryID" ColumnName="SubCategoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_subcategory">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_subcategory">
+        <MappingFragment StoreEntitySet="tbl_subcategory">
+          <ScalarProperty Name="SubCategoryID" ColumnName="SubCategoryID" />
+          <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+          <ScalarProperty Name="SubCategory" ColumnName="SubCategory" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_subscriber">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_subscriber">
+        <MappingFragment StoreEntitySet="tbl_subscriber">
+          <ScalarProperty Name="SubscriberId" ColumnName="SubscriberId" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="SubscribedDate" ColumnName="SubscribedDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_country">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_country">
+        <MappingFragment StoreEntitySet="tbl_country">
+          <ScalarProperty Name="phonecode" ColumnName="phonecode" />
+          <ScalarProperty Name="Country" ColumnName="Country" />
+          <ScalarProperty Name="CountryCode" ColumnName="CountryCode" />
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_state">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_state">
+        <MappingFragment StoreEntitySet="tbl_state">
+          <ScalarProperty Name="StateCode" ColumnName="StateCode" />
+          <ScalarProperty Name="State" ColumnName="State" />
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+          <ScalarProperty Name="StateID" ColumnName="StateID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_user">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_user">
+        <MappingFragment StoreEntitySet="tbl_user">
+          <ScalarProperty Name="SubscriptionStatus" ColumnName="SubscriptionStatus" />
+          <ScalarProperty Name="SubscriptionId" ColumnName="SubscriptionId" />
+          <ScalarProperty Name="otp" ColumnName="otp" />
+          <ScalarProperty Name="HandlerID" ColumnName="HandlerID" />
+          <ScalarProperty Name="PartnerEmail" ColumnName="PartnerEmail" />
+          <ScalarProperty Name="HeardFrom" ColumnName="HeardFrom" />
+          <ScalarProperty Name="UserType" ColumnName="UserType" />
+          <ScalarProperty Name="RegDate" ColumnName="RegDate" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="PwdKeyCreatedTime" ColumnName="PwdKeyCreatedTime" />
+          <ScalarProperty Name="PwdResetKey" ColumnName="PwdResetKey" />
+          <ScalarProperty Name="Salt" ColumnName="Salt" />
+          <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="State" ColumnName="State" />
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+          <ScalarProperty Name="ZipPostalCode" ColumnName="ZipPostalCode" />
+          <ScalarProperty Name="City" ColumnName="City" />
+          <ScalarProperty Name="Address" ColumnName="Address" />
+          <ScalarProperty Name="PhoneNo" ColumnName="PhoneNo" />
+          <ScalarProperty Name="EmailID" ColumnName="EmailID" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_faq_category">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_faq_category">
+        <MappingFragment StoreEntitySet="tbl_faq-category">
+          <ScalarProperty Name="Category" ColumnName="Category" />
+          <ScalarProperty Name="Faq_Cat_id" ColumnName="Faq_Cat_id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_blogcategory">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_blogcategory">
+        <MappingFragment StoreEntitySet="tbl_blogcategory">
+          <ScalarProperty Name="Category" ColumnName="Category" />
+          <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_banner">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_banner">
+        <MappingFragment StoreEntitySet="tbl_banner">
+          <ScalarProperty Name="ContentType" ColumnName="ContentType" />
+          <ScalarProperty Name="BannerVideo" ColumnName="BannerVideo" />
+          <ScalarProperty Name="SortPreference" ColumnName="SortPreference" />
+          <ScalarProperty Name="UrlLink" ColumnName="UrlLink" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="BannerText" ColumnName="BannerText" />
+          <ScalarProperty Name="BannerId" ColumnName="BannerId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_answer">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_answer">
+        <MappingFragment StoreEntitySet="tbl_answer">
+          <ScalarProperty Name="OtherAnswer" ColumnName="OtherAnswer" />
+          <ScalarProperty Name="MinitaskID" ColumnName="MinitaskID" />
+          <ScalarProperty Name="Answer" ColumnName="Answer" />
+          <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+          <ScalarProperty Name="AnswerID" ColumnName="AnswerID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_task">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_task">
+        <MappingFragment StoreEntitySet="tbl_task">
+          <ScalarProperty Name="MoreOptions" ColumnName="MoreOptions" />
+          <ScalarProperty Name="UserNote" ColumnName="UserNote" />
+          <ScalarProperty Name="AssistantID" ColumnName="AssistantID" />
+          <ScalarProperty Name="DeadlineType" ColumnName="DeadlineType" />
+          <ScalarProperty Name="TaskTitle" ColumnName="TaskTitle" />
+          <ScalarProperty Name="Deadline" ColumnName="Deadline" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="Budget" ColumnName="Budget" />
+          <ScalarProperty Name="WorkTime" ColumnName="WorkTime" />
+          <ScalarProperty Name="Repeating" ColumnName="Repeating" />
+          <ScalarProperty Name="Urgency" ColumnName="Urgency" />
+          <ScalarProperty Name="Fileattachment" ColumnName="Fileattachment" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="CompletionDate" ColumnName="CompletionDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="SubCategoryID" ColumnName="SubCategoryID" />
+          <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+          <ScalarProperty Name="ToID" ColumnName="ToID" />
+          <ScalarProperty Name="FromID" ColumnName="FromID" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_log">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_log">
+        <MappingFragment StoreEntitySet="tbl_log">
+          <ScalarProperty Name="LogDate" ColumnName="LogDate" />
+          <ScalarProperty Name="LogStatus" ColumnName="LogStatus" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+          <ScalarProperty Name="LogID" ColumnName="LogID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_chat">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_chat">
+        <MappingFragment StoreEntitySet="tbl_chat">
+          <ScalarProperty Name="AssistantId" ColumnName="AssistantId" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+          <ScalarProperty Name="Subject" ColumnName="Subject" />
+          <ScalarProperty Name="ChatDate" ColumnName="ChatDate" />
+          <ScalarProperty Name="ChatreadStatus" ColumnName="ChatreadStatus" />
+          <ScalarProperty Name="ChatText" ColumnName="ChatText" />
+          <ScalarProperty Name="FromId" ColumnName="FromId" />
+          <ScalarProperty Name="ToId" ColumnName="ToId" />
+          <ScalarProperty Name="ChatID" ColumnName="ChatID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_chatfile">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_chatfile">
+        <MappingFragment StoreEntitySet="tbl_chatfile">
+          <ScalarProperty Name="FileName" ColumnName="FileName" />
+          <ScalarProperty Name="ChatId" ColumnName="ChatId" />
+          <ScalarProperty Name="FileId" ColumnName="FileId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_minitask">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_minitask">
+        <MappingFragment StoreEntitySet="tbl_minitask">
+          <ScalarProperty Name="MoreOptions" ColumnName="MoreOptions" />
+          <ScalarProperty Name="UserNote" ColumnName="UserNote" />
+          <ScalarProperty Name="PostedDate" ColumnName="PostedDate" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+          <ScalarProperty Name="MinitaskID" ColumnName="MinitaskID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_optiontype">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_optiontype">
+        <MappingFragment StoreEntitySet="tbl_optiontype">
+          <ScalarProperty Name="Question" ColumnName="Question" />
+          <ScalarProperty Name="OptionID" ColumnName="OptionID" />
+          <ScalarProperty Name="OptionTypeID" ColumnName="OptionTypeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_taskattachment">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_taskattachment">
+        <MappingFragment StoreEntitySet="tbl_taskattachment">
+          <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+          <ScalarProperty Name="FileName" ColumnName="FileName" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+          <ScalarProperty Name="TaskAttachmentID" ColumnName="TaskAttachmentID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_notification">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_notification">
+        <MappingFragment StoreEntitySet="tbl_notification">
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Url" ColumnName="Url" />
+          <ScalarProperty Name="ReadStatus" ColumnName="ReadStatus" />
+          <ScalarProperty Name="Notification" ColumnName="Notification" />
+          <ScalarProperty Name="ToID" ColumnName="ToID" />
+          <ScalarProperty Name="NotificationID" ColumnName="NotificationID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_recommendations">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_recommendations">
+        <MappingFragment StoreEntitySet="tbl_recommendations">
+          <ScalarProperty Name="MiniTaskID" ColumnName="MiniTaskID" />
+          <ScalarProperty Name="TaskStatus" ColumnName="TaskStatus" />
+          <ScalarProperty Name="NextStep" ColumnName="NextStep" />
+          <ScalarProperty Name="Availability" ColumnName="Availability" />
+          <ScalarProperty Name="Price" ColumnName="Price" />
+          <ScalarProperty Name="Note" ColumnName="Note" />
+          <ScalarProperty Name="Rating" ColumnName="Rating" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="AssistantID" ColumnName="AssistantID" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+          <ScalarProperty Name="RecID" ColumnName="RecID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_survey">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_survey">
+        <MappingFragment StoreEntitySet="tbl_survey">
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+          <ScalarProperty Name="AssistantID" ColumnName="AssistantID" />
+          <ScalarProperty Name="Comments" ColumnName="Comments" />
+          <ScalarProperty Name="Rate" ColumnName="Rate" />
+          <ScalarProperty Name="SurveyQueID" ColumnName="SurveyQueID" />
+          <ScalarProperty Name="SurveyID" ColumnName="SurveyID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_surveyQue">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_surveyQue">
+        <MappingFragment StoreEntitySet="tbl_surveyQue">
+          <ScalarProperty Name="Question" ColumnName="Question" />
+          <ScalarProperty Name="SurveyQueID" ColumnName="SurveyQueID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_note">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_note">
+        <MappingFragment StoreEntitySet="tbl_note">
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Filepath" ColumnName="Filepath" />
+          <ScalarProperty Name="Note" ColumnName="Note" />
+          <ScalarProperty Name="AssistantID" ColumnName="AssistantID" />
+          <ScalarProperty Name="HandlerID" ColumnName="HandlerID" />
+          <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+          <ScalarProperty Name="NoteID" ColumnName="NoteID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_price">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_price">
+        <MappingFragment StoreEntitySet="tbl_price">
+          <ScalarProperty Name="DiscountedPrice" ColumnName="DiscountedPrice" />
+          <ScalarProperty Name="ActualPrice" ColumnName="ActualPrice" />
+          <ScalarProperty Name="PriceID" ColumnName="PriceID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_gifts">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_gifts">
+        <MappingFragment StoreEntitySet="tbl_gifts">
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="MailReceiver" ColumnName="MailReceiver" />
+          <ScalarProperty Name="MailSender" ColumnName="MailSender" />
+          <ScalarProperty Name="SenderName" ColumnName="SenderName" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="SentDate" ColumnName="SentDate" />
+          <ScalarProperty Name="RecepientEmail" ColumnName="RecepientEmail" />
+          <ScalarProperty Name="RecepientName" ColumnName="RecepientName" />
+          <ScalarProperty Name="SenderEmail" ColumnName="SenderEmail" />
+          <ScalarProperty Name="DiscountPercent" ColumnName="DiscountPercent" />
+          <ScalarProperty Name="DiscountedPrice" ColumnName="DiscountedPrice" />
+          <ScalarProperty Name="ActualPrice" ColumnName="ActualPrice" />
+          <ScalarProperty Name="Duration" ColumnName="Duration" />
+          <ScalarProperty Name="GiftCode" ColumnName="GiftCode" />
+          <ScalarProperty Name="GiftID" ColumnName="GiftID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_subscription">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_subscription">
+        <MappingFragment StoreEntitySet="tbl_subscription">
+          <ScalarProperty Name="GiftID" ColumnName="GiftID" />
+          <ScalarProperty Name="StripeReturnData" ColumnName="StripeReturnData" />
+          <ScalarProperty Name="StripePaymentType" ColumnName="StripePaymentType" />
+          <ScalarProperty Name="StripeOrderID" ColumnName="StripeOrderID" />
+          <ScalarProperty Name="ExpirationDate" ColumnName="ExpirationDate" />
+          <ScalarProperty Name="SubscriptionDate" ColumnName="SubscriptionDate" />
+          <ScalarProperty Name="TransactionMsg" ColumnName="TransactionMsg" />
+          <ScalarProperty Name="TransactionStatus" ColumnName="TransactionStatus" />
+          <ScalarProperty Name="TransactionNo" ColumnName="TransactionNo" />
+          <ScalarProperty Name="SubscriptionFee" ColumnName="SubscriptionFee" />
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="SubscriptionID" ColumnName="SubscriptionID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_cms">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_cms">
+        <MappingFragment StoreEntitySet="tbl_cms">
+          <ScalarProperty Name="CmsText" ColumnName="CmsText" />
+          <ScalarProperty Name="CmsPageName" ColumnName="CmsPageName" />
+          <ScalarProperty Name="CmsID" ColumnName="CmsID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_tempgifts">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_tempgifts">
+        <MappingFragment StoreEntitySet="tbl_tempgifts">
+          <ScalarProperty Name="MailReceiver" ColumnName="MailReceiver" />
+          <ScalarProperty Name="MailSender" ColumnName="MailSender" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="SenderName" ColumnName="SenderName" />
+          <ScalarProperty Name="Message" ColumnName="Message" />
+          <ScalarProperty Name="SentDate" ColumnName="SentDate" />
+          <ScalarProperty Name="RecepientEmail" ColumnName="RecepientEmail" />
+          <ScalarProperty Name="RecepientName" ColumnName="RecepientName" />
+          <ScalarProperty Name="SenderEmail" ColumnName="SenderEmail" />
+          <ScalarProperty Name="DiscountPercent" ColumnName="DiscountPercent" />
+          <ScalarProperty Name="DiscountedPrice" ColumnName="DiscountedPrice" />
+          <ScalarProperty Name="ActualPrice" ColumnName="ActualPrice" />
+          <ScalarProperty Name="Duration" ColumnName="Duration" />
+          <ScalarProperty Name="GiftCode" ColumnName="GiftCode" />
+          <ScalarProperty Name="TempGiftID" ColumnName="TempGiftID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_blogviews">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_blogviews">
+        <MappingFragment StoreEntitySet="tbl_blogviews">
+          <ScalarProperty Name="IPaddress" ColumnName="IPaddress" />
+          <ScalarProperty Name="BlogID" ColumnName="BlogID" />
+          <ScalarProperty Name="ViewID" ColumnName="ViewID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_CancelAnswer">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_CancelAnswer">
+        <MappingFragment StoreEntitySet="tbl_CancelAnswer">
+          <ScalarProperty Name="UserID" ColumnName="UserID" />
+          <ScalarProperty Name="SpecificReaspn" ColumnName="SpecificReaspn" />
+          <ScalarProperty Name="CancelID" ColumnName="CancelID" />
+          <ScalarProperty Name="CancelAnswerID" ColumnName="CancelAnswerID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_CancelCat">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_CancelCat">
+        <MappingFragment StoreEntitySet="tbl_CancelCat">
+          <ScalarProperty Name="CancellationCategory" ColumnName="CancellationCategory" />
+          <ScalarProperty Name="CancelCatID" ColumnName="CancelCatID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="tbl_CancelReason">
+      <EntityTypeMapping TypeName="db_jugglejoyModel.tbl_CancelReason">
+        <MappingFragment StoreEntitySet="tbl_CancelReason">
+          <ScalarProperty Name="OptionType" ColumnName="OptionType" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="CancelCatID" ColumnName="CancelCatID" />
+          <ScalarProperty Name="CancelID" ColumnName="CancelID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

@@ -1,0 +1,68 @@
+﻿@using juggle_joy.Models
+
+@{
+
+	Layout = null;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	var tasks = ctx.tbl_task.ToList();
+	int assistantid = Convert.ToInt32(Session["AssistantID"]);
+	var assistantname = ctx.tbl_user.Where(x => x.UserID == assistantid).FirstOrDefault();
+	var newtasks = tasks.Where(x =>  x.Status == (int)TaskStatus.Received).ToList();
+	//var pending = tasks.Where(x => x.AssistantID == assistantid && x.Status == (int)TaskStatus.Received).ToList().Count();
+	var ongoing = tasks.Where(x => x.AssistantID == assistantid && x.Status == (int)TaskStatus.Ongoing).ToList().Count();
+	var completed = tasks.Where(x => x.AssistantID == assistantid && x.Status == (int)TaskStatus.Complete).ToList().Count();
+
+
+}
+@if (Session["AssistantID"] != null)
+{
+	<div class="admin-page-sidebar">
+		<div class="admin-page-sidebar-main">
+			<div class="admin-page-sidebar-row">
+				<h3 class="handler">@assistantname.FirstName</h3>
+				<ul class="listing">
+					<li id="pending">
+						<a href="/new-tasks">New Tasks</a>
+						@if (newtasks.Count() > 0)
+						{
+							<span class="sidebar-notification-count">
+								@newtasks.Count()
+							</span>
+						}
+
+					</li>
+					@*<li id="pending">
+						<a href="/pending-tasks">Pending Tasks</a>
+						@if (pending > 0)
+						{
+							<span class="sidebar-notification-count">
+								@pending
+							</span>
+						}
+
+					</li>*@
+					<li id="ongoing">
+						<a href="/ongoing-tasks">Ongoing Tasks</a>
+						@if (ongoing > 0)
+						{
+							<span class="sidebar-notification-count">@ongoing</span>
+						}
+
+					</li>
+					<li id="completed">
+						<a href="/completed-tasks">Completed Tasks</a>
+						@if (completed > 0)
+						{
+							<span class="sidebar-notification-count">@completed</span>
+
+						}
+					</li>
+				</ul>
+			</div>
+
+
+		</div>
+	</div>
+}
+
+

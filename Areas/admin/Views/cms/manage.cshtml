@@ -1,0 +1,137 @@
+﻿@model juggle_joy.Models.CMSValidation
+@using juggle_joy.Models
+@{
+    ViewBag.Title = "Mange CMS | " + MvcApplication.project_name;
+}
+
+<ul class="breadcrumb">
+    <li><a href="~/admin/account/dashboard">Home</a></li>
+    <li class="active">Manage CMS</li>
+</ul>
+<div style="clear:both;"></div>
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Manage CMS</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+            @using (Html.BeginForm("manage", "cms", FormMethod.Post))
+            {
+                <div class="panel panel-default">
+                    <p id="lbl_msg" class="panel-title msg">@ViewBag.cmsmsg</p>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="CmsID" class="control-label">Select Page <span class="req"> *</span></label>
+                            @Html.DropDownListFor(x => x.CmsID, null, "Select Page", new { @class = "form-control flat" })
+                            @Html.ValidationMessageFor(x => x.CmsID)
+                        </div>
+                        <div id="div_editor" class="form-group" style="display:none">
+                            <label for="CmsText" class="control-label">Page Text <span class="req"> *</span></label>
+                            @Html.TextAreaFor(x => x.CmsText, new { @class = " form-control ", placeholder = "Page Content", cols = "15", rows = "20" })
+                            @*@Html.ValidationMessageFor(x => x.CmsText)*@
+                            <span id="descError" class="msg-error"></span>
+                        </div>
+                        @*<div id="div_editor_de" class="form-group" style="display:none">
+                                <label for="CmsText_FR" class="control-label">Page Text in German<span class="req"> *</span></label>
+                                @Html.TextAreaFor(x => x.CmsText_DE, new { @class = " form-control ", placeholder = "Page Content", cols = "15", rows = "20" })
+                                @Html.ValidationMessageFor(x => x.CmsText_DE)
+                            </div>*@
+                    </div>
+                    <div class="panel-footer">
+                        @*@Html.HiddenFor(x => x.CmsID)*@
+                        @if (Model.CmsID == 0)
+                        {
+                            <a href="/admin/manage-cms" class="btn btn-default">Clear Form</a>
+                            <button type="submit" onclick="validate()" class="btn btn-primary pull-right">Add Content</button>
+                        }
+                        else
+                        {
+                            <a href="/admin/manage-cms" class="btn btn-default">Cancel</a>
+                            <button type="submit" onclick="validate()" class="btn btn-primary pull-right">Update Content</button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <br /><br />
+</div>
+<script type="text/javascript" src="~/admin_assets/tinymce/tinymce.min.js"></script>
+<script type="text/javascript">
+    $('#lnk_cms').addClass("active");
+
+    if ('@ViewBag.cmsmsg' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+
+    tinymce.init({
+        selector: "#CmsText",
+        convert_fonts_to_spans: false,
+        plugins: ["advlist autolink lists link charmap print preview anchor textcolor ", "searchreplace visualblocks code fullscreen"],
+        toolbar: "insertfile undo redo | fontselect | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | forecolor backcolor | fullscreen",
+        menubar: false,
+        height: "150",
+        statusbar: false,
+        setup: function (editor) {
+            editor.on('keyup', function (e) {
+                $("#descError").html('');
+                $(".mce-tinymce").css("border", "1px solid #c5c5c5");
+            });
+        }
+    });
+
+    function validate() {
+        var content = tinymce.get('CmsText').getContent();
+        if (content == null || content == '') {
+            $("#descError").html("Please enter the content");
+            $(".mce-tinymce").css("border", "1px solid #e80c4d");
+            return false;
+        }
+    }
+
+    //tinymce.init({
+    //    selector: "#CmsText_DE",
+    //    convert_fonts_to_spans: false,
+    //    plugins: ["advlist autolink lists link charmap print preview anchor textcolor ", "searchreplace visualblocks code fullscreen"],
+    //    toolbar: "insertfile undo redo | fontselect | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link | forecolor backcolor",
+    //    menubar: false,
+    //    height: "300",
+    //    statusbar: false
+    //});
+
+
+    $(document).ready(function () {
+        $('#CmsID').change(function () {
+            if ($('#CmsID').val() != "") {
+                $("#div_editor").css("display", "block");
+                //$("#div_editor_de").css("display", "block");
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/cms/_GetPageContent",
+                    contentType: "application/json; charset=utf-8",
+                    data: { id: $('#CmsID').val() },
+                    datatype: "json",
+                    success: function (data) {
+                        if (data.CmsText != null) {
+                            tinymce.get('CmsText').setContent(data.CmsText);
+                            //tinymce.get('CmsText_DE').setContent(data.CmsText_DE);
+                        }
+                        else {
+                            tinymce.get('CmsText').setContent('<p>Page Content Coming Soon</p>');
+                        }
+                        $(".mce-tinymce").css("border", "1px solid #c5c5c5");
+                        $("#descError").html('');
+                    }
+                });
+            }
+            else {
+                tinymce.get('CmsText').setContent("");
+                //$('#CmsText').code("");
+                $("#div_editor").css("display", "none");
+            }
+        });
+    });
+</script>

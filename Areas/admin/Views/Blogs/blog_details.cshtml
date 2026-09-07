@@ -1,0 +1,72 @@
+﻿@model juggle_joy.Models.tbl_blogs
+@using juggle_joy.Models;
+@{
+    Layout = null;
+    ViewBag.Title = "blogs";
+}
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    //var country = ctx.tbl_country.Where(x => x.CountryID == Model.CountryID).FirstOrDefault();
+    //var state = ctx.tbl_state.Where(x => x.StateID == Model.StateID).FirstOrDefault();
+}
+
+<div class="row">
+    <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+        <div class="row font_size">
+            <div class="form-group">
+                <div class="col-xs-6 col-sm-8 col-md-12 col-lg-12">
+                    <label class="bold"> Blog title:</label>
+                    <span> @Model.BlogTitle</span>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row font_size">
+            <div class="form-group">
+                <div class="col-xs-6 col-sm-8 col-md-12 col-lg-12">
+                    <label class="bold"> Blog category:</label>
+                    <span> @Model.tbl_blogcategory.Category</span>
+                </div>
+            </div>
+        </div>
+        <br />
+
+
+        <div class="row font_size">
+            <div class="form-group">
+                <div class="col-xs-6 col-sm-8 col-md-12 col-lg-12">
+                    <label class="bold">Posted Date:</label>
+                    <span>@GlobalMethods.ConvertToDate(Model.Date)</span>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row font_size">
+            <div class="form-group">
+                <div class="col-xs-6 col-sm-8 col-md-12 col-lg-12">
+                    <label class="bold"> Overview :</label>
+                    <br /><span style="direction: ltr;text-align: justify;">@Html.Raw(Model.BlogDescription.Trim())</span>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        <div class="row font_size">
+            <div class="form-group">
+                <div class="col-xs-6 col-sm-8 col-md-12 col-lg-12">
+                    <label class="bold">  Blog Image:</label><br />
+                    <img src="~/assets/Blogs/Icons/@Model.BlogImage" style="width:200px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+

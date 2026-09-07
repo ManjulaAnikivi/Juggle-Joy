@@ -1,0 +1,154 @@
+﻿@using juggle_joy.Models
+@using System.Text.RegularExpressions;
+@{
+    Layout = null;
+    //ViewBag.Title = "Blog";
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var blgcategory = ctx.tbl_blogcategory.ToList();
+    var firstcategory = blgcategory.FirstOrDefault();
+    var bloglist = ctx.tbl_blogs.Where(x=>x.CategoryID== firstcategory.CategoryID).ToList();
+    var firstblog = bloglist.FirstOrDefault();
+    var list = bloglist.Skip(1);
+    Url_formating url = new Url_formating();
+
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - @MvcApplication.project_name</title>
+
+    @Html.Partial("css")
+
+</head>
+<body class="body-blog-page">
+    @Html.Partial("header")
+    <div class="main blog-page">
+        <div class="blog-archive">
+            <div class="blog-archive-main">
+                <div class="container">
+                    <div class="inner-container">
+                        <h1 class="font-caveat font-size-caveat-main">Step into Our Blog World!</h1>
+                        <p>
+                            Welcome to the JuggleJoy blog! Dive in to our information hub filled with time-saving hacks and parenting wisdom. Say hello to navigating parenthood with joy, laughter and ease!
+                        </p>
+                    </div>
+
+                    <div class="blog-categories">
+                        <p class="blog-categories-heading">Categories</p>
+                        <div class="blog-categories-main">
+                            <ul class="blog-category-wrapper">
+                                @foreach (var item in blgcategory)
+                                {
+                                    <li class="blog-category-name"><a href="/blog-category/@url.encode_url(item.Category)/@item.CategoryID">@item.Category</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="blog-posts-thumbnail">
+                        @if (firstblog != null)
+                        {
+                            <div class="blog-posts-grid">
+                                <div class="blog-posts blog-banner-post">
+                                    <a href="/blog-details/@url.encode_url(firstblog.BlogTitle)/@firstblog.BlogID" class="blog-post-link blog-post-image-link">
+                                        @if (firstblog.BlogImage == null)
+                                        {
+                                            <img src="~/Assets/images/no-img.png" alt="No Image">
+                                        }
+                                        else
+                                        {
+                                            <img src="~/Assets/Blogs/Images/@firstblog.BlogImage" alt="Blog Image">
+
+                                        }
+                                    </a>
+
+                                    <div class="blog-post-title-text">
+                                        <div class="blog-post-title">
+                                            <h5>@firstblog.tbl_blogcategory.Category</h5>
+                                            <a href="/blog-details/@url.encode_url(firstblog.BlogTitle)/@firstblog.BlogID" class="blog-post-link">
+                                                <h4>@firstblog.BlogTitle</h4>
+                                            </a>
+                                        </div>
+                                        <div class="blog-post-content">
+                                            <p>
+                                                @if (firstblog.BlogDescription != null)
+                                                {
+                                                    string noHTML = Regex.Replace(firstblog.BlogDescription, @"<[^>]+>|&nbsp;", "").Trim();
+                                                    string noHTMLNormalised = Regex.Replace(noHTML, @"\s{2,}", " ");
+                                                    if (noHTMLNormalised.Length > 300)
+                                                    {
+                                                        <span class="desctxt">@noHTMLNormalised.Substring(0, 300)</span><span>...</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="desctxt">@noHTMLNormalised</span>
+                                                    }
+
+                                                }
+                                            </p>
+                                        </div>
+                                        <a href="/blog-details/@url.encode_url(firstblog.BlogTitle)/@firstblog.BlogID" class="blog-post-link primary-btn">Read</a>
+                                    </div>
+                                </div>
+                                @foreach (var item in list)
+                                {
+                                    <div class="blog-posts">
+                                        <a href="/blog-details/@url.encode_url(item.BlogTitle)/@item.BlogID" class="blog-post-link blog-post-image-link">
+                                            @if (item.BlogImage == null)
+                                            {
+                                                <img src="~/Assets/images/no-img.png" alt="No Image">
+
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Assets/Blogs/Images/@item.BlogImage" alt="blog-page-1">
+
+                                            }
+                                        </a>
+                                        <div class="blog-post-title-text">
+                                            <div class="blog-post-title">
+                                                <h5>@item.tbl_blogcategory.Category</h5>
+                                                <a href="/blog-details/@url.encode_url(item.BlogTitle)/@item.BlogID" class="blog-post-link">
+                                                    <h4>@item.BlogTitle</h4>
+                                                </a>
+                                            </div>
+                                            <div class="blog-post-content">
+                                                <p>
+                                                    @if (item.BlogDescription != null)
+                                                    {
+                                                        string noHTML = Regex.Replace(item.BlogDescription, @"<[^>]+>|&nbsp;", "").Trim();
+                                                        string noHTMLNormalised = Regex.Replace(noHTML, @"\s{2,}", " ");
+                                                        if (noHTMLNormalised.Length > 110)
+                                                        {
+                                                            <span class="desctxt">@noHTMLNormalised.Substring(0, 110)</span><span>...</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="desctxt">@noHTMLNormalised</span>
+                                                        }
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <h4 class="font-caveat">No records found</h4>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @Html.Partial("footer")
+</body>
+</html>
+@Html.Partial("js")

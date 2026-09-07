@@ -1,0 +1,2083 @@
+﻿@model juggle_joy.Models.tbl_task
+@using juggle_joy.Models
+@using System.Data.Entity;
+
+@{
+    Layout = null;
+    int handlerid = Convert.ToInt32(Session["HandlerID"]);
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var tbluser = ctx.tbl_user.ToList();
+    var assist_name = tbluser.Where(x => x.UserID == Model.AssistantID).FirstOrDefault();
+    var user = tbluser.Where(x => x.UserID == Model.FromID).FirstOrDefault();
+
+    var Category = ctx.tbl_category.ToList();
+    var category = Category.Where(x => x.CategoryID == Model.CategoryID).FirstOrDefault();
+    var tblcat = Category.Where(x => x.CategoryID == Model.CategoryID).FirstOrDefault();
+
+    var handler = tbluser.Where(x => x.Status == (int)UserStatus.Active && x.HandlerID == handlerid).ToList();
+    var hanlderName = tbluser.Where(x => x.UserID == handlerid).FirstOrDefault();
+    var handler_firstname = hanlderName.FirstName;
+    var handler_initial = hanlderName.FirstName[0];
+    var handler_last = hanlderName.LastName[0];
+
+    var answerlist = ctx.tbl_answer.Include("tbl_question").Where(x => x.TaskID == Model.TaskID).ToList();
+
+    //calaculating diff btn two dates in terms of days
+    var daysDiffInt = "";
+
+    var DiffInt = 0;
+
+    if (Model.Deadline.HasValue)
+    {
+        var deadline = Model.Deadline.Value.Date;
+        var currentDate = DateTime.Now.Date;
+
+        var diff = deadline - currentDate;
+
+        var daysDiff = diff.TotalDays;
+
+        DiffInt = (int)daysDiff;
+        daysDiffInt = DiffInt.ToString();
+
+
+        //var difference = deadline - currentDate;
+        //var daysDifference = difference.TotalDays;
+        //diffInt = (int)daysDifference;
+        //daysDiffint = DiffInt;
+    }
+
+    //loading task details
+    //var strid = Model.SubCategoryID.ToString();
+
+    //var tblque = ctx.tbl_question
+    //			.AsEnumerable() // Switch to LINQ to Objects
+    //			.Where(x => x.SubCategoryID.Split(',').Any(z => z.Trim() == strid))
+    //			.ToList();
+
+    var catid = Model.CategoryID;
+    var strid = Model.SubCategoryID.ToString();
+    var tblque = ctx.tbl_question.ToList();
+    if (catid == 10)
+    {
+        tblque = ctx.tbl_question.Where(x => x.QuestionID == 1).ToList();
+    }
+    else
+    {
+        tblque = ctx.tbl_question
+               .AsEnumerable() // Switch to LINQ to Objects
+               .Where(x => x.SubCategoryID.Split(',').Any(z => z.Trim() == strid))
+               .ToList();
+    }
+
+    //fetching tbl_log based on date
+    var tblLog = ctx.tbl_log.Where(x => x.TaskID == Model.TaskID).GroupBy(x => DbFunctions.TruncateTime(x.LogDate)).ToList();
+
+    //minitask
+
+    var minitask = ctx.tbl_minitask.Where(x => x.TaskID == Model.TaskID).ToList();
+    int i = 1;
+    int k = 1;
+
+    int id = Convert.ToInt32(ViewBag.id);
+    int adid = Convert.ToInt32(ViewBag.adid);
+
+    var filelist = ctx.tbl_taskattachment.Where(x => x.TaskID == Model.TaskID).OrderByDescending(x => x.TaskAttachmentID).ToList();
+
+    string ext = "";
+
+    //recommendations
+    var recommendation = ctx.tbl_recommendations.Where(x => x.TaskID == Model.TaskID && (x.MiniTaskID == 0 || x.MiniTaskID == null)).ToList();
+
+    var recstatus = ctx.tbl_recommendations.Where(x => x.TaskID == Model.TaskID && x.TaskStatus == (int)TaskStatus.Received && (x.MiniTaskID == 0 || x.MiniTaskID == null)).FirstOrDefault();
+
+    //var recommendation = ctx.tbl_recommendations.Where(x => x.TaskID == Model.TaskID && x.MiniTaskID == 0 || x.MiniTaskID == null).ToList();
+
+    //var recstatus = ctx.tbl_recommendations.Where(x => x.TaskID == Model.TaskID && x.TaskStatus == (int)TaskStatus.Received&& x.MiniTaskID == 0 || x.MiniTaskID == null).FirstOrDefault();
+    int j = 1;
+    var userid = Convert.ToInt32(Session["HandlerID"]);
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    @Html.Partial("assistantHandler_css")
+    <style>
+        .bttn {
+            min-width: 70px;
+            height: 30px;
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20.83px;
+            color: var(--white-color);
+            background: var(--primary-color);
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            /*	padding: 0px 15px;
+            padding-top: 2px;*/
+            outline: none;
+            gap: 5px;
+        }
+
+        .primary-btn {
+            min-width: 120px;
+            height: 40px;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--white-color);
+            background: var(--primary-color);
+            /* text-transform: uppercase; */
+            text-decoration: none;
+            text-underline-offset: 3px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            outline: none;
+        }
+
+        .message-bubble-send .message-bubble-wrapper {
+            justify-content: end;
+        }
+
+
+        .rev-acc-inn-hd {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .task-review-box-details .props-wrapper .item {
+            margin-bottom: 10px !important;
+        }
+
+
+        .task-review {
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            line-height: 18.23px !important;
+            border: 2px solid #FFB065 !important;
+            border-radius: 10px !important;
+            /* padding: 8px 40px 8px 20px; */
+            color: var(--primary-text) !important;
+            background: #ffffff !important;
+            position: relative;
+            /*display: flex;*/
+            flex-direction: column;
+        }
+
+        .task-review-box-details .label {
+            font-weight: 700 !important;
+            margin-bottom: 6px !important;
+        }
+
+        .rev-acc-inn-hd .meta-data .title {
+            margin-bottom: 6px;
+            font-size: 16px !important;
+        }
+
+        .task-review-box-details p {
+            margin-bottom: 12px;
+        }
+
+        .bold-font {
+            font-weight: bold;
+        }
+
+
+        .selectedopt {
+            color: white;
+            font-size: 15px;
+            background-color: #00c1ab;
+            border-radius: 7px;
+            padding: 2px;
+            margin-right: 5px;
+        }
+
+
+        [data-title]:hover:after {
+            visibility: visible;
+        }
+
+        [data-title]:after {
+            content: attr(data-title);
+            background-color: #00c1ab;
+            color: white;
+            font-size: 15px;
+            position: absolute;
+            padding: 4px 8px 4px 8px;
+            visibility: hidden;
+        }
+
+       
+    </style>
+    <style>
+        .message-view-box {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding: 0 20px 10px;
+        }
+
+            .message-view-box::-webkit-scrollbar {
+                background: #00C1AB;
+                width: 5px;
+                height: auto;
+            }
+
+            .message-view-box::-webkit-scrollbar-thumb:hover {
+                background: #00c1abb3;
+            }
+
+            .message-view-box::-webkit-scrollbar-track {
+                background: #e7e7e7;
+            }
+        .message-view-box {
+            max-height: 56vh;
+            overflow-y: auto;
+            padding: 0 20px 10px;
+        }
+
+        .message-view-box::-webkit-scrollbar {
+            background: #00C1AB;
+            width: 5px;
+            height: auto;
+        }
+
+        .message-view-box::-webkit-scrollbar-thumb:hover {
+            background: #00c1abb3;
+        }
+
+        .message-view-box::-webkit-scrollbar-track {
+            background: #e7e7e7;
+        }
+
+        .popup-task-details::-webkit-scrollbar-track,
+        .popup-tabs-container .popup-tabs-section:not(.message-handler-main)::-webkit-scrollbar-track,
+        .popup-tabs-container .message-handler-main .message-view-box::-webkit-scrollbar-track {
+            background: #e7e7e7;
+        }
+
+        .popup-task-details::-webkit-scrollbar-thumb,
+        .popup-tabs-container .popup-tabs-section:not(.message-handler-main)::-webkit-scrollbar-thumb,
+        .popup-tabs-container .message-handler-main .message-view-box::-webkit-scrollbar-thumb {
+            background: #00c1ab4d;
+            border-radius: 10px;
+        }
+
+            .popup-task-details::-webkit-scrollbar-thumb:hover,
+            .popup-tabs-container .popup-tabs-section:not(.message-handler-main)::-webkit-scrollbar-thumb:hover,
+            .popup-tabs-container .message-handler-main .message-view-box::-webkit-scrollbar-thumb:hover {
+                background: #00c1abb3;
+            }
+
+
+        .popup-tabs-container .popup-tabs-section:not(.message-handler-main) {
+            /* position: sticky; */
+            min-height: 50vh;
+            max-height: 90vh;
+            overflow-y: auto;
+            /* top: 60px; */
+        }
+
+        .popup-tabs-container .message-handler-main .message-view-box {
+            /* position: sticky; */
+            min-height: 50vh;
+            max-height: 88vh;
+            overflow-y: auto;
+            /* top: 60px; */
+            padding: 0 20px 10px;
+        }
+
+        .message-handler-main-wrapper {
+            border: 1px solid #D1CEC6;
+            border-radius: 20px;
+            padding: 15px 0 0;
+        }
+
+        .popup-task-details {
+            height: 60vh;
+            overflow-y: auto;
+            border-top: 1px solid #D1CEC6;
+        }
+
+
+        .message-view-box {
+            /* min-height: 50vw;
+        max-height: 66vw;
+        overflow-y: auto;
+        display: inline-grid; */
+        }
+
+        .message-view-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+            height: 100%;
+            min-height: 50vh;
+        }
+
+        .message-bubble {
+            position: relative;
+            margin-top: 5px;
+        }
+
+            .message-bubble.viewbox-last-message {
+                margin-top: 0;
+            }
+
+                .message-bubble.viewbox-last-message .chat-message {
+                    background: #D1CEC6;
+                }
+
+        .message-bubble-wrapper {
+            display: flex;
+            gap: 10px;
+            padding-top: 5px;
+        }
+
+        .message-avatar {
+            display: inline-block;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+            .message-avatar > * {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                color: var(--white-color);
+                font-size: 16px;
+                font-weight: 700;
+                line-height: 20.83px;
+                object-fit: contain;
+            }
+
+        .receive-avatar.message-avatar > * {
+            background: var(--fade-red);
+        }
+
+        .send-avatar.message-avatar > * {
+            background: var(--primary-color);
+        }
+
+
+        .chat-message {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 26px;
+            text-align: left;
+            color: var(--primary-text);
+            background: #F2F3EE;
+            border-radius: 10px;
+            padding: 10px 20px;
+        }
+
+        .message-bubble-receive.chat-message {
+            justify-content: start;
+        }
+
+        .message-bubble-send .message-bubble-wrapper {
+            justify-content: end;
+        }
+
+        .chat-time {
+            display: block;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 18.23px;
+            color: var(--tertiary-color);
+            margin-top: 5px;
+        }
+
+        .receive-time.chat-time {
+            text-align: right;
+        }
+
+        .send.chat-time {
+            text-align: left;
+        }
+
+        .receive-time.chat-time {
+            text-align: left;
+        }
+
+        .send-time.chat-time {
+            text-align: right;
+        }
+
+        span.new-receive-alert {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 18.23px;
+            text-align: left;
+            color: var(--fade-red);
+        }
+        .type-message-main {
+            background: #FAFAF9;
+            padding: 20px;
+            border-radius: 0 0 20px 20px;
+        }
+        .type-message-container {
+            width: 100%;
+            min-height: 50px;
+            border: 1px solid var(--secondary-color);
+            border-radius: 10px;
+            padding: 2px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .type_message {
+            border: none;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 26px;
+            color: var(--primary-text);
+            padding: 0;
+            outline: none;
+            resize: none;
+        }
+            .type_message::placeholder {
+                color: #BBBBBB;
+            }
+        .file-input-wrapper {
+            display: inline-flex;
+            position: relative;
+            font-size: 16px;
+            color: var(--tertiary-color);
+        }
+        .file_attachment {
+            position: absolute;
+            width: 14px;
+            height: 16px;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+        .message-submit {
+            font-size: 20px;
+            line-height: 26px;
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            outline: none;
+        }   
+    </style>
+</head>
+<body class="body-assistant-specific-task-page body-admin-pages">
+    @Html.Partial("handlerheader")
+    <main class="main assistant-specific-task-page">
+        <section class="admin-handler-dashboard-section">
+            <div class="admin-handler-dashboard-main">
+                <div class="container-fluid">
+                    <div class="grid admin-page-grid">
+                        <div class="admin-page-sidebar">
+                            <div class="admin-page-sidebar-main">
+                                <div class="admin-page-sidebar-row">
+                                    <h3 class="handler">@hanlderName.FirstName</h3>
+                                    <ul class="listing">
+
+                                        @foreach (var item in handler)
+                                        {
+                                            var assistants = ctx.tbl_user.Where(x => x.UserID == item.UserID && x.UserType == "A" && x.Status == (int)UserStatus.Active).ToList();
+                                            foreach (var items in assistants)
+                                            {
+                                                var pendingTask = ctx.tbl_task.Where(x => x.AssistantID == items.UserID && x.Status == (int)TaskStatus.Received).ToList().Count();
+                                                if (items.UserID == Model.AssistantID)
+                                                {
+                                                    <li class="selected">
+                                                        <a href="/Handlers/task_pending/@item.UserID">@items.FirstName</a>
+                                                        @if (pendingTask > 0)
+                                                        {
+                                                            <span class="sidebar-notification-count">
+
+                                                                @pendingTask
+                                                            </span>
+                                                        }
+
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li class="">
+                                                        <a href="/Handlers/task_pending/@item.UserID">@items.FirstName</a>
+                                                        @if (pendingTask > 0)
+                                                        {
+                                                            <span class="sidebar-notification-count">
+                                                                @pendingTask
+                                                            </span>
+                                                        }
+                                                    </li>
+                                                }
+
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="admin-page-task-content background-panel-color">
+                            <div class="admin-page-task-content-main">
+                                <div class="form_submit" style="text-align:right;margin-bottom:10px">
+                                    <button type="submit" value="Go back" onclick="" class="bttn" id="reloadBackButton"><i class="fa fa-arrow-left" aria-hidden="true" style="font-size:26px"></i></button>
+                                </div>
+                                <div class="admin-page-task-content-container">
+
+                                    <div class="dashboard-popup-content dashboard-popups dashboard-popup-background">
+                                        <section class="task-detail-popup message-handler">
+                                            <div class="task-detail-popup-main">
+                                                <div class="popup-container">
+                                                    <div class="task-detail-popup-wrapper">
+                                                        <div class="content-wrapper">
+
+                                                            <div class="task-popup-box-contents">
+                                                                <div class="row">
+
+                                                                    <div class="col-lg-9 col-md-8 col-12 tab-content">
+                                                                        <div class="popup-tabs">
+
+                                                                            <div class="popup-task-tab-titles">
+                                                                                <ul>
+                                                                                    <li class="popup-task-tab">
+                                                                                        <a href="javascript:void(0)"
+                                                                                           class="popup-tab-title active-tab"
+                                                                                           data-id="task-details">
+                                                                                            <i class="fa-solid fa-comment-dots"></i><span>
+                                                                                                Task
+                                                                                                Details
+                                                                                            </span>
+                                                                                            <!-- <span
+                                                                                            class="notification-count">3</span> -->
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    @if (Model.Status == (int)TaskStatus.Ongoing || Model.Status == (int)TaskStatus.Complete)
+                                                                                    {
+                                                                                        <li class="popup-task-tab">
+                                                                                            <a href="javascript:void(0)"
+                                                                                               class="popup-tab-title"
+                                                                                               data-id="task-journal">
+                                                                                                <i class="fa-solid fa-pen-to-square"></i><span>
+                                                                                                    Messenger
+                                                                                                </span>
+                                                                                            </a>
+                                                                                        </li>
+                                                                                        @*<li class="popup-task-tab">
+                                                                                                <a href="javascript:void(0)"
+                                                                                                   class="popup-tab-title"
+                                                                                                   data-id="message-handler">
+                                                                                                    <i class="fa-solid fa-comment-dots"></i><span>
+                                                                                                        Chat
+                                                                                                    </span><span class="notification-count" id="chatcount"></span>
+                                                                                                </a>
+                                                                                            </li>*@
+                                                                                    }
+                                                                                    <li class="popup-task-tab">
+                                                                                        <a href="javascript:void(0)"
+                                                                                           class="popup-tab-title"
+                                                                                           data-id="view-mini-task">
+                                                                                            <i class="fa-solid fa-eye"></i><span>
+                                                                                                Mini-task
+                                                                                            </span>
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li class="popup-task-tab">
+                                                                                        <a href="javascript:void(0)"
+                                                                                           class="popup-tab-title"
+                                                                                           data-id="attachment">
+                                                                                            <i class="fa-solid fa-paperclip"></i><span>Attachment</span>
+                                                                                        </a>
+                                                                                    </li>
+                                                                                    <li class="popup-task-tab">
+                                                                                        <a href="javascript:void(0)"
+                                                                                           class="popup-tab-title"
+                                                                                           data-id="task-events">
+                                                                                            <i class="fa-solid fa-calendar-days"></i><span>
+                                                                                                Events
+                                                                                            </span>
+                                                                                        </a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+
+                                                                            <div class="popup-tabs-container">
+
+                                                                                <div class="popup-tabs-section tab-active"
+                                                                                     data-id="task-details">
+
+                                                                                    <div class="task-popup-content task-content">
+                                                                                        <div class="task-popup-content-left task-left">
+                                                                                            <div class="task-icon-wrapper">
+                                                                                                <div class="task-icon">
+                                                                                                    <img src="~/Assets/Category/@tblcat.CategoryImage"
+                                                                                                         alt="task-cake">
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="popup-task-title">
+                                                                                                <h2>
+                                                                                                    @Model.TaskTitle
+                                                                                                </h2>
+                                                                                                <div class="popup-task-title-bottom">
+                                                                                                    <p class="task-bottom-info">
+                                                                                                        <span class="strong-heading">
+                                                                                                            Task
+                                                                                                            in
+                                                                                                            progress:
+                                                                                                        </span>
+                                                                                                        @if (Model.AssistantID != null)
+                                                                                                        {
+                                                                                                            <span class="text-content">
+                                                                                                                With
+                                                                                                                your
+                                                                                                                assistant,
+                                                                                                                @assist_name.FirstName @assist_name.LastName
+                                                                                                            </span>
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            <span class="text-content">
+                                                                                                                Assistant not assigned
+                                                                                                            </span>
+                                                                                                        }
+
+                                                                                                    </p>
+
+                                                                                                    <p class="task-bottom-info">
+                                                                                                        <span class="strong-heading">
+                                                                                                            Due
+                                                                                                            Date:
+                                                                                                        </span>
+                                                                                                        @if (@Model.Deadline.HasValue)
+                                                                                                        {
+                                                                                                            if (DiffInt > 0)
+                                                                                                            {
+                                                                                                                <span class="text-content">
+                                                                                                                    @Model.Deadline.Value.ToString("dd MMM yy") (in  @daysDiffInt
+                                                                                                                    days)
+                                                                                                                </span>
+
+                                                                                                            }
+                                                                                                            else if (DiffInt == 0)
+                                                                                                            {
+                                                                                                                <span class="text-content">
+                                                                                                                    @Model.Deadline.Value.ToString("dd MMM yy") (Expiring today)
+                                                                                                                </span>
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+                                                                                                                <span class="text-content">
+                                                                                                                    Expired
+                                                                                                                </span>
+                                                                                                            }
+
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            <span class="text-content">
+                                                                                                                No Due Date
+                                                                                                            </span>
+                                                                                                        }
+
+
+                                                                                                    </p>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    <div class="box-content">
+                                                                                        @if (Model.Status == (int)TaskStatus.Ongoing || Model.Status == (int)TaskStatus.Complete)
+                                                                                        {
+                                                                                            <div class="popup-task-review-box box-background">
+                                                                                                @*<span class="task-status-status task-status status-action-required"></span>*@
+                                                                                                <div class="popup-task-review-wrapper">
+                                                                                                    <h4>Recommendations</h4>
+                                                                                                    <div class="popup-task-reviws">
+
+                                                                                                        @if (recommendation.Count() > 0)
+                                                                                                        {
+                                                                                                            foreach (var item in recommendation)
+                                                                                                            {
+
+                                                                                                                <div class="task-review">
+                                                                                                                    @if (item.TaskStatus == 1)
+                                                                                                                    {
+                                                                                                                        @*<span class="icon-container">
+                                                                                                                                <i class="fa fa-check selectedopt" aria-hidden="true" title="selected by user"></i>
+                                                                                                                            </span>*@
+                                                                                                                        <a data-title="selected by user"> <i class="fa fa-check selectedopt" aria-hidden="true"></i></a>
+                                                                                                                    }
+                                                                                                                    <span class="strong-heading">
+                                                                                                                        Option @j :
+                                                                                                                    </span>
+                                                                                                                    <span class="text-content">
+                                                                                                                        @item.Name
+                                                                                                                    </span>
+                                                                                                                    <a href="javascript:void(0)"
+                                                                                                                       class="task-review-btn">
+                                                                                                                        <i class="fa-solid fa-chevron-right"></i>
+                                                                                                                    </a>
+                                                                                                                    <div class="task-review-box-details">
+                                                                                                                        @*Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium explicabo officia ad laboriosam quos rem.*@
+                                                                                                                        <div class="rev-acc-inn-hd">
+                                                                                                                            <div class="meta-data">
+                                                                                                                                <h6 class="title">@item.Name</h6>
+                                                                                                                                <div class="rating">
+                                                                                                                                    <span class="rat-list" style="color: #ffb065 !important">
+                                                                                                                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                                                                                                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                                                                                                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                                                                                                                        <i class="far fa-star" aria-hidden="true"></i>
+                                                                                                                                        <i class="far fa-star" aria-hidden="true"></i>
+                                                                                                                                    </span>
+                                                                                                                                    <span class="rat-label">26 reviews / 8.5</span>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                        <p>@item.Note</p>
+                                                                                                                        <div class="props-wrapper row">
+                                                                                                                            <div class="item col-md-6 col-12">
+                                                                                                                                <div class="label">Price</div>
+                                                                                                                                <div class="value">@item.Price</div>
+                                                                                                                            </div>
+                                                                                                                            <div class="item col-md-6 col-12">
+                                                                                                                                <div class="label">Availability</div>
+                                                                                                                                <div class="value">@item.Availability</div>
+                                                                                                                            </div>
+                                                                                                                            <div class="col-12 item">
+                                                                                                                                <div class="label">Next step</div>
+                                                                                                                                <div class="value">@item.NextStep </div>
+                                                                                                                            </div>
+                                                                                                                            @if (item.TaskStatus == 1)
+                                                                                                                            {
+                                                                                                                                <div class="col-12 item">
+                                                                                                                                    <div class="label">User Note</div>
+                                                                                                                                    <div class="value">@Model.UserNote </div>
+                                                                                                                                </div>
+                                                                                                                            }
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                                j++;
+                                                                                                            }
+
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            <div class="" style="font-size: 14px !important; font-weight: 400 !important;">
+                                                                                                                <span class="strong-heading">
+                                                                                                                    No Recommendations
+                                                                                                                </span>
+                                                                                                            </div>
+                                                                                                        }
+
+
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        }
+
+
+
+                                                                                        <div class="popup-task-details-box box-background">
+                                                                                            <div class="popup-task-details-wrapper">
+                                                                                                <h4>Task details</h4>
+
+
+                                                                                                @foreach (var item in tblque)
+                                                                                                {
+                                                                                                    var ans = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID && x.QuestionID == item.QuestionID && x.MinitaskID == null).FirstOrDefault();
+
+
+                                                                                                    <div class="task-details">
+                                                                                                        <h6>@item.Question</h6>
+                                                                                                        @if (ans != null)
+                                                                                                        {
+
+                                                                                                            if (item.OptionType == "Radio")
+                                                                                                            {
+                                                                                                                var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == ans.Answer).FirstOrDefault();
+                                                                                                                if (tblopt != null)
+                                                                                                                {
+                                                                                                                    if (tblopt.OptionType == "textbox")
+                                                                                                                    {
+                                                                                                                        <p>
+                                                                                                                            @tblopt.Question,@ans.OtherAnswer
+                                                                                                                        </p>
+                                                                                                                    }
+                                                                                                                    else
+                                                                                                                    {
+                                                                                                                        <p>
+                                                                                                                            @tblopt.Question
+                                                                                                                        </p>
+                                                                                                                    }
+
+                                                                                                                }
+
+                                                                                                            }
+                                                                                                            else if (item.OptionType == "CheckBox")
+                                                                                                            {
+                                                                                                                var anslist = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID && x.QuestionID == item.QuestionID && x.MinitaskID == null).ToList();
+                                                                                                                foreach (var anwser in anslist)
+                                                                                                                {
+                                                                                                                    var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == anwser.Answer).FirstOrDefault();
+                                                                                                                    if (tblopt != null)
+                                                                                                                    {
+                                                                                                                        if (tblopt.OptionType == "textbox")
+                                                                                                                        {
+                                                                                                                            <p>
+                                                                                                                                @tblopt.Question,@anwser.OtherAnswer
+                                                                                                                            </p>
+                                                                                                                        }
+                                                                                                                        else
+                                                                                                                        {
+                                                                                                                            <p>
+                                                                                                                                @tblopt.Question
+                                                                                                                            </p>
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                            else if (item.OptionType == "Option")
+                                                                                                            {
+                                                                                                                var anslist = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID && x.QuestionID == item.QuestionID && x.MinitaskID == null).ToList();
+
+                                                                                                                foreach (var anwser in anslist)
+                                                                                                                {
+                                                                                                                    var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == anwser.Answer).FirstOrDefault();
+                                                                                                                    if (tblopt != null)
+                                                                                                                    {
+                                                                                                                        if (tblopt.OptionType == "text" || tblopt.OptionType == "counter" || tblopt.OptionType == "date" || tblopt.OptionType == "time" || tblopt.OptionType == "textarea")
+                                                                                                                        {
+                                                                                                                            <p>
+                                                                                                                                @tblopt.Question:@anwser.OtherAnswer
+                                                                                                                            </p>
+                                                                                                                        }
+
+                                                                                                                        if (tblopt.OptionType == "checkbox")
+                                                                                                                        {
+                                                                                                                            if (@anwser.OtherAnswer != null)
+                                                                                                                            {
+                                                                                                                                <p>
+                                                                                                                                    @tblopt.Question:checked
+                                                                                                                                </p>
+                                                                                                                            }
+
+                                                                                                                        }
+
+                                                                                                                        if (tblopt.OptionType == "radio")
+                                                                                                                        {
+                                                                                                                            var opttypeid = Convert.ToInt32(anwser.OtherAnswer);
+                                                                                                                            var opttypa = ctx.tbl_optiontype.Where(x => x.OptionTypeID == opttypeid).FirstOrDefault();
+                                                                                                                            <p>
+                                                                                                                                @tblopt.Question:@opttypa.Question
+                                                                                                                            </p>
+                                                                                                                        }
+
+
+
+                                                                                                                        if (tblopt.OptionType == "ddtime")
+                                                                                                                        {
+                                                                                                                            var opttypeid = Convert.ToInt32(anwser.OtherAnswer);
+                                                                                                                            var opttypa = ctx.tbl_optiontype.Where(x => x.OptionTypeID == opttypeid).FirstOrDefault();
+                                                                                                                            <p>
+                                                                                                                                @tblopt.Question:@opttypa.Question
+                                                                                                                            </p>
+                                                                                                                        }
+
+                                                                                                                    }
+                                                                                                                }
+
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+                                                                                                                //for counter and textarea
+                                                                                                                <p>
+                                                                                                                    @ans.Answer
+                                                                                                                </p>
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                    </div>
+                                                                                                }
+
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                </div>
+
+                                                                                @if (Model.Status == (int)TaskStatus.Ongoing || Model.Status == (int)TaskStatus.Complete)
+                                                                                {
+
+                                                                                    <div class="popup-tabs-section task-journal-main"
+                                                                                         data-id="task-journal">
+
+                                                                                        <div class="task-journal-wrapper">
+                                                                                            <div class="task-journal-heading-wrapper">
+                                                                                                <h4>
+                                                                                                    @Model.TaskTitle
+                                                                                                </h4>
+                                                                                            </div>
+
+
+                                                                                            <div class="task-journal-message-box-container">
+                                                                                                <p id="lbl_msg" style="margin-left: 79px; margin-top: 10px; margin-bottom: -16px;"></p>
+                                                                                                <div class="task-journal-message-box-wrapper">
+                                                                                                    <span class="task-journal-avatar" style="visibility:hidden">AW</span>
+
+                                                                                                    <div class="task-journal-message-box-main">
+                                                                                                        <div class="task-journal-message-box-tabs">
+                                                                                                            <ul>
+                                                                                                                <li class="task-journal-tab">
+                                                                                                                    <a href="javascript:void(0)"
+                                                                                                                       data-id="message-handler"
+                                                                                                                       class="task-journal-tab-title active-tab" id="task-journal-chat">
+                                                                                                                        <i class="fa-solid fa-comment-dots"></i><span>
+                                                                                                                            Chat
+                                                                                                                        </span><span class="notification-count" id="chatcount" style=" right: -13px !important;"></span>
+                                                                                                                    </a>
+                                                                                                                </li>
+                                                                                                                <li class="task-journal-tab">
+                                                                                                                    <a href="javascript:void(0)"
+                                                                                                                       data-id="task-journal-private-note"
+                                                                                                                       class="task-journal-tab-title">
+                                                                                                                        <i class="fas fa-sticky-note"></i>
+                                                                                                                        Private
+                                                                                                                        note
+                                                                                                                    </a>
+                                                                                                                </li>
+                                                                                                            </ul>
+                                                                                                        </div>
+
+
+                                                                                                        <div class="task-journal-tabs-container">
+
+                                                                                                            <div class="task-journal-tab-content task-journal-public-reply message-handler-main tab-active" data-id="message-handler">
+                                                                                                                <div class="message-handler-main-wrapper" id="chatbox"></div>
+                                                                                                            </div>
+                                                                                                            <div class="task-journal-tab-content task-journal-public-reply tab-active"
+                                                                                                                 data-id="task-journal-public-reply">
+
+                                                                                                                @*<div class="task-journal-tab-content task-journal-public-reply message-handler-main tab-active" data-id="message-handler">
+                                                                                                                        <div class="message-handler-main-wrapper" id="chatbox"></div>
+                                                                                                                    </div>*@
+                                                                                                            </div>
+                                                                                                            <div class="task-journal-tab-content task-journal-private-note"
+                                                                                                                 data-id="task-journal-private-note">
+                                                                                                                <form id="notes" enctype="multipart/form-data" method="post">
+
+                                                                                                                    <div class="task-journal-message-input-box-wrapper">
+                                                                                                                        <div class="task-journal-message-input-box">
+                                                                                                                            <textarea name="Note" class="note"
+                                                                                                                                      id="task-journal-message"
+                                                                                                                                      cols="30"
+                                                                                                                                      rows="5">
+
+																															</textarea>
+                                                                                                                        </div>
+
+                                                                                                                        <div class="task-journal-message-input-tools">
+                                                                                                                            <button type="button" id="bold">
+                                                                                                                                <i class="fa-solid fa-bold"></i>
+                                                                                                                            </button>
+                                                                                                                            <div class="file-input-wrapper">
+                                                                                                                                <i class="fa-solid fa-paperclip"></i>
+                                                                                                                                <input type="file" name="Filepath" id="file_attachment" class="file_attachment file">
+                                                                                                                                <a id="filenameDisplay" href="" style="font-size: 14px; padding-left: 6px;"></a>
+                                                                                                                            </div>
+                                                                                                                            <button>
+                                                                                                                                <i class="fa-solid fa-t"></i>
+                                                                                                                            </button>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                    <p id="lbl_msg1" style="padding-top:5px"></p>
+
+                                                                                                                    <input type="hidden" name="NoteID" class="NoteID" />
+                                                                                                                    <input type="hidden" name="TaskID" value="@Model.TaskID" />
+                                                                                                                    <input type="hidden" name="HandlerID" value="@Model.ToID" />
+                                                                                                                    @*<input type="hidden" name="AssistantID" value="@Model.AssistantID" />*@
+
+                                                                                                                    <button type="submit" class="primary-btn my-2" id="btn-submit">Save</button>
+                                                                                                                </form>
+
+                                                                                                            </div>
+
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+
+                                                                                            <div id="notelist">
+
+
+
+                                                                                            </div>
+                                                                                            @*<div class="task-journal-message-view-box-container" style="display:none">
+                                                                                                <div class="task-journal-message-view-box-wrapper">*@
+                                                                                            @*<div class="task-journal-message-view-box">
+                                                                                                    <span class="task-journal-avatar">AW</span>
+                                                                                                    <div class="task-journal-message-view-box-message">
+                                                                                                        <p class="task-journal-message-meta-info">
+                                                                                                            <span class="task-journal-avatar-name">
+                                                                                                                Amy
+                                                                                                                Williams
+                                                                                                            </span>
+                                                                                                            <span class="task-journal-message-date-time">
+                                                                                                                Jun
+                                                                                                                10, 2024
+                                                                                                                11:10pm
+                                                                                                                (public
+                                                                                                                reply)
+                                                                                                            </span>
+                                                                                                        </p>
+
+                                                                                                        <p class="task-journal-message-message">
+                                                                                                            Spoke to few
+                                                                                                            companies
+                                                                                                            will I am
+                                                                                                            just waiting
+                                                                                                            for the
+                                                                                                            quote before
+                                                                                                            deciding to
+                                                                                                            provide the
+                                                                                                            client with
+                                                                                                            the options.
+                                                                                                            <br>--
+                                                                                                            <br>Your
+                                                                                                            dedicated
+                                                                                                            assistant,
+                                                                                                            <br>AW
+                                                                                                        </p>
+
+                                                                                                        <div class="task-journal-message-edit-delete">
+                                                                                                            <button class="task-journal-message-edit">
+                                                                                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                                                                            </button>
+                                                                                                            <button class="task-journal-message-delete">
+                                                                                                                <i class="fa-solid fa-trash-can"></i>
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>*@
+                                                                                            @*</div>
+                                                                                                </div>*@
+                                                                                        </div>
+                                                                                    </div>
+
+
+                                                                                }
+                                                                                <div class="popup-tabs-section view-mini-task-main"
+                                                                                     data-id="view-mini-task">
+
+                                                                                    @if (minitask.Count() > 0)
+                                                                                    {
+                                                                                        foreach (var item in minitask)
+                                                                                        {
+                                                                                            k = 1;
+                                                                                            var recommendation_mini = ctx.tbl_recommendations.Where(x => x.TaskID == Model.TaskID && x.MiniTaskID == item.MinitaskID).ToList();
+
+                                                                                            <div class="view-mini-task">
+                                                                                                @{
+                                                                                                    var answerlistminitask = ctx.tbl_answer.Include("tbl_question").Where(x => x.TaskID == item.TaskID && x.MinitaskID == item.MinitaskID).ToList();
+
+                                                                                                }
+
+                                                                                                <div class="mini-task-box" style="margin-bottom: 20px !important;">
+                                                                                                    <button class="mini-task-box-toggle">
+                                                                                                        <i class="fa-solid fa-chevron-right"></i>
+                                                                                                    </button>
+                                                                                                    <div class="mini-task-box-title">
+
+                                                                                                        <div class="mini-task-box-title-wrapper">
+                                                                                                            <h4>
+                                                                                                                @i, @item.Title
+                                                                                                            </h4>
+
+                                                                                                            <div class="popup-task-button-wrapper">
+                                                                                                                <div class="popup-task-btn mini-task-edit-btn">
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                    <div class="mini-task-box-details">
+
+
+                                                                                                        @if (Model.Status == (int)TaskStatus.Ongoing || Model.Status == (int)TaskStatus.Complete)
+                                                                                                        {
+
+                                                                                                            <div class="popup-task-review-box box-background">
+                                                                                                                @*<span class="task-status-status task-status status-action-required"></span>*@
+                                                                                                                <div class="popup-task-review-wrapper">
+                                                                                                                    <h4>Recommendations</h4>
+                                                                                                                    <div class="popup-task-reviws">
+
+                                                                                                                        @if (recommendation_mini.Count() > 0)
+                                                                                                                        {
+                                                                                                                            foreach (var items in recommendation_mini)
+                                                                                                                            {
+                                                                                                                                <div class="task-review">
+                                                                                                                                    @if (items.TaskStatus == 1)
+                                                                                                                                    {
+                                                                                                                                        @*<span class="icon-container">
+                                                                                                                                                <i class="fa fa-check selectedopt" aria-hidden="true" title="selected by user"></i>
+                                                                                                                                            </span>*@
+                                                                                                                                        <a data-title="selected by user"> <i class="fa fa-check selectedopt" aria-hidden="true"></i></a>
+                                                                                                                                    }
+                                                                                                                                    <span class="strong-heading">
+                                                                                                                                        Option @k :
+                                                                                                                                    </span>
+                                                                                                                                    <span class="text-content">
+                                                                                                                                        @items.Name
+                                                                                                                                    </span>
+                                                                                                                                    <a href="javascript:void(0)"
+                                                                                                                                       class="task-review-btn">
+                                                                                                                                        <i class="fa-solid fa-chevron-right"></i>
+                                                                                                                                    </a>
+                                                                                                                                    <div class="task-review-box-details">
+                                                                                                                                        @*Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium explicabo officia ad laboriosam quos rem.*@
+                                                                                                                                        <div class="rev-acc-inn-hd">
+                                                                                                                                            <div class="meta-data">
+                                                                                                                                                <h6 class="title">@items.Name</h6>
+                                                                                                                                                <div class="rating">
+                                                                                                                                                    <span class="rat-list" style="color: #ffb065 !important">
+                                                                                                                                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                                                                                                                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                                                                                                                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                                                                                                                                        <i class="far fa-star" aria-hidden="true"></i>
+                                                                                                                                                        <i class="far fa-star" aria-hidden="true"></i>
+                                                                                                                                                    </span>
+                                                                                                                                                    <span class="rat-label">26 reviews / 8.5</span>
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                        <p>@items.Note</p>
+                                                                                                                                        <div class="props-wrapper row">
+                                                                                                                                            <div class="item col-md-6 col-12">
+                                                                                                                                                <div class="label">Price</div>
+                                                                                                                                                <div class="value">@items.Price</div>
+                                                                                                                                            </div>
+                                                                                                                                            <div class="item col-md-6 col-12">
+                                                                                                                                                <div class="label">Availability</div>
+                                                                                                                                                <div class="value">@items.Availability</div>
+                                                                                                                                            </div>
+                                                                                                                                            <div class="col-12 item">
+                                                                                                                                                <div class="label">Next step</div>
+                                                                                                                                                <div class="value">@items.NextStep </div>
+                                                                                                                                            </div>
+                                                                                                                                            @if (items.TaskStatus == 1)
+                                                                                                                                            {
+                                                                                                                                                <div class="col-12 item">
+                                                                                                                                                    <div class="label">User Note</div>
+                                                                                                                                                    <div class="value">@Model.UserNote </div>
+                                                                                                                                                </div>
+                                                                                                                                            }
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                k++;
+                                                                                                                            }
+
+                                                                                                                        }
+                                                                                                                        else
+                                                                                                                        {
+                                                                                                                            <div class="" style="font-size: 14px !important; font-weight: 400 !important;">
+                                                                                                                                <span class="strong-heading">
+                                                                                                                                    No Recommendations
+                                                                                                                                </span>
+                                                                                                                            </div>
+                                                                                                                        }
+
+
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        }
+                                                                                                        <div class="mini-task-details box-background">
+                                                                                                            @foreach (var items in tblque)
+                                                                                                            {
+                                                                                                                var ans = ctx.tbl_answer.Where(x => x.TaskID == item.TaskID && x.QuestionID == items.QuestionID && x.MinitaskID == item.MinitaskID).FirstOrDefault();
+
+                                                                                                                //var answerlistminitask = ctx.tbl_answer.Include("tbl_question").Where(x => x.TaskID == itemminitask.TaskID && x.MinitaskID == itemminitask.MinitaskID).ToList();
+
+
+
+                                                                                                                <div class="task-details">
+                                                                                                                    <h6>@items.Question</h6>
+                                                                                                                    @if (ans != null)
+                                                                                                                    {
+
+                                                                                                                        if (items.OptionType == "Radio")
+                                                                                                                        {
+                                                                                                                            var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == ans.Answer).FirstOrDefault();
+                                                                                                                            if (tblopt != null)
+                                                                                                                            {
+                                                                                                                                if (tblopt.OptionType == "textbox")
+                                                                                                                                {
+                                                                                                                                    <p>
+                                                                                                                                        @tblopt.Question,@ans.OtherAnswer
+                                                                                                                                    </p>
+                                                                                                                                }
+                                                                                                                                else
+                                                                                                                                {
+                                                                                                                                    <p>
+                                                                                                                                        @tblopt.Question
+                                                                                                                                    </p>
+                                                                                                                                }
+
+                                                                                                                            }
+
+                                                                                                                        }
+                                                                                                                        else if (items.OptionType == "CheckBox")
+                                                                                                                        {
+                                                                                                                            var anslist = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID && x.QuestionID == items.QuestionID && x.MinitaskID == item.MinitaskID).ToList();
+                                                                                                                            foreach (var anwser in anslist)
+                                                                                                                            {
+                                                                                                                                var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == anwser.Answer).FirstOrDefault();
+                                                                                                                                if (tblopt != null)
+                                                                                                                                {
+                                                                                                                                    if (tblopt.OptionType == "textbox")
+                                                                                                                                    {
+                                                                                                                                        <p>
+                                                                                                                                            @tblopt.Question,@anwser.OtherAnswer
+                                                                                                                                        </p>
+                                                                                                                                    }
+                                                                                                                                    else
+                                                                                                                                    {
+                                                                                                                                        <p>
+                                                                                                                                            @tblopt.Question
+                                                                                                                                        </p>
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                        else if (items.OptionType == "Option")
+                                                                                                                        {
+                                                                                                                            var anslist = ctx.tbl_answer.Where(x => x.TaskID == Model.TaskID && x.QuestionID == items.QuestionID && x.MinitaskID == item.MinitaskID).ToList();
+
+                                                                                                                            foreach (var anwser in anslist)
+                                                                                                                            {
+                                                                                                                                var tblopt = ctx.tbl_options.Where(x => x.OptionID.ToString() == anwser.Answer).FirstOrDefault();
+                                                                                                                                if (tblopt != null)
+                                                                                                                                {
+                                                                                                                                    if (tblopt.OptionType == "text" || tblopt.OptionType == "counter" || tblopt.OptionType == "date" || tblopt.OptionType == "time" || tblopt.OptionType == "textarea")
+                                                                                                                                    {
+                                                                                                                                        <p>
+                                                                                                                                            @tblopt.Question:@anwser.OtherAnswer
+                                                                                                                                        </p>
+                                                                                                                                    }
+
+                                                                                                                                    if (tblopt.OptionType == "checkbox")
+                                                                                                                                    {
+                                                                                                                                        if (@anwser.OtherAnswer != null)
+                                                                                                                                        {
+                                                                                                                                            <p>
+                                                                                                                                                @tblopt.Question:checked
+                                                                                                                                            </p>
+                                                                                                                                        }
+
+                                                                                                                                    }
+
+                                                                                                                                    if (tblopt.OptionType == "radio")
+                                                                                                                                    {
+                                                                                                                                        var opttypeid = Convert.ToInt32(anwser.OtherAnswer);
+                                                                                                                                        var opttypa = ctx.tbl_optiontype.Where(x => x.OptionTypeID == opttypeid).FirstOrDefault();
+                                                                                                                                        <p>
+                                                                                                                                            @tblopt.Question:@opttypa.Question
+                                                                                                                                        </p>
+                                                                                                                                    }
+
+
+
+                                                                                                                                    if (tblopt.OptionType == "ddtime")
+                                                                                                                                    {
+                                                                                                                                        var opttypeid = Convert.ToInt32(anwser.OtherAnswer);
+                                                                                                                                        var opttypa = ctx.tbl_optiontype.Where(x => x.OptionTypeID == opttypeid).FirstOrDefault();
+                                                                                                                                        <p>
+                                                                                                                                            @tblopt.Question:@opttypa.Question
+                                                                                                                                        </p>
+                                                                                                                                    }
+
+                                                                                                                                }
+                                                                                                                            }
+
+                                                                                                                        }
+                                                                                                                        else
+                                                                                                                        {
+                                                                                                                            //for counter and textarea
+                                                                                                                            <p>
+                                                                                                                                @ans.Answer
+                                                                                                                            </p>
+                                                                                                                        }
+                                                                                                                    }
+
+                                                                                                                </div>
+                                                                                                            }
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            i++;
+                                                                                        }
+
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <div class="view-mini-task">No mini task available</div>
+                                                                                    }
+
+
+                                                                                </div>
+
+                                                                                <div class="popup-tabs-section task-attachment tasktabsdeatils"
+                                                                                     data-id="attachment">
+                                                                                    <div class="task-attachment-main">
+                                                                                        <div class="task-attachment-add-file">
+                                                                                            <label id="lblMessage" style="color: rgb(220 53 69)"></label>
+                                                                                            <label id="lbl_Message" style="color: #00c1ab"></label>
+                                                                                            @using (Html.BeginForm("fileupload", "Handlers", FormMethod.Post, new { enctype = "multipart/form-data", id = "upload" }))
+                                                                                            {
+                                                                                                @Html.AntiForgeryToken()
+                                                                                                <div style="display:flex">
+                                                                                                    <div class="attachment-add-new-file">
+                                                                                                        <div>
+                                                                                                            <input type="file" name="fileattachment" id="fileattachment"
+                                                                                                                   class="task-attachment-input">
+                                                                                                        </div>
+                                                                                                        <div class="file-icon">
+                                                                                                            <i class="fa-solid fa-plus"></i>
+                                                                                                        </div>
+                                                                                                        <div class="file-text  showfilename">
+                                                                                                            <div class="hide">
+                                                                                                                <div class="file-title-main">
+                                                                                                                    Add a new file
+                                                                                                                </div>
+                                                                                                                <div class="file-title-placeholder">
+                                                                                                                    30 Mgb max.
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div class="show">
+
+                                                                                                            </div>
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                    <div class="form_submit" style="margin-left:10px">
+                                                                                                        <input type="submit" value="Upload" class="primary-btn ">
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                            }
+
+                                                                                        </div>
+
+                                                                                        <div class="task-attachment-file-container" id="filelist">
+                                                                                            @*@{var filelist = ctx.tbl_taskattachment.Where(x => x.TaskID == Model.TaskID).ToList(); }*@
+                                                                                            @foreach (var files in filelist)
+                                                                                            {
+                                                                                                var users = ctx.tbl_user.Where(x => x.UserID == files.UserID).FirstOrDefault();
+                                                                                                <div class="task-attachment-file">
+                                                                                                    <a href="~/Assets/TaskFiles/@files.FileName" target="_blank" download>
+                                                                                                        <div class="file-preview file-thumbnail">
+                                                                                                            @if (files.FileName != null)
+                                                                                                            {
+                                                                                                                ext = Path.GetExtension(files.FileName);
+                                                                                                            }
+
+                                                                                                            @if (ext.ToLower() == ".pdf" && files != null)
+                                                                                                            {
+                                                                                                                <img src="~/Assets/images/pdficon.png">
+                                                                                                            }
+                                                                                                            else if (ext.ToLower() == ".doc" || ext.ToLower() == ".docx" && files != null)
+                                                                                                            {
+                                                                                                                <img src="~/Assets/images/wordicon.png">
+                                                                                                            }
+                                                                                                            else if (files != null)
+                                                                                                            {
+                                                                                                                <img src="~/Assets/images/fileicon.png">
+
+                                                                                                            }
+
+                                                                                                        </div>
+                                                                                                        &nbsp;<i class="fa fa-download"></i>
+                                                                                                        <div class="file-text">
+                                                                                                            <div class="file-title-main">
+                                                                                                                @files.FileName
+                                                                                                            </div>
+                                                                                                            <div class="file-title-placeholder" id="fileusername">
+                                                                                                                Uploaded
+                                                                                                                by
+                                                                                                                @users.FirstName on
+                                                                                                                @files.Date.Value.ToString("MMM dd,yyyy")
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </a>
+
+                                                                                                    <button class="file-delete-btn" onclick="deletefiles(@files.TaskAttachmentID)">
+                                                                                                        <i class="fa-solid fa-trash-can"></i>
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                            }
+
+                                                                                            <div id="loadfiles"></div>
+
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+
+                                                                                <div class="popup-tabs-section task-events"
+                                                                                     data-id="task-events">
+                                                                                    <div class="task-events-main">
+
+
+
+
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-3 col-md-4 col-12 tab-content">
+                                                                        <div class="assistant-specific-task-client-details">
+                                                                            <div class="client-details-wrapper">
+                                                                                <h3>Client details:</h3>
+                                                                                <div class="client-avatar-name">
+                                                                                    <span class="client-avatar">@user.FirstName[0].ToString().ToUpper()</span>
+                                                                                    <span class="client-name">
+                                                                                        @user.FirstName[0].ToString().ToUpper()
+                                                                                    </span>
+                                                                                </div>
+
+                                                                                <div class="client-info-wrapper">
+                                                                                    <p>SLA:</p>
+                                                                                    <div class="client-task-progress">
+                                                                                        <div class="table-task-sla">
+
+                                                                                            @*@if (Model.Status == (int)TaskStatus.Received)
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 30%;"></span>
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else if (Model.Status == (int)TaskStatus.Ongoing)
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 60%;"></span>
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else if (Model.Status == (int)TaskStatus.Complete)
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 100%;"></span>
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 100%; background-color: #e5756f"></span>
+                                                                                                    </span>
+                                                                                                }*@
+                                                                                            @if (Model.Deadline.HasValue)
+                                                                                            {
+                                                                                                if (DiffInt >= 9)
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 33%; background-color: #00c1ab !important;"></span>
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else if (DiffInt >= 4 && DiffInt <= 8)
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 66%; background-color: #ffce00 !important;"></span>
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else if (DiffInt >= 0 && DiffInt <= 3)
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 90%; background-color: #e5756f !important;"></span>
+                                                                                                    </span>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <span class="progress-bar">
+                                                                                                        <span class="progress" style="width: 100%; background-color: #e5756f !important;"></span>
+                                                                                                    </span>
+                                                                                                }
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <span class="progress-bar">
+                                                                                                    <span class="progress" style="width: 33%; background-color: #00c1ab !important;"></span>
+                                                                                                </span>
+                                                                                            }
+                                                                                        </div>
+
+                                                                                        @if (Model.Status == (int)TaskStatus.Received)
+                                                                                        {
+
+                                                                                            if (Model.Deadline.HasValue)
+                                                                                            {
+                                                                                                if (DiffInt >= 0 && DiffInt <= 3)
+                                                                                                {
+
+                                                                                                    <p class="progress-status">
+                                                                                                        High
+                                                                                                    </p>
+
+                                                                                                }
+                                                                                                else if (DiffInt > 3 && DiffInt < 9)
+                                                                                                {
+                                                                                                    <p class="progress-status">Medium</p>
+
+                                                                                                }
+                                                                                                else if (DiffInt < 0)
+                                                                                                {
+                                                                                                    <p class="progress-status">Low</p>
+
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <p class="progress-status">Low</p>
+
+                                                                                                }
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <p class="progress-status">Low</p>
+
+                                                                                            }
+                                                                                        }
+
+                                                                                    </div>
+                                                                                </div>
+
+                                                                                <div class="client-info-wrapper">
+                                                                                    <p>Date Created:</p>
+                                                                                    <p class="date-created">
+                                                                                        @GlobalMethods.ConvertToDate(@Model.CreatedDate)
+                                                                                        @GlobalMethods.Convert24HrsTime(@Model.CreatedDate)
+
+                                                                                    </p>
+                                                                                </div>
+
+                                                                                <div class="client-info-wrapper">
+                                                                                    <p>Due Date:</p>
+                                                                                    @if (Model.Deadline.HasValue)
+                                                                                    {
+                                                                                        <p>@GlobalMethods.ConvertToDate(Model.Deadline)</p>
+
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <p>No Due Date</p>
+
+                                                                                    }
+                                                                                </div>
+
+                                                                                <div class="client-info-wrapper">
+                                                                                    <p>Category:</p>
+                                                                                    <p>@category.Category</p>
+                                                                                </div>
+
+                                                                                <div class="client-info-wrapper">
+                                                                                    <p>Status:</p>
+                                                                                    <p class="admin-tasks-table">
+                                                                                        @if (Model.Status == (int)TaskStatus.Received)
+                                                                                        {
+                                                                                            <span class="table-task-status-data">
+                                                                                                New
+                                                                                            </span>
+
+                                                                                        }
+                                                                                        else if (Model.Status == (int)TaskStatus.Ongoing)
+                                                                                        {
+                                                                                            <span class="table-task-status-data">
+                                                                                                In Progress
+                                                                                            </span>
+                                                                                        }
+                                                                                        else if (Model.Status == (int)TaskStatus.Complete)
+                                                                                        {
+                                                                                            <span class="table-task-status-data">
+                                                                                                Open
+                                                                                            </span>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <span class="table-task-status-data hold">Hold</span>
+                                                                                        }
+                                                                                    </p>
+                                                                                </div>
+
+                                                                                <div class="client-info-wrapper">
+                                                                                    <p>Assigned Assistant:</p>
+                                                                                    @if (Model.AssistantID != null)
+                                                                                    {
+                                                                                        <p>@assist_name.FirstName @assist_name.LastName</p>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <p>Assistant not assigned</p>
+                                                                                    }
+
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    @Html.Partial("handlerfooter")
+    <script src="~/Assets/js/all.min.js"></script>
+    <script src="~/Assets/js/jquery.min.js"></script>
+    <script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+    @*<script src="~/Assets/js/script.js"></script>*@
+    @*<script src="~/Assets/js/admin-dashboard.js"></script>*@
+    @*<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>*@
+    
+    <script>
+      $(".task-events-main").load("/task/log_Events", { id: @Model.TaskID});
+    </script>
+
+    <script>
+        
+            var toid = 0;
+var aid = 0;
+
+ toid = '@id';
+        aid = '@adid';
+  var taskid =@Model.TaskID;
+var fromid=@userid;
+
+        $.ajax({
+            url: "/chat/getchatmsgcount/",
+            type: "POST",
+            dataType: "json",
+            data: { taskid: taskid },
+            datatype: "json",
+            success: function (result) {
+                if (result != null) {
+                    //$('#chatcount').html(result);
+                    if (result == 0) {
+                        $('.active-tab .notification-count').css("display", "none");
+                    }
+                    else {
+                        $('.active-tab .notification-count').css("display", "flex");
+                        $('.active-tab .notification-count').html(result)
+                    }
+                }
+            },
+            error: function () {
+                //alert("Oops something went wrong !");
+            }
+        });
+
+        $("#chatbox").load("/chat/getchatlist", { taskid: taskid, fromid: fromid }, function () {
+            $(".chat").load("/Handlers/chatnotification", function () { });
+        });
+
+
+        
+
+    //var chatcount = $("#chatcount").html();
+    //if (chatcount == 0) {
+    //    $('.active-tab .notification-count').css("display", "none");
+    //    }
+
+        
+
+        $(document).ready(function () {
+            $(document).on('change', '#FileInput', function (e) {
+                debugger
+                e.preventDefault();
+                var ext = $('#FileInput').val().split('.').pop().toLowerCase();
+                if ($.inArray(ext, ['jpg', 'pdf', 'docx', 'doc', 'png', 'xlsx']) == -1) {
+                    alert('Please upload jpg,pdf,doc,xlsx.png files!');
+                    $("#FileInput").val('');
+                    return false;
+
+                }
+                else {
+
+                    var filename = $('input[type=file]').val().split('\\').pop();
+                    $('#Filename').html(filename);
+                    var file_data = $("#FileInput").prop("files")[0];
+                    $('#message-text').html(filename);
+
+                    var form_data = new FormData();
+                    form_data.append("file", file_data);
+
+                    $.ajax({
+                        url: "/chat/uploadfile/",
+                        data: form_data,
+                        type: "POST",
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'html',
+                        success: function (result) {
+                            if (result != null) {
+                            }
+                        },
+                        error: function () {
+                            alert("Oops something went wrong !");
+                        }
+                    });
+                }
+            });
+
+			// Function to refresh the previous page
+			function refreshPreviousPage() {
+				// Listen for the pageshow event
+				$(window).on('pageshow', function (event) {
+					// Check if the event's persisted property is false, indicating that the page is being loaded fresh
+					if (event.originalEvent.persisted) {
+						// Refresh the page
+						location.reload();
+					}
+				});
+			}
+
+			// Function to go back in the browser history and refresh the previous page
+			function goBackAndRefresh() {
+				// Go back one page in the browser history
+				window.history.back();
+
+				// Call the function to refresh the previous page after a short delay (adjust as needed)
+				setTimeout(refreshPreviousPage, 500); // 500 milliseconds delay, adjust as needed
+			}
+
+			// Example: Reload previous page when a button with id "reloadBackButton" is clicked
+			$('#reloadBackButton').on('click', function () {
+				goBackAndRefresh();
+			});
+		});
+
+
+		$(".admin-page-sidebar-row").addClass("active__row");
+		$(".handler").addClass("toggle-active");
+		$(".listing").css("display", "block");
+		$('.popup-tab-title').click(function () {
+			$(".popup-tabs-section").removeClass('tab-active');
+			$(".popup-tabs-section[data-id='" + $(this).attr('data-id') + "']").addClass("tab-active");
+			$(".popup-tab-title").removeClass('active-tab');
+			$(this).parent().find(".popup-tab-title").addClass('active-tab');
+
+			if ($(".popup-tabs-section[data-id='message-handler']").hasClass("tab-active")) {
+				$(".popup-task-button-wrapper.task-button-wrapper").addClass("show-btn");
+				$(".popup-task-button-wrapper.task-button-wrapper").removeClass("hide-btn");
+			}
+			else {
+				$(".popup-task-button-wrapper.task-button-wrapper").removeClass("show-btn");
+				$(".popup-task-button-wrapper.task-button-wrapper").addClass("hide-btn");
+			}
+		});
+		$(".view-mini-task-main .mini-task-box-toggle").on("click", function (e) {
+			e.preventDefault();
+			var $this = $(this);
+			if (!$this.hasClass("toggle-active")) {
+				$(".view-mini-task-main .mini-task-box-details").slideUp(400);
+				$(".view-mini-task-main .mini-task-box-toggle").removeClass("toggle-active");
+				$(".view-mini-task-main .mini-task-box-toggle").removeClass("active");
+				$(".view-mini-task-main .mini-task-box-toggle").parent().removeClass("active__row");
+			}
+			$this.toggleClass("toggle-active");
+			$this.parent().toggleClass("active__row");
+			$this.next().next().slideToggle();
+		});
+
+		//  admin view Recommendation accordion
+		$(".popup-task-review-wrapper .task-review-btn").on("click", function (e) {
+			e.preventDefault();
+			var $that = $(this);
+			if (!$that.hasClass("toggle-active")) {
+				$(".popup-task-review-wrapper .task-review-box-details").slideUp(400);
+				$(".popup-task-review-wrapper .task-review-btn").removeClass("toggle-active");
+				$(".popup-task-review-wrapper .task-review-btn").removeClass("active");
+				$(".popup-task-review-wrapper .task-review-btn").parent().removeClass("active__row");
+			}
+			$that.toggleClass("toggle-active");
+			$that.parent().toggleClass("active__row");
+			$that.next().next().slideToggle();
+		});
+
+		// admin task journal tabs
+		$('.task-journal-tab-title').click(function () {
+			$(".task-journal-tab-content").removeClass('tab-active');
+			$(".task-journal-tab-content[data-id='" + $(this).attr('data-id') + "']").addClass("tab-active");
+			$(".task-journal-tab-title").removeClass('active-tab');
+			$(this).parent().find(".task-journal-tab-title").addClass('active-tab');
+		});
+    </script>
+
+    <script>
+
+        $('#upload').submit(function (e) {
+            debugger
+            $(".show").text("");
+            $(".hide").show();
+            e.preventDefault(); // stop the standard form submission
+            var label = $("#lblMessage");
+            var filePath = $("#fileattachment")[0].value;
+          /*  alert(filePath);*/
+            label.text("");
+            var extension = filePath.substring(filePath.lastIndexOf(".") + 1, filePath.length).toLowerCase();
+            var validFilesTypes = ["pdf", "doc", "docx"];
+            var isValidFile = validFilesTypes.includes(extension);
+            if (filePath == "") {
+                label.html("Please upload file");
+                return false;
+            }
+            else if (!isValidFile) {
+                label.html("Invalid File. Please upload file with extension: " + validFilesTypes.join(", ") + ".");
+                return false;
+            } else {
+                 var data = new FormData(this);
+                 data.append('taskid',@Model.TaskID);
+                 @*data.append('userid',@Model.ToID);*@
+                 debugger
+                 $.ajax({
+                     url: "/Handlers/fileupload",
+                     type: "Post",
+                     //data: new FormData(this),
+                     data: data,
+                     cache: false,
+                     contentType: false,
+                     processData: false,
+                     cache:false,
+                     success: function (data) {
+                         if (data.filecount) {
+                             label.html("Maximum 6 files can be uploaded");
+                             setTimeout(function () {
+                                 label.text("");
+                             }, 3000);
+                             $('#upload')[0].reset();
+                             return false;
+                         }
+                         else if (data.filesize) {
+                             label.html("Total file size exceeds the maximum limit of 30MB.");
+                             setTimeout(function () {
+                                 label.text("");
+                             }, 3000);
+                             $('#upload')[0].reset();
+                             return false;
+                         }
+                         else {
+                             //var obj = $.parseJSON(data);
+                             //var taskid = obj.TaskID;
+                             //$("#loadfiles").load("/Handlers/loadfilelist", { id: obj.TaskAttachmentID });
+                             var taskid = data.taskid;
+                             $("#filelist").load("/Handlers/loadfiles", { id: taskid },
+                                 function () {
+                                     //alert("File uploaded successfully");
+                                     $("#lbl_Message").text("File uploaded successfully");
+                                     setTimeout(function () {
+                                         $("#lbl_Message").text("");
+                                 }, 3000);
+
+                                 });
+
+                                   $(".task-events-main").load("/task/log_Events", { id:taskid});
+                                 //Clear the file input feild
+                             $('#upload')[0].reset();
+
+                         }
+
+
+                     },
+                     error: function (xhr, error, status) {
+                         console.log(error, status);
+                     }
+                 });
+            }
+
+        });
+
+        function deletefiles(id) {
+            debugger
+            var label = $("#lblMessage");
+            label.text("");
+
+            var res = confirm("Are you sure want to delete the file");
+            if (res == true) {
+                $.ajax({
+                    url: "/Handlers/deletefile",
+                    type: "Post",
+                    data: { id: id},
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.notvaliduser) {
+                            label.text("You can't delete the file since it is not uploaded by you.");
+                            setTimeout(function () {
+                                label.text("");
+                            }, 3000);
+                        } else {
+                            //alert(data.taskid);
+                            var taskid = data.taskid;
+
+                            $("#filelist").load("/Handlers/loadfiles", { id: taskid },
+                                function () {
+                                    //alert("File uploaded successfully");
+                                    label.text("File is deleted successfully");
+                                    setTimeout(function () {
+                                        label.text("");
+                                    }, 3000);
+
+                                });
+
+                            $(".task-events-main").load("/task/log_Events", { id: taskid });
+                        }
+
+
+
+                    },
+                    error: function (xhr, error, status) {
+                        console.log(error, status);
+                    }
+                });
+            }
+
+        }
+
+
+		document.getElementById("fileattachment").onchange = function (event) {
+            debugger
+            var filePath = $('#fileattachment')[0].files[0].name;
+            $(".hide").hide();
+            $(".show").text(filePath);
+		}
+
+        $('a[data-id="task-journal-private-note"]').click(function (event) {
+            $("#notelist").load("/Handlers/notelist",{taskid:'@Model.TaskID'});
+        });
+
+		////$("#notelist").load("/Handlers/notelist",{taskid:'@Model.TaskID'});
+
+		$('#file_attachment').change(function (e) {
+			var fileName = e.target.files[0].name;
+			$('#filenameDisplay').text(fileName);
+			$("#filenameDisplay").attr("href", "#");
+			$("#filenameDisplay").removeAttr("download", "");
+
+		});
+
+
+		$(".task-journal-message-view-box-container").css("display", "none");
+
+		$(".task-journal-tab-title").on("click", function () {
+			$(".task-journal-message-view-box-container").css("display", "block");
+		})
+
+		$("#task-journal-chat").on("click", function () {
+			$(".task-journal-message-view-box-container").css("display", "none");
+		})
+
+		$(document).ready(function () {
+			$('#btn-submit').on('click', function (e) {
+				e.preventDefault();
+				debugger
+
+				var note = $(".note").val();
+				var notes = $.trim(note);
+
+				if (notes == "" || notes == null) {
+					$("#lbl_msg1").html("Note cant be empty");
+					$("#lbl_msg1").css("color", "rgb(220, 53, 69)");
+				}
+				else {
+					$("#lbl_msg1").html("");
+
+// Create FormData object from form
+				var formData = new FormData($('#notes')[0]);
+				//var fileInput = document.getElementById('fileInput');
+				var fileInput = document.getElementById('file_attachment');
+
+				formData.append('filename', fileInput);
+				//var formData = new FormData($('#notes').serialize());
+				console.log(formData);
+				$.ajax({
+					url: '/Handlers/Note',
+					type: 'POST',
+					data: formData, // Send form data directly
+					contentType: false, // Let jQuery handle contentType
+					processData: false, // Let jQuery process the data
+					success: function (response) {
+						debugger
+						$(".task-journal-message-view-box-container").css("display", "block");
+
+						$("#notes").find(".note").val("");
+						$("#notes").find(".file").val("");
+						$(".NoteID").val("");
+						$('#filenameDisplay').text("");
+						$("#notelist").load("/Handlers/notelist",{taskid:'@Model.TaskID'});
+						$('html, body').animate({
+							scrollTop: $(".popup-container").offset().top
+						}, 'fast');
+						$("#lbl_msg").html("");
+						$("#lbl_msg").css("display", "block");
+						$("#lbl_msg").css("color", "#00c1ab");
+						$("#lbl_msg").html("Note saved successfully");
+						$("#lbl_msg").fadeOut(5000);
+					},
+					error: function (xhr, status, error) {
+						$('html, body').animate({
+							scrollTop: $(".popup-container").offset().top
+						}, 'fast');
+						$("#lbl_msg").html("");
+						$("#lbl_msg").css("display", "block");
+						$("#lbl_msg").css("color", "#00c1ab");
+						$("#lbl_msg").html("Failed to save note");
+						$("#lbl_msg").fadeOut(5000);
+					}
+				});
+				}
+
+			});
+		});
+
+
+		$("#bold").on("click", function () {
+			$("#task-journal-message").toggleClass("bold-font")
+		})
+    </script>
+</body>
+
+</html>

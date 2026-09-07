@@ -1,0 +1,1686 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_question>
+
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    int i = 2;
+
+    int userid = Convert.ToInt32(Session["UserID"]);
+    var tbluser = ctx.tbl_user.Include("tbl_country").Include("tbl_state").Where(x => x.UserID == userid).FirstOrDefault();
+
+    int taskid = Convert.ToInt32(ViewBag.TaskID);
+
+    var tbltask = ctx.tbl_task.Where(x => x.TaskID == taskid).FirstOrDefault();
+
+    var minitask = Convert.ToInt32(ViewBag.minitaskid);
+    int minitaskid = minitask;
+
+
+}
+
+
+
+<style>
+    .dateclass {
+        font-weight: 700;
+        color: var(--primary-text);
+        border: 1px solid var(--primary-color);
+        border-radius: 20px;
+        padding: 7px 20px;
+        outline: none;
+    }
+
+    .input_text {
+        margin: 5px;
+        width: 50%;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 5px;
+    }
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AddTask-@MvcApplication.project_name</title>
+
+    @Html.Partial("dashboard_css")
+
+    <style>
+        .btn_minitask {
+            min-width: 80px;
+            min-height: 30px;
+            border-radius: 20px;
+            color: white;
+            background: #00c1ab;
+            padding: 5px 20px;
+            border: none;
+            float: right;
+        }
+    </style>
+</head>
+
+<body style="background-color: #d1cec6f2">
+
+
+    @Html.Partial("dashboard-header")
+
+
+    <main>
+
+        <section class="new-task-popup">
+
+            <div class="new-task-popup-main">
+
+                <div class="new-task-popup-wrapper" style="margin-top: 80px; margin-bottom: 340px; padding-bottom: 27px; ">
+
+
+                    <div class="popup-cross-btn">
+                        <a href="/taskDetails/@tbltask.TaskID"><i class="fa-solid fa-circle-xmark"></i></a>
+                    </div>
+
+                    <div class="new-task-content-slides-box">
+
+                        <div class="new-task-content-slides-main" style=" display:block; margin-bottom: -75px;">
+
+
+
+
+                            <div class="new-task-content-slide slide_count_2" style=" display:block;">
+                                @using (Html.BeginForm("addminitask", "Task", FormMethod.Post, new { @class = "form_add_new_task" }))
+                                {
+                                    var isexistminitask = ctx.tbl_minitask.Where(x => x.TaskID == taskid && x.MinitaskID == minitaskid).FirstOrDefault();
+
+                                    @Html.AntiForgeryToken()<div class="new-task-content-wrapper">
+                                        <div class="new-task-content task_part_3">
+                                            <div class="new-task-heading">
+                                                <h3><span>1</span>What title would like to give to this task?</h3>
+                                            </div>
+                                            <div class="new-task-content-inside">
+                                                @if (isexistminitask != null)
+                                                {
+                                                    <textarea name="tasktitle" class="textarea" id="tasktitle" placeholder="TaskTitle">@isexistminitask.Title</textarea>
+
+                                                }
+                                                else
+                                                {
+                                                    <textarea name="tasktitle" class="textarea" id="tasktitle" placeholder="TaskTitle"></textarea>
+
+                                                }
+                                                <label id="lbl_title" style="color: rgb(229, 117, 111);"></label>
+                                            </div>
+                                        </div>
+
+
+                                        @if (Model.Count() > 0)
+                                        {
+
+
+                                            foreach (var item in Model)
+                                            {
+
+
+                                                if (isexistminitask != null)
+                                                {
+                                                    //edit
+                                                    var tblanswerlist = ctx.tbl_answer.Where(x => x.TaskID == taskid && x.MinitaskID == isexistminitask.MinitaskID && x.QuestionID == item.QuestionID).FirstOrDefault();
+
+                                                    if (tblanswerlist != null)
+                                                    {
+                                                        //if data exist in tblanswer
+                                                        if (item.OptionType == "Counter")
+                                                        {
+
+
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div class="new-task-content-inside">
+                                                                    <div class="qty-container">
+                                                                        <button class="qty-btn qty-btn-minus" type="button">
+                                                                            <i class="fa fa-minus"></i>
+                                                                        </button>
+                                                                        <input type="text" name="answerCounter" value="@tblanswerlist.Answer" class="input-qty"
+                                                                               placeholder="0" pattern="[0-9]" />
+                                                                        <button class="qty-btn qty-btn-plus" type="button">
+                                                                            <i class="fa fa-plus"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else if (item.OptionType == "Textarea")
+                                                        {
+                                                            if (@item.Question == "What is the address?" || @item.Question == "What is the collection address?" || @item.Question == "What is the delivery address?")
+                                                            {
+                                                                <div class="new-task-content task_part_2">
+
+                                                                    <div class="new-task-heading">
+                                                                        <h3><span>@i</span>@item.Question</h3>
+                                                                    </div>
+
+                                                                    <div class="new-task-location-address">
+                                                                        <div class="row">
+                                                                            <div class="col-md-6 col-12">
+                                                                                <div class="new-task-input-box">
+                                                                                    <label for="saved-address">
+                                                                                        Select from saved
+                                                                                        address
+                                                                                    </label>
+                                                                                    <select name="saved-address" id="saved-address">
+
+                                                                                        @*@tbluser.Address*@
+                                                                                        @if (tbluser.Address != null && tbluser.City != null && tbluser.State != null && tbluser.CountryID != null)
+                                                                                        {
+                                                                                            <option value="">
+                                                                                                @tbluser.Address,
+                                                                                                @tbluser.City,
+                                                                                                @tbluser.tbl_state.State,
+                                                                                                @tbluser.tbl_country.Country
+                                                                                            </option>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <option value=""> </option>
+                                                                                        }
+
+                                                                                        @*<option value="saab">Saab</option>
+                                                                                            <option value="opel">Opel</option>
+                                                                                            <option value="audi">Audi</option>*@
+                                                                                    </select>
+
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-md-6 col-12">
+
+                                                                                <div class="new-task-input-box">
+                                                                                    <label for="other-address">Other</label>
+                                                                                    <input type="text" name="address"
+                                                                                           id="other-address" value="@tblanswerlist.Answer"
+                                                                                           placeholder="Start by typing the post code">
+                                                                                    <span class="icon">
+                                                                                        <i class="fa-solid fa-location-crosshairs"></i>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="new-task-content task_part_3">
+                                                                    <div class="new-task-heading">
+                                                                        <h3><span>@i</span>@item.Question</h3>
+                                                                    </div>
+                                                                    <div class="new-task-content-inside">
+
+                                                                        <textarea name="answerOther" class="textarea" id="textareaid" placeholder="Your answer">@tblanswerlist.Answer</textarea>
+
+                                                                    </div>
+                                                                </div>
+                                                            }
+
+                                                        }
+                                                        else if (item.OptionType == "Radio")
+                                                        {
+
+                                                            var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div class="new-task-content-inside">
+                                                                    <div class="new-task-single-select-wrapper">
+
+                                                                        @foreach (var items in tblopt)
+                                                                        {
+                                                                            var anschecklist = ctx.tbl_answer.Where(x => x.QuestionID == item.QuestionID && x.TaskID == taskid && x.MinitaskID == isexistminitask.MinitaskID && x.Answer == items.OptionID.ToString()).FirstOrDefault();
+                                                                            <div class="new-task-single-select">
+
+                                                                                @if (tblanswerlist.Answer == items.OptionID.ToString())
+                                                                                {
+                                                                                    <input type="radio"
+                                                                                           name="answerOptions[@item.QuestionID]"
+                                                                                           id="opt_@items.OptionID"
+                                                                                           value="@items.OptionID"
+                                                                                           class="option-radio"
+                                                                                           data-optiontype="@items.OptionType"
+                                                                                           data-target="textarea_@(item.QuestionID)_@(items.OptionID)"
+                                                                                           data-questionid="@item.QuestionID" checked>
+
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <input type="radio"
+                                                                                           name="answerOptions[@item.QuestionID]"
+                                                                                           id="opt_@items.OptionID"
+                                                                                           value="@items.OptionID"
+                                                                                           class="option-radio"
+                                                                                           data-optiontype="@items.OptionType"
+                                                                                           data-target="textarea_@(item.QuestionID)_@(items.OptionID)"
+                                                                                           data-questionid="@item.QuestionID">
+
+                                                                                }
+
+
+
+                                                                                <label for="opt_@items.OptionID">
+                                                                                    <div class="new-task-single-select-inner">
+                                                                                        <div class="single-select-name">
+                                                                                            <p>@items.Question</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </label>
+
+
+
+                                                                            </div>
+                                                                            <br />
+
+                                                                            if (items.OptionType != null)
+                                                                            {
+                                                                                if (items.OptionType == "textbox")
+                                                                                {
+                                                                                    if (anschecklist != null)
+                                                                                    {
+                                                                                        if (anschecklist.OtherAnswer != null)
+                                                                                        {
+                                                                                            <div class="col-md-12"
+                                                                                                 style="display:block;"
+                                                                                                 id="textarea_@(item.QuestionID)_@(items.OptionID)">
+
+                                                                                                @if (items.OptionID == 249 || items.OptionID == 266 || items.OptionID == 275 || items.OptionID == 313 || items.OptionID == 541 || items.OptionID == 567 || items.OptionID == 589 || items.OptionID == 606)
+                                                                                                {
+                                                                                                    if (tbluser.Address != null && tbluser.City != null && tbluser.State != null && tbluser.CountryID != null)
+                                                                                                    {
+                                                                                                        <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                                  class="textarea" style="min-height:auto"
+                                                                                                                  placeholder="@items.Placeholder" readonly>@tbluser.Address,@tbluser.City, @tbluser.tbl_state.State,@tbluser.tbl_country.Country</textarea>
+
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                                  class="textarea" style="min-height:auto"
+                                                                                                                  placeholder="@items.Placeholder" readonly></textarea>
+                                                                                                    }
+                                                                                                }
+                                                                                                else
+                                                                                                {
+
+
+
+                                                                                                    <textarea name="optiontyperadio[@(items.OptionID)]"
+                                                                                                              class="textarea" style="min-height:auto"
+                                                                                                              placeholder="@items.Placeholder">@anschecklist.OtherAnswer</textarea>
+
+                                                                                                }
+                                                                                            </div>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <div class="col-md-12"
+                                                                                                 style="display:none;"
+                                                                                                 id="textarea_@(item.QuestionID)_@(items.OptionID)">
+
+                                                                                                <textarea name="optiontyperadio[@(items.OptionID)]"
+                                                                                                          class="textarea" style="min-height:auto"
+                                                                                                          placeholder="@items.Placeholder"></textarea>
+                                                                                            </div>
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <div class="col-md-12"
+                                                                                             style="display:none;"
+                                                                                             id="textarea_@(item.QuestionID)_@(items.OptionID)">
+                                                                                            @if (items.OptionID == 249 || items.OptionID == 266 || items.OptionID == 275 || items.OptionID == 313 || items.OptionID == 541 || items.OptionID == 567 || items.OptionID == 589 || items.OptionID == 606)
+                                                                                            {
+                                                                                                if (tbluser.Address != null && tbluser.City != null && tbluser.State != null && tbluser.CountryID != null)
+                                                                                                {
+                                                                                                    <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                              class="textarea" style="min-height:auto"
+                                                                                                              placeholder="@items.Placeholder" readonly>@tbluser.Address,@tbluser.City, @tbluser.tbl_state.State,@tbluser.tbl_country.Country</textarea>
+
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                              class="textarea" style="min-height:auto"
+                                                                                                              placeholder="@items.Placeholder" readonly></textarea>
+                                                                                                }
+                                                                                            }
+                                                                                            else
+                                                                                            {
+
+
+                                                                                                <textarea name="optiontyperadio[@(items.OptionID)]"
+                                                                                                          class="textarea" style="min-height:auto"
+                                                                                                          placeholder="@items.Placeholder"></textarea>
+
+                                                                                            }
+                                                                                        </div>
+                                                                                    }
+
+
+
+                                                                                }
+                                                                            }
+
+                                                                        }
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        }
+                                                        else if (item.OptionType == "CheckBox")
+                                                        {
+
+                                                            var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div class="new-task-content-inside">
+                                                                    <div class="new-task-single-select-wrapper">
+
+                                                                        @foreach (var items in tblopt)
+                                                                        {
+
+
+
+                                                                            var anschecklist = ctx.tbl_answer.Where(x => x.QuestionID == item.QuestionID && x.TaskID == taskid && x.MinitaskID == isexistminitask.MinitaskID && x.Answer == items.OptionID.ToString()).FirstOrDefault();
+                                                                            <div class="new-task-single-select">
+                                                                                @if (anschecklist != null)
+                                                                                {
+                                                                                    @*<input type="checkbox" name="answercheck[@item.QuestionID]" id="@items.Question" value="@items.OptionID" checked>*@
+                                                                                    <input type="checkbox"
+                                                                                           name="answercheck[@item.QuestionID]"
+                                                                                           id="opt_@items.OptionID"
+                                                                                           value="@items.OptionID"
+                                                                                           class="option-check classcheckbox"
+                                                                                           data-optiontype="@items.OptionType"
+                                                                                           data-target="textarea_@(item.QuestionID)_@(items.OptionID)"
+                                                                                           data-questionid="@item.QuestionID" checked>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    @*<input type="checkbox" name="answercheck[@item.QuestionID]" id="@items.Question" value="@items.OptionID">*@
+                                                                                    <input type="checkbox"
+                                                                                           name="answercheck[@item.QuestionID]"
+                                                                                           id="opt_@items.OptionID"
+                                                                                           value="@items.OptionID"
+                                                                                           class="option-check classcheckbox"
+                                                                                           data-optiontype="@items.OptionType"
+                                                                                           data-target="textarea_@(item.QuestionID)_@(items.OptionID)"
+                                                                                           data-questionid="@item.QuestionID">
+                                                                                }
+
+                                                                                <label for="opt_@items.OptionID">
+                                                                                    <div class="new-task-single-select-inner">
+                                                                                        <div class="single-select-name">
+                                                                                            <p>@items.Question</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </label>
+
+                                                                            </div>
+
+                                                                            <br />
+
+                                                                            if (items.OptionType != null)
+                                                                            {
+                                                                                if (items.OptionType == "textbox")
+                                                                                {
+                                                                                    if (anschecklist != null)
+                                                                                    {
+                                                                                        if (anschecklist.OtherAnswer != null)
+                                                                                        {
+                                                                                            <div class="col-md-12"
+                                                                                                 style="display:block;"
+                                                                                                 id="textarea_@(item.QuestionID)_@(items.OptionID)">
+
+                                                                                                <textarea name="optiontypecheckbox[@items.OptionID]"
+                                                                                                          class="textarea" style="min-height:auto"
+                                                                                                          placeholder="@items.Placeholder">@anschecklist.OtherAnswer</textarea>
+                                                                                            </div>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <div class="col-md-12"
+                                                                                                 style="display: none;"
+                                                                                                 id="textarea_@(item.QuestionID)_@(items.OptionID)">
+
+                                                                                                <textarea name="optiontypecheckbox[@items.OptionID]"
+                                                                                                          class="textarea" style="min-height:auto"
+                                                                                                          placeholder="@items.Placeholder"></textarea>
+                                                                                            </div>
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <div class="col-md-12"
+                                                                                             style="display: none;"
+                                                                                             id="textarea_@(item.QuestionID)_@(items.OptionID)">
+
+                                                                                            <textarea name="optiontypecheckbox[@items.OptionID]"
+                                                                                                      class="textarea" style="min-height:auto"
+                                                                                                      placeholder="@items.Placeholder"></textarea>
+                                                                                        </div>
+                                                                                    }
+
+
+
+                                                                                }
+                                                                            }
+
+                                                                        }
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        }
+                                                        else if (item.OptionType == "Option")
+                                                        {
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div style="text-align:center" class="question-group" data-question-id="@item.QuestionID">
+                                                                    @{
+                                                                        var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+
+                                                                    }
+                                                                    @foreach (var items in tblopt)
+                                                                    {
+                                                                        var ans = ctx.tbl_answer.Where(x => x.QuestionID == items.QuestionID && x.TaskID == taskid && x.MinitaskID == isexistminitask.MinitaskID && x.Answer == items.OptionID.ToString()).FirstOrDefault();
+
+                                                                        if (items.OptionType != null)
+                                                                        {
+                                                                            if (items.OptionType == "text")
+                                                                            {
+
+                                                                                <div class="new-task-content-inside">
+                                                                                    <label>@items.Question</label>
+
+                                                                                    @if (ans != null)
+                                                                                    {
+                                                                                        <input type="text" name="optiontext[@items.OptionID]" value="@ans.OtherAnswer" class="input_text input_field" />
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <input type="text" name="optiontext[@items.OptionID]" class="input_text input_field" />
+
+                                                                                    }
+
+
+                                                                                </div>
+                                                                            }
+                                                                            else if (items.OptionType == "date")
+                                                                            {
+                                                                                <label>@items.Question</label>
+
+                                                                                if (ans != null)
+                                                                                {
+                                                                                    if (ans.OtherAnswer != null)
+                                                                                    {
+                                                                                        <input type="date" name="optiondate[@items.OptionID]" value="@ans.OtherAnswer.AsDateTime().ToString("yyyy-MM-dd")" class="dateclass input_field" style="margin-right:20px" />
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <input type="date" name="optiondate[@items.OptionID]" class="dateclass input_field" style="margin-right:20px" />
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <input type="date" name="optiondate[@items.OptionID]" class="dateclass input_field" style="margin-right:20px" />
+
+                                                                                }
+
+
+                                                                            }
+                                                                            else if (items.OptionType == "time")
+                                                                            {
+
+                                                                                <label style="margin-left:10px">@items.Question</label>
+
+
+                                                                                if (ans != null)
+                                                                                {
+                                                                                    if (ans.OtherAnswer != null)
+                                                                                    {
+                                                                                        <input type="time" name="optiontime[@items.OptionID]" value="@ans.OtherAnswer" class="dateclass input_field" />
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <input type="time" name="optiontime[@items.OptionID]" class="dateclass input_field" />
+                                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <input type="time" name="optiontime[@items.OptionID]" class="dateclass input_field" />
+
+                                                                                }
+
+                                                                            }
+                                                                            else if (items.OptionType == "textarea")
+                                                                            {
+                                                                                <div class="new-task-content-inside">
+                                                                                    <label>@items.Question</label>
+                                                                                    @if (ans != null)
+                                                                                    {
+                                                                                        <textarea name="optiontextarea[@items.OptionID]" class="textarea input_field" id="optiontextarea" placeholder="@items.Placeholder">@ans.OtherAnswer</textarea>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <textarea name="optiontextarea[@items.OptionID]" class="textarea input_field" id="optiontextarea" placeholder="@items.Placeholder"></textarea>
+                                                                                    }
+
+                                                                                </div>
+                                                                            }
+                                                                            else if (items.OptionType == "checkbox")
+                                                                            {
+                                                                                <div style="padding-top:10px">
+                                                                                    @if (ans != null)
+                                                                                    {
+                                                                                        if (ans.OtherAnswer != null)
+                                                                                        {
+                                                                                            <input type="checkbox"
+                                                                                                   name="optioncheckbox[@items.OptionID]" id="optioncheckbox_@(item.QuestionID)" class="optioncheckbox" data-question-id="@item.QuestionID" checked>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <input type="checkbox"
+                                                                                                   name="optioncheckbox[@items.OptionID]" id="optioncheckbox_@(item.QuestionID)" class="optioncheckbox" data-question-id="@item.QuestionID">
+                                                                                        }
+
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <input type="checkbox"
+                                                                                               name="optioncheckbox[@items.OptionID]" id="optioncheckbox_@(item.QuestionID)" class="optioncheckbox" data-question-id="@item.QuestionID">
+                                                                                    }
+
+                                                                                    <label>@items.Question</label>
+                                                                                </div>
+                                                                            }
+                                                                            else if (items.OptionType == "counter")
+                                                                            {
+                                                                                <div class="new-task-content-inside input_field" style="margin-bottom:20px">
+                                                                                    <label>@items.Question</label>
+
+                                                                                    <div class="qty-container">
+                                                                                        <button class="qty-btn qty-btn-minus" type="button">
+                                                                                            <i class="fa fa-minus"></i>
+                                                                                        </button>
+                                                                                        @if (ans != null)
+                                                                                        {
+                                                                                            <input type="text" name="optioncounter[@items.OptionID]" value="@ans.OtherAnswer" class="input-qty"
+                                                                                                   placeholder="0" pattern="[0-9]" />}
+                                                                                        else
+                                                                                        {
+                                                                                            <input type="text" name="optioncounter[@items.OptionID]" value="0" class="input-qty"
+                                                                                                   placeholder="0" pattern="[0-9]" />
+                                                                                        }
+
+                                                                                        <button class="qty-btn qty-btn-plus" type="button">
+                                                                                            <i class="fa fa-plus"></i>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                            else if (items.OptionType == "radio")
+                                                                            {
+                                                                                var tblopttype = ctx.tbl_optiontype.Where(x => x.OptionID == items.OptionID).ToList();
+                                                                                <div style="display: flex; justify-content: center;">
+                                                                                    <div style="margin:10px">
+                                                                                        <label style="font-size: 18px; font-weight: bold;"> @items.Question:</label>
+                                                                                    </div>
+                                                                                    @foreach (var optype in tblopttype)
+                                                                                    {
+
+                                                                                        <div class="new-task-content-inside" style="margin:10px">
+                                                                                            <div class="new-task-single-select-wrapper">
+                                                                                                <div class="new-task-single-select">
+
+                                                                                                    @if (ans != null)
+                                                                                                    {
+                                                                                                        if (ans.OtherAnswer == optype.OptionTypeID.ToString())
+                                                                                                        {
+                                                                                                            <input type="radio" id="optype_@optype.OptionTypeID" class="input_field"
+                                                                                                                   name="optionradio[@items.OptionID]" value="@optype.OptionTypeID" checked>
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            <input type="radio" id="optype_@optype.OptionTypeID" class="input_field"
+                                                                                                                   name="optionradio[@items.OptionID]" value="@optype.OptionTypeID">
+                                                                                                        }
+
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        <input type="radio" id="optype_@optype.OptionTypeID" class="input_field"
+                                                                                                               name="optionradio[@items.OptionID]" value="@optype.OptionTypeID">
+                                                                                                    }
+                                                                                                    <label for="optype_@optype.OptionTypeID">
+                                                                                                        <div class="new-task-single-select-inner">
+                                                                                                            <div class="single-select-name">
+                                                                                                                <p>@optype.Question</p>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </label>
+
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+
+
+                                                                                    }
+                                                                                </div>
+                                                                            }
+                                                                            else if (items.OptionType == "ddtime")
+                                                                            {
+                                                                                var tblopttype = ctx.tbl_optiontype.Where(x => x.OptionID == items.OptionID).ToList();
+                                                                                <label>@items.Question</label>
+                                                                                if (ans != null)
+                                                                                {
+
+                                                                                    <span class="new-task-input-box input_field" style=" max-width: 155px; display: inline-block !important">
+
+
+                                                                                        <select name="optionddtime[@items.OptionID]">
+                                                                                            <option value='' selected>Choose option</option>
+                                                                                            @foreach (var optype in tblopttype)
+                                                                                            {
+                                                                                                if (ans.OtherAnswer == optype.OptionTypeID.ToString())
+                                                                                                {
+                                                                                                    <option value="@optype.OptionTypeID" selected="selected">@optype.Question</option>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <option value="@optype.OptionTypeID">@optype.Question</option>
+                                                                                                }
+
+                                                                                            }
+                                                                                        </select>
+                                                                                    </span>
+
+                                                                                }
+                                                                                else
+                                                                                {
+
+                                                                                    <span class="new-task-input-box" style=" max-width: 155px; display: inline-block !important">
+
+                                                                                        <select name="optionddtime[@items.OptionID]" style=" border-radius: 24px;">
+                                                                                            <option value='' selected>Choose option</option>
+                                                                                            @foreach (var optype in tblopttype)
+                                                                                            {
+                                                                                                <option value="@optype.OptionTypeID">@optype.Question</option>
+                                                                                            }
+                                                                                        </select>
+                                                                                    </span>
+
+                                                                                }
+                                                                            }
+                                                                        }
+
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        //if data doesnot exist in tblanswer
+                                                        if (item.OptionType == "Counter")
+                                                        {
+
+
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div class="new-task-content-inside">
+                                                                    <div class="qty-container">
+                                                                        <button class="qty-btn qty-btn-minus" type="button">
+                                                                            <i class="fa fa-minus"></i>
+                                                                        </button>
+                                                                        <input type="text" name="answerCounter" value="0" class="input-qty"
+                                                                               placeholder="0" pattern="[0-9]" />
+                                                                        <button class="qty-btn qty-btn-plus" type="button">
+                                                                            <i class="fa fa-plus"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else if (item.OptionType == "Textarea")
+                                                        {
+                                                            if (@item.Question == "What is the address?" || @item.Question == "What is the collection address?" || @item.Question == "What is the delivery address?")
+                                                            {
+                                                                <div class="new-task-content task_part_2">
+
+                                                                    <div class="new-task-heading">
+                                                                        <h3><span>@i</span>@item.Question</h3>
+                                                                    </div>
+
+                                                                    <div class="new-task-location-address">
+                                                                        <div class="row">
+                                                                            <div class="col-md-6 col-12">
+                                                                                <div class="new-task-input-box">
+                                                                                    <label for="saved-address">
+                                                                                        Select from saved
+                                                                                        address
+                                                                                    </label>
+                                                                                    <select name="saved-address" id="saved-address">
+                                                                                        @if (tbluser.Address != null && tbluser.City != null && tbluser.State != null && tbluser.CountryID != null)
+                                                                                        {
+                                                                                            <option value="">
+                                                                                                @tbluser.Address,
+                                                                                                @tbluser.City,
+                                                                                                @tbluser.tbl_state.State,
+                                                                                                @tbluser.tbl_country.Country
+                                                                                            </option>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <option value=""></option>
+                                                                                        }
+
+                                                                                    </select>
+
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-md-6 col-12">
+
+                                                                                <div class="new-task-input-box">
+                                                                                    <label for="other-address">Other</label>
+                                                                                    <input type="text" name="address"
+                                                                                           id="other-address"
+                                                                                           placeholder="Start by typing the post code">
+                                                                                    <span class="icon">
+                                                                                        <i class="fa-solid fa-location-crosshairs"></i>
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="new-task-content task_part_3">
+                                                                    <div class="new-task-heading">
+                                                                        <h3><span>@i</span>@item.Question</h3>
+                                                                    </div>
+                                                                    <div class="new-task-content-inside">
+                                                                        <textarea name="answerOther" class="textarea" id="textareaid" placeholder="Your answer"></textarea>
+                                                                    </div>
+                                                                </div>
+                                                            }
+
+                                                        }
+                                                        else if (item.OptionType == "Radio")
+                                                        {
+
+                                                            var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div class="new-task-content-inside">
+                                                                    <div class="new-task-single-select-wrapper">
+
+                                                                        @foreach (var items in tblopt)
+                                                                        {
+
+                                                                            <div class="new-task-single-select">
+
+                                                                                <input type="radio"
+                                                                                       name="answerOptions[@item.QuestionID]"
+                                                                                       id="opt_@items.OptionID"
+                                                                                       value="@items.OptionID"
+                                                                                       class="option-radio"
+                                                                                       data-optiontype="@items.OptionType"
+                                                                                       data-target="textarea_@(item.QuestionID)_@(items.OptionID)"
+                                                                                       data-questionid="@item.QuestionID">
+
+                                                                                <label for="opt_@items.OptionID">
+                                                                                    <div class="new-task-single-select-inner">
+                                                                                        <div class="single-select-name">
+                                                                                            <p>@items.Question</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </label>
+
+
+
+                                                                            </div>
+                                                                            <br />
+
+                                                                            if (items.OptionType != null)
+                                                                            {
+                                                                                if (items.OptionType == "textbox")
+                                                                                {
+                                                                                    <div class="col-md-12"
+                                                                                         style="display:none;"
+                                                                                         id="textarea_@(item.QuestionID)_@(items.OptionID)">
+                                                                                        @if (items.OptionID == 249 || items.OptionID == 266 || items.OptionID == 275 || items.OptionID == 313 || items.OptionID == 541 || items.OptionID == 567 || items.OptionID == 589 || items.OptionID == 606)
+                                                                                        {
+                                                                                            if (tbluser.Address != null && tbluser.City != null && tbluser.State != null && tbluser.CountryID != null)
+                                                                                            {
+                                                                                                <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                          class="textarea" style="min-height:auto"
+                                                                                                          placeholder="@items.Placeholder" readonly>@tbluser.Address,@tbluser.City, @tbluser.tbl_state.State,@tbluser.tbl_country.Country
+                                          </textarea>
+
+                                                                                            }
+                                                                                            else
+                                                                                            {
+                                                                                                <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                          class="textarea" style="min-height:auto"
+                                                                                                          placeholder="@items.Placeholder" readonly></textarea>
+                                                                                            }
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                      class="textarea" style="min-height:auto"
+                                                                                                      placeholder="@items.Placeholder"></textarea>
+                                                                                        }
+
+                                                                                    </div>
+
+                                                                                }
+                                                                            }
+
+
+
+
+                                                                        }
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        }
+                                                        else if (item.OptionType == "CheckBox")
+                                                        {
+
+                                                            var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div class="new-task-content-inside">
+                                                                    <div class="new-task-single-select-wrapper">
+
+                                                                        @foreach (var items in tblopt)
+                                                                        {
+                                                                            <div class="new-task-single-select">
+
+                                                                                <input type="checkbox"
+                                                                                       name="answercheck[@item.QuestionID]"
+                                                                                       id="opt_@items.OptionID"
+                                                                                       value="@items.OptionID"
+                                                                                       class="option-check classcheckbox"
+                                                                                       data-optiontype="@items.OptionType"
+                                                                                       data-target="textarea_@(item.QuestionID)_@(items.OptionID)"
+                                                                                       data-questionid="@item.QuestionID">
+
+                                                                                <label for="opt_@items.OptionID">
+                                                                                    <div class="new-task-single-select-inner">
+                                                                                        <div class="single-select-name">
+                                                                                            <p>@items.Question</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </label>
+
+
+
+                                                                            </div>
+                                                                            <br />
+
+                                                                            if (items.OptionType != null)
+                                                                            {
+                                                                                if (items.OptionType == "textbox")
+                                                                                {
+                                                                                    <div class="col-md-12"
+                                                                                         style="display:none;"
+                                                                                         id="textarea_@(item.QuestionID)_@(items.OptionID)">
+
+                                                                                        <textarea name="optiontypecheckbox[@items.OptionID]"
+                                                                                                  class="textarea" style="min-height:auto"
+                                                                                                  placeholder="@items.Placeholder"></textarea>
+                                                                                    </div>
+
+                                                                                }
+                                                                            }
+
+                                                                        }
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        }
+                                                        else if (item.OptionType == "Option")
+                                                        {
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div style="text-align:center" class="question-group" data-question-id="@item.QuestionID">
+                                                                    @{
+                                                                        var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+                                                                    }
+                                                                    @foreach (var items in tblopt)
+                                                                    {
+                                                                        if (items.OptionType != null)
+                                                                        {
+                                                                            if (items.OptionType == "text")
+                                                                            {
+                                                                                <div class="new-task-content-inside">
+                                                                                    <label>@items.Question</label>
+
+                                                                                    <input type="text" name="optiontext[@items.OptionID]" class="input_text input_field" />
+
+                                                                                </div>
+                                                                            }
+                                                                            else if (items.OptionType == "date")
+                                                                            {
+                                                                                <label>@items.Question</label>
+
+                                                                                <input type="date" name="optiondate[@items.OptionID]" class="dateclass input_field" style="margin-right:20px" />
+
+
+                                                                            }
+                                                                            else if (items.OptionType == "time")
+                                                                            {
+
+                                                                                <label style="margin-left:10px">@items.Question</label>
+
+                                                                                <input type="time" name="optiontime[@items.OptionID]" class="dateclass input_field" />
+
+                                                                            }
+                                                                            else if (items.OptionType == "textarea")
+                                                                            {
+                                                                                <div class="new-task-content-inside">
+                                                                                    <label>@items.Question</label>
+                                                                                    <textarea name="optiontextarea[@items.OptionID]" class="textarea input_field" placeholder="@items.Placeholder" id="optiontextarea"></textarea>
+                                                                                </div>
+                                                                            }
+                                                                            else if (items.OptionType == "checkbox")
+                                                                            {
+                                                                                <div style="padding-top:10px">
+
+                                                                                    <input type="checkbox"
+                                                                                           name="optioncheckbox[@items.OptionID]" id="optioncheckbox_@(item.QuestionID)" class="optioncheckbox" data-question-id="@item.QuestionID">
+                                                                                    <label>@items.Question</label>
+                                                                                </div>
+
+                                                                            }
+                                                                            else if (items.OptionType == "counter")
+                                                                            {
+                                                                                <div class="new-task-content-inside input_field" style="margin-bottom:20px">
+                                                                                    <label>@items.Question</label>
+
+                                                                                    <div class="qty-container">
+                                                                                        <button class="qty-btn qty-btn-minus" type="button">
+                                                                                            <i class="fa fa-minus"></i>
+                                                                                        </button>
+                                                                                        <input type="text" name="optioncounter[@items.OptionID]" value="0" class="input-qty"
+                                                                                               placeholder="0" pattern="[0-9]" />
+                                                                                        <button class="qty-btn qty-btn-plus" type="button">
+                                                                                            <i class="fa fa-plus"></i>
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                            else if (items.OptionType == "radio")
+                                                                            {
+                                                                                var tblopttype = ctx.tbl_optiontype.Where(x => x.OptionID == items.OptionID).ToList();
+                                                                                <div style="display: flex; justify-content: center;">
+                                                                                    <div style="margin:10px">
+                                                                                        <label style="font-size: 18px; font-weight: bold;"> @items.Question:</label>
+                                                                                    </div>
+                                                                                    @foreach (var optype in tblopttype)
+                                                                                    {
+                                                                                        <div class="new-task-content-inside" style="margin:10px">
+                                                                                            <div class="new-task-single-select-wrapper">
+                                                                                                <div class="new-task-single-select">
+
+                                                                                                    <input type="radio" id="optype_@optype.OptionTypeID" class="input_field"
+                                                                                                           name="optionradio[@items.OptionID]" value="@optype.OptionTypeID">
+
+                                                                                                    <label for="optype_@optype.OptionTypeID">
+                                                                                                        <div class="new-task-single-select-inner">
+                                                                                                            <div class="single-select-name">
+                                                                                                                <p>@optype.Question</p>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </label>
+
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    }
+                                                                                </div>
+                                                                            }
+
+                                                                            else if (items.OptionType == "ddtime")
+                                                                            {
+                                                                                var tblopttype = ctx.tbl_optiontype.Where(x => x.OptionID == items.OptionID).ToList();
+                                                                                <label>@items.Question</label>
+
+                                                                                <span class="new-task-input-box input_field" style=" max-width: 155px;display:inline-block !important">
+                                                                                    <select name="optionddtime[@items.OptionID]" style=" border-radius: 24px;">
+                                                                                        <option value='' selected>Choose option</option>
+                                                                                        @foreach (var optype in tblopttype)
+                                                                                        {
+                                                                                            <option value="@optype.OptionTypeID">@optype.Question</option>
+                                                                                            @*<option value="Early morning">Early morning</option>
+                                                                                                <option value="Late morning">Late morning</option>
+                                                                                                <option value="Early afternoon">Early afternoon</option>
+                                                                                                <option value="Evening">Evening</option>*@
+                                                                                        }
+                                                                                    </select>
+
+                                                                                </span>
+
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    //add
+                                                    if (item.OptionType == "Counter")
+                                                    {
+
+
+                                                        <div class="new-task-content task_part_3">
+                                                            <div class="new-task-heading">
+                                                                <h3><span>@i</span>@item.Question</h3>
+                                                            </div>
+                                                            <div class="new-task-content-inside">
+                                                                <div class="qty-container">
+                                                                    <button class="qty-btn qty-btn-minus" type="button">
+                                                                        <i class="fa fa-minus"></i>
+                                                                    </button>
+                                                                    <input type="text" name="answerCounter" value="0" class="input-qty"
+                                                                           placeholder="0" pattern="[0-9]" />
+                                                                    <button class="qty-btn qty-btn-plus" type="button">
+                                                                        <i class="fa fa-plus"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else if (item.OptionType == "Textarea")
+                                                    {
+                                                        if (@item.Question == "What is the address?" || @item.Question == "What is the collection address?" || @item.Question == "What is the delivery address?")
+                                                        {
+                                                            <div class="new-task-content task_part_2">
+
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+
+                                                                <div class="new-task-location-address">
+                                                                    <div class="row">
+                                                                        <div class="col-md-6 col-12">
+                                                                            <div class="new-task-input-box">
+                                                                                <label for="saved-address">
+                                                                                    Select from saved
+                                                                                    address
+                                                                                </label>
+                                                                                <select name="saved-address" id="saved-address">
+                                                                                    @if (tbluser.Address != null && tbluser.City != null && tbluser.State != null && tbluser.CountryID != null)
+                                                                                    {
+                                                                                        <option value="">
+                                                                                            @tbluser.Address,
+                                                                                            @tbluser.City,
+                                                                                            @tbluser.tbl_state.State,
+                                                                                            @tbluser.tbl_country.Country
+                                                                                        </option>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <option value=""></option>
+                                                                                    }
+
+                                                                                </select>
+
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6 col-12">
+
+                                                                            <div class="new-task-input-box">
+                                                                                <label for="other-address">Other</label>
+                                                                                <input type="text" name="address"
+                                                                                       id="other-address"
+                                                                                       placeholder="Start by typing the post code">
+                                                                                <span class="icon">
+                                                                                    <i class="fa-solid fa-location-crosshairs"></i>
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="new-task-content task_part_3">
+                                                                <div class="new-task-heading">
+                                                                    <h3><span>@i</span>@item.Question</h3>
+                                                                </div>
+                                                                <div class="new-task-content-inside">
+                                                                    <textarea name="answerOther" class="textarea" id="textareaid" placeholder="Your answer"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        }
+
+                                                    }
+                                                    else if (item.OptionType == "Radio")
+                                                    {
+
+                                                        var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+                                                        <div class="new-task-content task_part_3">
+                                                            <div class="new-task-heading">
+                                                                <h3><span>@i</span>@item.Question</h3>
+                                                            </div>
+                                                            <div class="new-task-content-inside">
+                                                                <div class="new-task-single-select-wrapper">
+
+                                                                    @foreach (var items in tblopt)
+                                                                    {
+
+
+                                                                        <div class="new-task-single-select">
+
+                                                                            <input type="radio"
+                                                                                   name="answerOptions[@item.QuestionID]"
+                                                                                   id="opt_@items.OptionID"
+                                                                                   value="@items.OptionID"
+                                                                                   class="option-radio"
+                                                                                   data-optiontype="@items.OptionType"
+                                                                                   data-target="textarea_@(item.QuestionID)_@(items.OptionID)"
+                                                                                   data-questionid="@item.QuestionID">
+
+                                                                            <label for="opt_@items.OptionID">
+                                                                                <div class="new-task-single-select-inner">
+                                                                                    <div class="single-select-name">
+                                                                                        <p>@items.Question</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </label>
+
+
+
+                                                                        </div>
+
+
+
+                                                                        <br />
+
+                                                                        if (items.OptionType != null)
+                                                                        {
+                                                                            if (items.OptionType == "textbox")
+                                                                            {
+                                                                                <div class="col-md-12"
+                                                                                     style="display:none;"
+                                                                                     id="textarea_@(item.QuestionID)_@(items.OptionID)">
+                                                                                    @if (items.OptionID == 249 || items.OptionID == 266 || items.OptionID == 275 || items.OptionID == 313 || items.OptionID == 541 || items.OptionID == 567 || items.OptionID == 589 || items.OptionID == 606)
+                                                                                    {
+                                                                                        if (tbluser.Address != null && tbluser.City != null && tbluser.State != null && tbluser.CountryID != null)
+                                                                                        {
+                                                                                            <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                      class="textarea" style="min-height:auto"
+                                                                                                      placeholder="@items.Placeholder" readonly>@tbluser.Address,@tbluser.City, @tbluser.tbl_state.State,@tbluser.tbl_country.Country
+                                                                                             </textarea>
+
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                      class="textarea" style="min-height:auto"
+                                                                                                      placeholder="@items.Placeholder" readonly></textarea>
+                                                                                        }
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <textarea name="optiontyperadio[@items.OptionID]"
+                                                                                                  class="textarea" style="min-height:auto"
+                                                                                                  placeholder="@items.Placeholder"></textarea>
+                                                                                    }
+
+                                                                                </div>
+
+                                                                            }
+                                                                        }
+
+
+
+
+                                                                    }
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (item.OptionType == "CheckBox")
+                                                    {
+
+                                                        var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+                                                        <div class="new-task-content task_part_3">
+                                                            <div class="new-task-heading">
+                                                                <h3><span>@i</span>@item.Question</h3>
+                                                            </div>
+                                                            <div class="new-task-content-inside">
+                                                                <div class="new-task-single-select-wrapper">
+
+                                                                    @foreach (var items in tblopt)
+                                                                    {
+                                                                        <div class="new-task-single-select">
+
+                                                                            <input type="checkbox"
+                                                                                   name="answercheck[@item.QuestionID]"
+                                                                                   id="opt_@items.OptionID"
+                                                                                   value="@items.OptionID"
+                                                                                   class="option-check classcheckbox"
+                                                                                   data-optiontype="@items.OptionType"
+                                                                                   data-target="textarea_@(item.QuestionID)_@(items.OptionID)"
+                                                                                   data-questionid="@item.QuestionID">
+
+                                                                            <label for="opt_@items.OptionID">
+                                                                                <div class="new-task-single-select-inner">
+                                                                                    <div class="single-select-name">
+                                                                                        <p>@items.Question</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </label>
+
+
+
+                                                                        </div>
+                                                                        <br />
+
+                                                                        if (items.OptionType != null)
+                                                                        {
+                                                                            if (items.OptionType == "textbox")
+                                                                            {
+                                                                                <div class="col-md-12"
+                                                                                     style="display:none;"
+                                                                                     id="textarea_@(item.QuestionID)_@(items.OptionID)">
+
+                                                                                    <textarea name="optiontypecheckbox[@items.OptionID]"
+                                                                                              class="textarea" style="min-height:auto"
+                                                                                              placeholder="@items.Placeholder"></textarea>
+                                                                                </div>
+
+                                                                            }
+                                                                        }
+
+                                                                    }
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    }
+                                                    else if (item.OptionType == "Option")
+                                                    {
+                                                        <div class="new-task-content task_part_3">
+                                                            <div class="new-task-heading">
+                                                                <h3><span>@i</span>@item.Question</h3>
+                                                            </div>
+                                                            <div style="text-align:center" class="question-group" data-question-id="@item.QuestionID">
+                                                                @{
+                                                                    var tblopt = ctx.tbl_options.Where(x => x.QuestionID == item.QuestionID).ToList();
+                                                                }
+                                                                @foreach (var items in tblopt)
+                                                                {
+                                                                    if (items.OptionType != null)
+                                                                    {
+                                                                        if (items.OptionType == "text")
+                                                                        {
+                                                                            <div class="new-task-content-inside">
+                                                                                <label>@items.Question</label>
+
+                                                                                <input type="text" name="optiontext[@items.OptionID]" class="input_text input_field" />
+
+                                                                            </div>
+                                                                        }
+                                                                        else if (items.OptionType == "date")
+                                                                        {
+                                                                            <label>@items.Question</label>
+
+                                                                            <input type="date" name="optiondate[@items.OptionID]" class="dateclass input_field" style="margin-right:20px" />
+
+
+                                                                        }
+                                                                        else if (items.OptionType == "time")
+                                                                        {
+
+                                                                            <label style="margin-left:10px">@items.Question</label>
+
+                                                                            <input type="time" name="optiontime[@items.OptionID]" class="dateclass input_field" />
+
+                                                                        }
+                                                                        else if (items.OptionType == "textarea")
+                                                                        {
+                                                                            <div class="new-task-content-inside">
+                                                                                <label>@items.Question</label>
+                                                                                <textarea name="optiontextarea[@items.OptionID]" class="textarea input_field" placeholder="@items.Placeholder" id="optiontextarea"></textarea>
+                                                                            </div>
+                                                                        }
+                                                                        else if (items.OptionType == "checkbox")
+                                                                        {
+                                                                            <div style="padding-top:10px">
+
+                                                                                <input type="checkbox"
+                                                                                       name="optioncheckbox[@items.OptionID]" id="optioncheckbox_@(item.QuestionID)" class="optioncheckbox" data-question-id="@item.QuestionID">
+                                                                                <label>@items.Question</label>
+                                                                            </div>
+
+                                                                        }
+                                                                        else if (items.OptionType == "counter")
+                                                                        {
+                                                                            <div class="new-task-content-inside input_field" style="margin-bottom:20px">
+                                                                                <label>@items.Question</label>
+
+                                                                                <div class="qty-container">
+                                                                                    <button class="qty-btn qty-btn-minus" type="button">
+                                                                                        <i class="fa fa-minus"></i>
+                                                                                    </button>
+                                                                                    <input type="text" name="optioncounter[@items.OptionID]" value="0" class="input-qty"
+                                                                                           placeholder="0" pattern="[0-9]" />
+                                                                                    <button class="qty-btn qty-btn-plus" type="button">
+                                                                                        <i class="fa fa-plus"></i>
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                        else if (items.OptionType == "radio")
+                                                                        {
+                                                                            var tblopttype = ctx.tbl_optiontype.Where(x => x.OptionID == items.OptionID).ToList();
+                                                                            <div style="display: flex; justify-content: center;">
+                                                                                <div style="margin:10px">
+                                                                                    <label style="font-size: 18px; font-weight: bold;"> @items.Question:</label>
+                                                                                </div>
+                                                                                @foreach (var optype in tblopttype)
+                                                                                {
+
+
+                                                                                    <div class="new-task-content-inside" style="margin:10px">
+                                                                                        <div class="new-task-single-select-wrapper">
+                                                                                            <div class="new-task-single-select">
+
+                                                                                                <input type="radio" id="optype_@optype.OptionTypeID" class="input_field"
+                                                                                                       name="optionradio[@items.OptionID]" value="@optype.OptionTypeID">
+
+                                                                                                <label for="optype_@optype.OptionTypeID">
+                                                                                                    <div class="new-task-single-select-inner">
+                                                                                                        <div class="single-select-name">
+                                                                                                            <p>@optype.Question</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </label>
+
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                        else if (items.OptionType == "ddtime")
+                                                                        {
+                                                                            var tblopttype = ctx.tbl_optiontype.Where(x => x.OptionID == items.OptionID).ToList();
+                                                                            <label>@items.Question</label>
+
+                                                                            <span class="new-task-input-box input_field" style=" max-width: 155px;display:inline-block !important">
+                                                                                <select name="optionddtime[@items.OptionID]" style=" border-radius: 24px;">
+                                                                                    <option value='' selected>Choose option</option>
+                                                                                    @foreach (var optype in tblopttype)
+                                                                                    {
+                                                                                        <option value="@optype.OptionTypeID">@optype.Question</option>
+                                                                                        @*<option value="Early morning">Early morning</option>
+                                                                                            <option value="Late morning">Late morning</option>
+                                                                                            <option value="Early afternoon">Early afternoon</option>
+                                                                                            <option value="Evening">Evening</option>*@
+                                                                                    }
+                                                                                </select>
+
+                                                                            </span>
+
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+
+                                                i++;
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p style="color: #00c1ab;text-align:center">No Questions Found</p>
+
+                                        }
+
+
+
+
+                                    </div>
+
+
+
+                                    <div>
+
+                                        @if (isexistminitask != null)
+                                        {
+
+                                            <button class="btn_minitask" type="submit">Edit MiniTask</button>
+
+                                        }
+                                        else
+                                        {
+
+                                            <button class="btn_minitask" type="submit">Create MiniTask</button>
+
+                                        }
+
+                                    </div>
+
+
+                                }
+                            </div>
+
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+    @Html.Partial("dashboard-footer")
+
+    @Html.Partial("js")
+    @Html.Partial("dashboard-script")
+
+    @*<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>*@
+
+    @* below script is added because select options not working ie not able to select *@
+    @*<script src="~/Scripts/jquery-3.3.1.min.js"></script>*@
+
+
+
+
+
+    <script>
+
+        $('.form_add_new_task').submit(function () {
+            if ($('#tasktitle').val() == "") {
+                $('#lbl_title').html("Please mention your task title");
+                return false;
+            }
+            else {
+                $('#lbl_title').html(" ");
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+
+<script>
+    $(document).ready(function () {
+        // Listen for clicks on radio buttons with class 'option-radio'
+        $('.option-radio').click(function () {
+            debugger
+            /*alert();*/
+            var questionId = $(this).data('questionid');
+            // Hide all textareas within the same question
+            $('div[id^="textarea_' + questionId + '_"]').hide();
+
+            // Check if the clicked radio button is associated with a textbox
+            if ($(this).data('optiontype') === 'textbox') {
+                // Get the target textarea ID
+                var targetId = $(this).data('target');
+
+                // Show the target textarea
+                $('#' + targetId).show();
+            }
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        // Listen for clicks on checkboxes
+        $('.classcheckbox').click(function () {
+            debugger
+            var questionId = $(this).data('questionid');
+
+            // Check if the clicked checkbox button is associated with a textbox
+            if ($(this).data('optiontype') === 'textbox') {
+                // Get the target textarea ID
+                var targetId = $(this).data('target');
+
+                if ($(this).is(':checked')) {
+                    $('#' + targetId).show();
+                } else {
+                    $('#' + targetId).hide();
+                }
+
+            }
+
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(document).ready(function () {
+            $('.optioncheckbox').change(function () {
+                debugger
+                var isChecked = $(this).is(':checked');
+                var questionId = $(this).data('question-id');
+                var $questionGroup = $('.question-group[data-question-id="' + questionId + '"]');
+
+
+                if (isChecked) {
+                    //disables the checkbox other than the selected one
+                    $questionGroup.find('.optioncheckbox').not(this).prop('checked', false);
+
+                    //clears the value of other input feilds if presents
+                    $questionGroup.find('.input_field').val("");
+
+
+                } else {
+                    $questionGroup.find('.optioncheckbox').prop('checked', false);
+                }
+            });
+
+
+            $('.input_field').focus(function () {
+                debugger
+                var questionId = $(this).closest('.question-group').data('question-id');
+                var $questionGroup = $('.question-group[data-question-id="' + questionId + '"]');
+                $questionGroup.find('.optioncheckbox').prop('checked', false);
+
+            });
+
+        });
+    });
+</script>
+
+@*restrict past dates in HTML5 input type Date*@
+<script>
+    $(function () {
+        debugger
+        var dtToday = new Date();
+
+        var month = dtToday.getMonth() + 1;
+        var day = dtToday.getDate();
+        var year = dtToday.getFullYear();
+        if (month < 10)
+            month = '0' + month.toString();
+        if (day < 10)
+            day = '0' + day.toString();
+
+        var minDate = year + '-' + month + '-' + day;
+
+        $('.selectpresentdate').attr('min', minDate);
+    });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+

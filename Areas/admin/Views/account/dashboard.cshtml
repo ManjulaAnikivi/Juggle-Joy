@@ -1,0 +1,221 @@
+﻿@using juggle_joy.Models
+@{
+    ViewBag.Title = "Dashboard | " + MvcApplication.project_name;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var user = ctx.tbl_user.ToList();
+    var contacts = ctx.tbl_contact.Count();
+    var subscriber = ctx.tbl_subscriber.Count();
+    var blog = ctx.tbl_blogs.Count();
+    var question = ctx.tbl_question.Count();
+
+    var task = ctx.tbl_task.ToList();
+    var taskReceived = task.Where(x => x.Status == (int)TaskStatus.Received).ToList().Count();
+    var taskOngoing = task.Where(x => x.Status == (int)TaskStatus.Ongoing).ToList().Count();
+    var taskCompleted = task.Where(x => x.Status == (int)TaskStatus.Complete).ToList().Count();
+
+    var handler = ctx.tbl_user.Where(x => x.Status != null && x.UserType == "H").Select(x => x.Status).ToList();
+    var activehandler = handler.Where(x => x.Value == (int)UserStatus.Active).Count();
+    var blockedhandler = handler.Where(x => x.Value == (int)UserStatus.Blocked).Count();
+
+    var assistent = ctx.tbl_user.Where(x => x.Status != null && x.UserType == "A").Select(x => x.Status).ToList();
+    var activeassistent = assistent.Where(x =>x.Value == (int)UserStatus.Active).Count();
+    var blockedassistent = assistent.Where(x => x.Value == (int)UserStatus.Blocked).Count();
+
+    var activeUser = user.Where(x => x.Status == (int)UserStatus.Active && x.UserType == "U").Count();
+    var incompleteRegUser = user.Where(x => x.Status == (int)UserStatus.IncompleteRegistration && x.UserType == "U").Count();
+    var blockedUser = user.Where(x => x.Status == (int)UserStatus.Blocked && x.UserType == "U").Count();
+
+}
+
+<style>
+	.widget-item-icon, .widget-carousel {
+		border-radius: 10px;
+	}
+	.owl-page span, owl-page.active span {
+		background:whitesmoke !important;
+	}
+</style>
+<ul class="breadcrumb">
+	<li><a href="~/admin/dashboard">Home</a></li>
+	<li class="active">Dashboard</li>
+</ul>
+<div class="page-title">
+	<h2><span class="fa fa-desktop"></span> Dashboard</h2>
+</div>
+<div style="clear:both;"></div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-primary widget-item-icon" style="cursor: pointer; background: linear-gradient(to bottom, #1b1e24 0%, #101215 100%);" onclick="javascript: location.href = '/admin/profile'">
+                <div class="widget-item-left">
+                    <span class="fa fa-user"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count">&nbsp;</div>
+                    <div class="widget-title">My Profile</div>
+                    <div class="widget-subtitle">Update your profile</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-success widget-item-icon" style="cursor: pointer; background: #607d8b" onclick="javascript: location.href = '/admin/change-password'">
+                <div class="widget-item-left">
+                    <span class="fa fa-lock"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count">&nbsp;</div>
+                    <div class="widget-title">Change Password</div>
+                    <div class="widget-subtitle">Change your password</div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-warning widget-carousel" style="background: #673ab7 ">
+                <div class="owl-carousel" id="owl-example">
+                    <div style="cursor:pointer;" onclick="location.href = '/admin/active-users';">
+                        <div class="widget-int">@activeUser</div>
+                        <div class="widget-title">Active Users</div>
+                        <div class="widget-subtitle">View Active Users</div>
+                    </div>
+                    <div style="cursor: pointer;" onclick="location.href = '/admin/blocked-users';">
+                        <div class="widget-int">@blockedUser</div>
+                        <div class="widget-title">Blocked Users</div>
+                        <div class="widget-subtitle">View Blocked Users</div>
+                    </div>
+                    <div style="cursor: pointer;" onclick="location.href = '/admin/incomplete-registred-users';">
+                        <div class="widget-int">@incompleteRegUser</div>
+                        <div class="widget-title">Incomplete Reg-Users</div>
+                        <div class="widget-subtitle">View Incomplete Reg-Users</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-warning widget-carousel" style="background: #673ab7 ">
+                <div class="owl-carousel" id="owl-example">
+                    <div style="cursor:pointer;" onclick="location.href = '/admin/tasks/received';">
+                        <div class="widget-int">@taskReceived</div>
+                        <div class="widget-title">Received Taks</div>
+                        <div class="widget-subtitle">View Received Taks</div>
+                    </div>
+                    <div style="cursor: pointer;" onclick="location.href = '/admin/tasks/ongoing';">
+                        <div class="widget-int">@taskOngoing</div>
+                        <div class="widget-title">Ongoing Tasks</div>
+                        <div class="widget-subtitle">View Ongoing Tasks</div>
+                    </div>
+                    <div style="cursor: pointer;" onclick="location.href = '/admin/tasks/completed';">
+                        <div class="widget-int">@taskCompleted</div>
+                        <div class="widget-title">Completed Tasks</div>
+                        <div class="widget-subtitle">View Completed Tasks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-warning widget-carousel" style="background: #af4c6c ">
+                <div class="owl-carousel" id="owl-example">
+                    <div style="cursor:pointer;" onclick="location.href = '/admin/active-handlers';">
+                        <div class="widget-int">@activehandler</div>
+                        <div class="widget-title">Active Handlers</div>
+                        <div class="widget-subtitle">View Active Handlers</div>
+                    </div>
+                    <div style="cursor: pointer;" onclick="location.href = '/admin/blocked-handlers';">
+                        <div class="widget-int">@blockedhandler</div>
+                        <div class="widget-title">Blocked Handlers</div>
+                        <div class="widget-subtitle">View Blocked Handlers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-warning widget-carousel" style="background: #af4c6c ">
+                <div class="owl-carousel" id="owl-example">
+                    <div style="cursor:pointer;" onclick="location.href = '/admin/active-assistants';">
+                        <div class="widget-int">@activeassistent</div>
+                        <div class="widget-title">Active  Assistants</div>
+                        <div class="widget-subtitle">View Active Assistants</div>
+                    </div>
+                    <div style="cursor: pointer;" onclick="location.href = '/admin/blocked-assistants';">
+                        <div class="widget-int">@blockedassistent</div>
+                        <div class="widget-title">Blocked Assistants</div>
+                        <div class="widget-subtitle">View Blocked Assistants</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-danger widget-item-icon" style="cursor: pointer; background: #333" onclick="javascript: location.href = '/admin/questions'">
+                <div class="widget-item-left">
+                    <span class="fa fa-question"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count">@question</div>
+                    <div class="widget-title"> Question</div>
+                    <div class="widget-subtitle">Add questions</div>
+                </div>
+            </div>
+        </div>*@
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-danger widget-item-icon" style="cursor: pointer; background: #993370" onclick="javascript: location.href = '/admin/add-blog'">
+                <div class="widget-item-left">
+                    <span class="fa fa-file"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count">@blog</div>
+                    <div class="widget-title"> Blogs</div>
+                    <div class="widget-subtitle">Add blogs</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-item-icon" style="cursor: pointer; background-color: #009688;" onclick="javascript: location.href = '/admin/add-faq'">
+                <div class="widget-item-left">
+                    <span class="fa fa-question-circle"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count">&nbsp;</div>
+                    <div class="widget-title">FAQs</div>
+                    <div class="widget-subtitle">Manage FAQs</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-success widget-item-icon" style="cursor: pointer; background: #3f51b5" onclick="javascript: location.href = '/admin/contacts'">
+                <div class="widget-item-left">
+                    <span class="fa fa-phone"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count">@contacts</div>
+                    <div class="widget-title">Contacts Received</div>
+                    <div class="widget-subtitle">View contact details</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
+            <div class="widget widget-success widget-item-icon" style="cursor: pointer; background: #2196f3" onclick="javascript: location.href = '/admin/subscribers'">
+                <div class="widget-item-left">
+                    <span class="fa fa-envelope"></span>
+                </div>
+                <div class="widget-data">
+                    <div class="widget-int num-count">@subscriber</div>
+                    <div class="widget-title">Subscribers</div>
+                    <div class="widget-subtitle">View subscribers</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+	
+</div>
+<div style="clear:both;"></div>
+<script type="text/javascript" src="~/admin_assets/js/plugins/owl/owl.carousel.min.js"></script>
+<script type="text/javascript">
+    $('#lnk_dashboard').addClass("active");
+</script>

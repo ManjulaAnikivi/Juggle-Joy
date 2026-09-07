@@ -1,0 +1,291 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_task>
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    int i = 1;
+    var tbl_user = ctx.tbl_user.ToList();
+    int handlerid = Convert.ToInt32(Session["HandlerID"]);
+    var assistant = tbl_user.Where(x => x.UserType == "A" && x.Status == (int)UserStatus.Active && x.HandlerID == handlerid).OrderBy(x => x.UserID).ToList();
+
+    var pageid = ViewBag.id;
+
+}
+<link href="~/Content/chosen/chosen.min.css" rel="stylesheet" />
+<style>
+    .chosen-container-single .chosen-single span {
+        display: unset !important;
+    }
+
+    .chosen-container-single .chosen-single div b {
+        background: unset !important;
+    }
+
+    .chosen-container-single .chosen-single {
+        padding-left: 11px !important;
+        background: white !important;
+    }
+
+    .admin-page-table-content-container {
+        overflow-x: unset !important;
+    }
+
+    @@media (max-width: 1249px) {
+        .admin-page-table-content-main .admin-page-table-content-container {
+            overflow-x: scroll !important;
+        }
+    }
+</style>
+<p id="lbl_msg1" style="text-align:left"></p>
+
+<div class="admin-page-table-content-main">
+    <div class="admin-page-table-content-container">
+
+        <ul class="admin-tasks-table">
+
+            <li class="table-row table-heading">
+                <div class="table-heading-wrapper">
+                    <div class="table-task-id">ID</div>
+                    <div class="table-task-sla">SLA</div>
+                    <div class="table-task-sla">Summary</div>
+                    <div class="table-task-sla">Assistant</div>
+                    <div class="table-task-priority">Priority</div>
+                    <div class="table-task-status">Status</div>
+                    <div class="table-task-created-by">Created by</div>
+                </div>
+            </li>
+            @if (Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    var DiffInt = 6;
+                    if (item.Deadline.HasValue)
+                    {
+                        var DeadlineDate = item.Deadline.Value.Date;
+                        var currentDate = DateTime.Now.Date;
+                        var diff = DeadlineDate - currentDate;
+                        var daysDiff = diff.TotalDays;
+                        DiffInt = (int)daysDiff;
+                    }
+
+
+                    var user = tbl_user.Where(x => x.UserID == item.FromID).FirstOrDefault();
+
+                    if (item != null)
+                    {
+                        <li class="table-row">
+                            <a href="/assistant-specific-tasks/@item.TaskID">
+                                <div class="table-task-id">@i</div>
+
+                                <div class="table-task-sla">
+                                    @*@if (item.Status == (int)TaskStatus.Received)
+            {
+                <span class="progress-bar">
+                    <span class="progress" style="width: 30%;"></span>
+                </span>
+            }
+            else if (item.Status == (int)TaskStatus.Ongoing)
+            {
+                <span class="progress-bar">
+                    <span class="progress" style="width: 60%;"></span>
+                </span>
+            }
+            else if (item.Status == (int)TaskStatus.Complete)
+            {
+                <span class="progress-bar">
+                    <span class="progress" style="width: 100%;"></span>
+                </span>
+            }
+            else
+            {
+                <span class="progress-bar">
+                    <span class="progress" style="width: 100%; background-color: #e5756f"></span>
+                </span>
+            }*@
+                                    @if (item.Deadline.HasValue)
+                                    {
+                                        if (DiffInt >= 9)
+                                        {
+                                            <span class="progress-bar">
+                                                <span class="progress" style="width: 33%; background-color: #00c1ab !important;"></span>
+                                            </span>
+                                        }
+                                        else if (DiffInt >= 4 && DiffInt <= 8)
+                                        {
+                                            <span class="progress-bar">
+                                                <span class="progress" style="width: 66%; background-color: #ffce00 !important;"></span>
+                                            </span>
+                                        }
+                                        else if (DiffInt >= 0 && DiffInt <= 3)
+                                        {
+                                            <span class="progress-bar">
+                                                <span class="progress" style="width: 90%; background-color: #e5756f !important;"></span>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="progress-bar">
+                                                <span class="progress" style="width: 100%; background-color: #e5756f !important;"></span>
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="progress-bar">
+                                            <span class="progress" style="width: 33%; background-color: #00c1ab !important;"></span>
+                                        </span>
+                                    }
+                                </div>
+                                <div class="table-task-sla">@item.TaskTitle</div>
+                                <div class="table-task-sla">
+                                    <select id="cars" class="cars" name="cars" taskid="@item.TaskID">
+                                        <option value="0" selected disabled>Select Assistant</option>
+
+                                        @if (item.AssistantID != null)
+                                        {
+                                            var asst = tbl_user.Where(x => x.UserID == item.AssistantID).FirstOrDefault();
+                                            <option value="@item.AssistantID" selected="selected">@asst.FirstName @asst.LastName</option>
+
+                                            foreach (var items in assistant)
+                                            {
+                                                if (items.UserID != item.AssistantID)
+                                                {
+                                                    <option value="@items.UserID">@items.FirstName @items.LastName</option>
+
+                                                }
+                                            }
+                                        }
+
+
+                                        @foreach (var items in assistant)
+                                        {
+                                            if (item.AssistantID == null)
+                                            {
+                                                <option value="@items.UserID">@items.FirstName @items.LastName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+
+                                @if (item.Deadline.HasValue)
+                                {
+                                    if (DiffInt >= 0 && DiffInt <= 3)
+                                    {
+                                        <div class="table-task-priority">
+                                            <span class="table-task-priority-data low">High</span>
+                                        </div>
+                                    }
+                                    else if (DiffInt > 3 && DiffInt < 9)
+                                    {
+                                        <div class="table-task-priority">
+                                            <span class="table-task-priority-data " style="background-color: #ffce00 !important;">Medium</span>
+                                        </div>
+                                    }
+                                    else if (DiffInt < 0)
+                                    {
+                                        <div class="table-task-priority">
+                                            <span class="table-task-priority-data low">Low</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="table-task-priority">
+                                            <span class="table-task-priority-data high">Low</span>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="table-task-priority">
+                                        <span class="table-task-priority-data high">Low</span>
+                                    </div>
+                                }
+
+
+                                <div class="table-task-status">
+                                    @if (item.Status == (int)TaskStatus.Received)
+                                    {
+                                        <span class="table-task-status-data">
+                                            New
+                                        </span>
+
+                                    }
+                                    else if (item.Status == (int)TaskStatus.Ongoing)
+                                    {
+                                        <span class="table-task-status-data">
+                                            In Progress
+                                        </span>
+                                    }
+                                    else if (item.Status == (int)TaskStatus.Complete)
+                                    {
+                                        <span class="table-task-status-data">
+                                            Open
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="table-task-status-data hold">Hold</span>
+                                    }
+                                </div>
+                                <div class="table-task-created-by">@user.FirstName</div>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li style="text-align:center;padding:10px">No Records Found</li>
+                    }
+                    i++;
+                }
+            }
+            else
+            {
+                <li style="text-align:center;padding:10px">No Records Found</li>
+            }
+
+
+        </ul>
+    </div>
+</div>
+@*<script src="~/Scripts/jquery-3.3.1.min.js"></script>*@
+<script src="~/Scripts/chosen.jquery.min.js"></script>
+
+
+<script>
+	////var count = @i;
+	$(".cars").chosen();
+
+	$('select[name="cars"]').on('change', function () {
+		debugger
+		let assistantid = $(this).val();
+		var taskid = $(this).attr("taskid")
+
+		$.ajax({
+			type: "post",
+			url: "/Handlers/saveassistant",
+			data: { id: taskid, asstID: assistantid },
+			datatype: "json",
+			//traditional: true,
+			success: function (data) {
+				if (data.success == true) {
+					//alert("Assistant Added/Edited successfully");
+					$("#lbl_msg1").css("display", "block");
+					$("#lbl_msg1").css("color", "#00c1ab");
+					$('html, body').animate({
+						scrollTop: $(".admin-page-sidebar").offset().top
+					}, 'fast');
+					$("#lbl_msg1").html("Assistant assigned successfully");
+					$("#lbl_msg1").fadeOut(5000);
+					$("#handler_sidebar").load("/Handlers/handler_sidebar")
+				}
+				else {
+					alert("Failed to Add/Edit assistant");
+
+				}
+			}
+		});
+	});
+
+
+</script>
+

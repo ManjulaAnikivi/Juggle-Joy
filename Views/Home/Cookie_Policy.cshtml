@@ -1,0 +1,53 @@
+﻿
+@{
+    //ViewBag.Title = "Our services";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Policy - @MvcApplication.project_name</title>
+    @Html.Partial("css")
+
+</head>
+<body class="body-our-services-page">
+    @Html.Partial("header")
+    <div class="main our-services-page">
+
+        <section class="our-services banner">
+
+
+            <div class="container" style=" margin-top: 30px; margin-bottom: 40px;">
+                <div class="row">
+                    <div class="col-md-12">
+                        @*<h2 class="text-center mb-4" style="color: #00C1AB;text-align:center">Cookie Policy</h2>*@
+                        <div style="margin: 10px 10px 10px 20px;margin-bottom:20px; font-size: 12px; color: #757575">
+                            @*@Html.Raw(terms.CmsText)*@
+                            <div name="termly-embed" data-id="e656396c-766f-4216-834b-176277f2a75a"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+
+    </div>
+
+    @Html.Partial("footer")
+</body>
+</html>
+@Html.Partial("js")
+<script type="text/javascript">
+    (function (d, s, id) {
+        var js, tjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "https://app.termly.io/embed-policy.min.js";
+        tjs.parentNode.insertBefore(js, tjs);
+    }(document, 'script', 'termly-jssdk'));</script>

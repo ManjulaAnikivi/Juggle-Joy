@@ -1,0 +1,786 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="db_jugglejoyModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="tbl_admin">
+    <Key>
+      <PropertyRef Name="AdminID" />
+    </Key>
+    <Property Name="AdminID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FullName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" MaxLength="20" Nullable="false" />
+    <Property Name="PasswordHash" Type="nvarchar" MaxLength="40" Nullable="false" />
+    <Property Name="Salt" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="EmailID" Type="nvarchar" MaxLength="75" Nullable="false" />
+    <Property Name="PhoneNo" Type="nvarchar" MaxLength="20" Nullable="false" />
+    <Property Name="PwdResetKey" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="PwdKeyCreatedTime" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="tbl_answer">
+    <Key>
+      <PropertyRef Name="AnswerID" />
+    </Key>
+    <Property Name="AnswerID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TaskID" Type="int" />
+    <Property Name="QuestionID" Type="int" />
+    <Property Name="Answer" Type="nvarchar(max)" />
+    <Property Name="MinitaskID" Type="int" />
+    <Property Name="OtherAnswer" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="tbl_banner">
+    <Key>
+      <PropertyRef Name="BannerId" />
+    </Key>
+    <Property Name="BannerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BannerText" Type="nvarchar" MaxLength="100" />
+    <Property Name="Description" Type="nvarchar(max)" />
+    <Property Name="UrlLink" Type="nvarchar" MaxLength="250" />
+    <Property Name="SortPreference" Type="int" />
+    <Property Name="BannerVideo" Type="varchar" MaxLength="50" />
+    <Property Name="ContentType" Type="nvarchar" MaxLength="200" />
+  </EntityType>
+  <EntityType Name="tbl_blogcategory">
+    <Key>
+      <PropertyRef Name="CategoryID" />
+    </Key>
+    <Property Name="CategoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Category" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="tbl_blogs">
+    <Key>
+      <PropertyRef Name="BlogID" />
+    </Key>
+    <Property Name="BlogID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BlogImage" Type="nvarchar" MaxLength="50" />
+    <Property Name="BlogDescription" Type="ntext" />
+    <Property Name="Date" Type="datetime" />
+    <Property Name="CategoryID" Type="int" />
+    <Property Name="BlogTitle" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="tbl_blogviews">
+    <Key>
+      <PropertyRef Name="ViewID" />
+    </Key>
+    <Property Name="ViewID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BlogID" Type="int" />
+    <Property Name="IPaddress" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="tbl_CancelAnswer">
+    <Key>
+      <PropertyRef Name="CancelAnswerID" />
+    </Key>
+    <Property Name="CancelAnswerID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CancelID" Type="int" />
+    <Property Name="SpecificReaspn" Type="nvarchar(max)" />
+    <Property Name="UserID" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_CancelCat">
+    <Key>
+      <PropertyRef Name="CancelCatID" />
+    </Key>
+    <Property Name="CancelCatID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CancellationCategory" Type="nvarchar" MaxLength="500" />
+  </EntityType>
+  <EntityType Name="tbl_CancelReason">
+    <Key>
+      <PropertyRef Name="CancelID" />
+    </Key>
+    <Property Name="CancelID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CancelCatID" Type="int" />
+    <Property Name="Reason" Type="nvarchar(max)" />
+    <Property Name="OptionType" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="tbl_category">
+    <Key>
+      <PropertyRef Name="CategoryID" />
+    </Key>
+    <Property Name="CategoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Category" Type="nvarchar" MaxLength="50" />
+    <Property Name="CategoryImage" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="tbl_chat">
+    <Key>
+      <PropertyRef Name="ChatID" />
+    </Key>
+    <Property Name="ChatID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ToId" Type="int" />
+    <Property Name="FromId" Type="int" />
+    <Property Name="ChatText" Type="ntext" />
+    <Property Name="ChatreadStatus" Type="int" />
+    <Property Name="ChatDate" Type="datetime" />
+    <Property Name="Subject" Type="nvarchar" MaxLength="200" />
+    <Property Name="TaskID" Type="int" />
+    <Property Name="AssistantId" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_chatfile">
+    <Key>
+      <PropertyRef Name="FileId" />
+    </Key>
+    <Property Name="FileId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ChatId" Type="int" />
+    <Property Name="FileName" Type="nvarchar" MaxLength="75" />
+  </EntityType>
+  <EntityType Name="tbl_cms">
+    <Key>
+      <PropertyRef Name="CmsID" />
+    </Key>
+    <Property Name="CmsID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CmsPageName" Type="nvarchar" MaxLength="200" />
+    <Property Name="CmsText" Type="ntext" />
+  </EntityType>
+  <EntityType Name="tbl_contact">
+    <Key>
+      <PropertyRef Name="ContactID" />
+    </Key>
+    <Property Name="ContactID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ContactName" Type="nvarchar" MaxLength="50" />
+    <Property Name="ContactEmail" Type="nvarchar" MaxLength="75" />
+    <Property Name="ContactPhone" Type="nvarchar" MaxLength="20" />
+    <Property Name="ContactSubject" Type="nvarchar" MaxLength="200" />
+    <Property Name="ContactMsg" Type="ntext" />
+    <Property Name="ContactDate" Type="datetime" />
+  </EntityType>
+  <EntityType Name="tbl_country">
+    <Key>
+      <PropertyRef Name="CountryID" />
+    </Key>
+    <Property Name="CountryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CountryCode" Type="varchar" MaxLength="10" />
+    <Property Name="Country" Type="varchar" MaxLength="150" />
+    <Property Name="phonecode" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_faq">
+    <Key>
+      <PropertyRef Name="FaqID" />
+    </Key>
+    <Property Name="FaqID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FaqQuestion" Type="nvarchar" MaxLength="200" />
+    <Property Name="FaqAnswer" Type="nvarchar(max)" />
+    <Property Name="Faq_categoryID" Type="int" />
+    <Property Name="SortPreference" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_faq-category">
+    <Key>
+      <PropertyRef Name="Faq_Cat_id" />
+    </Key>
+    <Property Name="Faq_Cat_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Category" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="tbl_gifts">
+    <Key>
+      <PropertyRef Name="GiftID" />
+    </Key>
+    <Property Name="GiftID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="GiftCode" Type="nvarchar" MaxLength="50" />
+    <Property Name="Duration" Type="int" />
+    <Property Name="ActualPrice" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountedPrice" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountPercent" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="SenderEmail" Type="nvarchar" MaxLength="75" />
+    <Property Name="RecepientName" Type="nvarchar" MaxLength="150" />
+    <Property Name="RecepientEmail" Type="nvarchar" MaxLength="75" />
+    <Property Name="SentDate" Type="datetime" />
+    <Property Name="Message" Type="nvarchar(max)" />
+    <Property Name="SenderName" Type="nvarchar" MaxLength="75" />
+    <Property Name="MailSender" Type="char" MaxLength="1" />
+    <Property Name="MailReceiver" Type="char" MaxLength="1" />
+    <Property Name="Status" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_log">
+    <Key>
+      <PropertyRef Name="LogID" />
+    </Key>
+    <Property Name="LogID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TaskID" Type="int" />
+    <Property Name="LogStatus" Type="nvarchar" MaxLength="150" />
+    <Property Name="LogDate" Type="datetime" />
+  </EntityType>
+  <EntityType Name="tbl_minitask">
+    <Key>
+      <PropertyRef Name="MinitaskID" />
+    </Key>
+    <Property Name="MinitaskID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TaskID" Type="int" />
+    <Property Name="Title" Type="nvarchar" MaxLength="200" />
+    <Property Name="PostedDate" Type="datetime" />
+    <Property Name="UserNote" Type="nvarchar(max)" />
+    <Property Name="MoreOptions" Type="char" MaxLength="1" />
+  </EntityType>
+  <EntityType Name="tbl_note">
+    <Key>
+      <PropertyRef Name="NoteID" />
+    </Key>
+    <Property Name="NoteID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TaskID" Type="int" />
+    <Property Name="HandlerID" Type="int" />
+    <Property Name="AssistantID" Type="int" />
+    <Property Name="Note" Type="nvarchar(max)" />
+    <Property Name="Filepath" Type="nvarchar" MaxLength="100" />
+    <Property Name="Date" Type="datetime" />
+  </EntityType>
+  <EntityType Name="tbl_notification">
+    <Key>
+      <PropertyRef Name="NotificationID" />
+    </Key>
+    <Property Name="NotificationID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ToID" Type="int" />
+    <Property Name="Notification" Type="nvarchar" MaxLength="100" />
+    <Property Name="ReadStatus" Type="char" MaxLength="1" />
+    <Property Name="Url" Type="nvarchar(max)" />
+    <Property Name="Date" Type="datetime" />
+  </EntityType>
+  <EntityType Name="tbl_options">
+    <Key>
+      <PropertyRef Name="OptionID" />
+    </Key>
+    <Property Name="OptionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="QuestionID" Type="int" />
+    <Property Name="Question" Type="nvarchar(max)" />
+    <Property Name="OptionType" Type="nvarchar" MaxLength="100" />
+    <Property Name="Placeholder" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="tbl_optiontype">
+    <Key>
+      <PropertyRef Name="OptionTypeID" />
+    </Key>
+    <Property Name="OptionTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="OptionID" Type="int" />
+    <Property Name="Question" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="tbl_price">
+    <Key>
+      <PropertyRef Name="PriceID" />
+    </Key>
+    <Property Name="PriceID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ActualPrice" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountedPrice" Type="decimal" Precision="18" Scale="2" />
+  </EntityType>
+  <EntityType Name="tbl_question">
+    <Key>
+      <PropertyRef Name="QuestionID" />
+    </Key>
+    <Property Name="QuestionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Question" Type="nvarchar(max)" />
+    <Property Name="SubCategoryID" Type="nvarchar(max)" />
+    <Property Name="OptionType" Type="nvarchar" MaxLength="50" />
+    <Property Name="Placeholder" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="tbl_recommendations">
+    <Key>
+      <PropertyRef Name="RecID" />
+    </Key>
+    <Property Name="RecID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TaskID" Type="int" />
+    <Property Name="AssistantID" Type="int" />
+    <Property Name="Name" Type="nvarchar" MaxLength="500" />
+    <Property Name="Rating" Type="nvarchar" MaxLength="500" />
+    <Property Name="Note" Type="nvarchar(max)" />
+    <Property Name="Price" Type="nvarchar" MaxLength="500" />
+    <Property Name="Availability" Type="nvarchar" MaxLength="500" />
+    <Property Name="NextStep" Type="nvarchar(max)" />
+    <Property Name="TaskStatus" Type="int" />
+    <Property Name="MiniTaskID" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_state">
+    <Key>
+      <PropertyRef Name="StateID" />
+    </Key>
+    <Property Name="StateID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CountryID" Type="int" />
+    <Property Name="State" Type="varchar" MaxLength="30" />
+    <Property Name="StateCode" Type="nvarchar" MaxLength="50" />
+  </EntityType>
+  <EntityType Name="tbl_subcategory">
+    <Key>
+      <PropertyRef Name="SubCategoryID" />
+    </Key>
+    <Property Name="SubCategoryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CategoryID" Type="int" />
+    <Property Name="SubCategory" Type="nvarchar" MaxLength="100" />
+  </EntityType>
+  <EntityType Name="tbl_subscriber">
+    <Key>
+      <PropertyRef Name="SubscriberId" />
+    </Key>
+    <Property Name="SubscriberId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="EmailId" Type="nvarchar" MaxLength="75" />
+    <Property Name="SubscribedDate" Type="datetime" />
+  </EntityType>
+  <EntityType Name="tbl_subscription">
+    <Key>
+      <PropertyRef Name="SubscriptionID" />
+    </Key>
+    <Property Name="SubscriptionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserID" Type="int" />
+    <Property Name="SubscriptionFee" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="TransactionNo" Type="nvarchar" MaxLength="50" />
+    <Property Name="TransactionStatus" Type="nvarchar" MaxLength="50" />
+    <Property Name="TransactionMsg" Type="nvarchar" MaxLength="200" />
+    <Property Name="SubscriptionDate" Type="datetime" />
+    <Property Name="ExpirationDate" Type="datetime" />
+    <Property Name="StripeOrderID" Type="nvarchar" MaxLength="50" />
+    <Property Name="StripePaymentType" Type="nvarchar" MaxLength="50" />
+    <Property Name="StripeReturnData" Type="nvarchar(max)" />
+    <Property Name="GiftID" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_survey">
+    <Key>
+      <PropertyRef Name="SurveyID" />
+    </Key>
+    <Property Name="SurveyID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SurveyQueID" Type="int" />
+    <Property Name="Rate" Type="char" MaxLength="1" />
+    <Property Name="Comments" Type="nvarchar(max)" />
+    <Property Name="AssistantID" Type="int" />
+    <Property Name="TaskID" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_surveyQue">
+    <Key>
+      <PropertyRef Name="SurveyQueID" />
+    </Key>
+    <Property Name="SurveyQueID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Question" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="tbl_task">
+    <Key>
+      <PropertyRef Name="TaskID" />
+    </Key>
+    <Property Name="TaskID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FromID" Type="int" />
+    <Property Name="ToID" Type="int" />
+    <Property Name="CategoryID" Type="int" />
+    <Property Name="SubCategoryID" Type="int" />
+    <Property Name="CreatedDate" Type="datetime" />
+    <Property Name="CompletionDate" Type="datetime" />
+    <Property Name="Description" Type="nvarchar(max)" />
+    <Property Name="Fileattachment" Type="nvarchar" MaxLength="75" />
+    <Property Name="Urgency" Type="char" MaxLength="1" />
+    <Property Name="Repeating" Type="char" MaxLength="1" />
+    <Property Name="WorkTime" Type="nvarchar" MaxLength="100" />
+    <Property Name="Budget" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="Status" Type="int" />
+    <Property Name="Deadline" Type="datetime" />
+    <Property Name="TaskTitle" Type="nvarchar" MaxLength="250" />
+    <Property Name="DeadlineType" Type="char" MaxLength="1" />
+    <Property Name="AssistantID" Type="int" />
+    <Property Name="UserNote" Type="nvarchar(max)" />
+    <Property Name="MoreOptions" Type="char" MaxLength="1" />
+  </EntityType>
+  <EntityType Name="tbl_taskattachment">
+    <Key>
+      <PropertyRef Name="TaskAttachmentID" />
+    </Key>
+    <Property Name="TaskAttachmentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TaskID" Type="int" />
+    <Property Name="UserID" Type="int" />
+    <Property Name="Date" Type="datetime" />
+    <Property Name="FileName" Type="nvarchar" MaxLength="75" />
+    <Property Name="FileSize" Type="int" />
+  </EntityType>
+  <EntityType Name="tbl_tempgifts">
+    <Key>
+      <PropertyRef Name="TempGiftID" />
+    </Key>
+    <Property Name="TempGiftID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="GiftCode" Type="nvarchar" MaxLength="50" />
+    <Property Name="Duration" Type="int" />
+    <Property Name="ActualPrice" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountedPrice" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="DiscountPercent" Type="decimal" Precision="18" Scale="2" />
+    <Property Name="SenderEmail" Type="nvarchar" MaxLength="75" />
+    <Property Name="RecepientName" Type="nvarchar" MaxLength="150" />
+    <Property Name="RecepientEmail" Type="nvarchar" MaxLength="75" />
+    <Property Name="SentDate" Type="datetime" />
+    <Property Name="Message" Type="nvarchar(max)" />
+    <Property Name="SenderName" Type="nvarchar" MaxLength="75" />
+    <Property Name="Status" Type="int" />
+    <Property Name="MailSender" Type="char" MaxLength="1" />
+    <Property Name="MailReceiver" Type="char" MaxLength="1" />
+  </EntityType>
+  <EntityType Name="tbl_user">
+    <Key>
+      <PropertyRef Name="UserID" />
+    </Key>
+    <Property Name="UserID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
+    <Property Name="LastName" Type="nvarchar" MaxLength="50" />
+    <Property Name="EmailID" Type="nvarchar" MaxLength="75" />
+    <Property Name="PhoneNo" Type="nvarchar" MaxLength="20" />
+    <Property Name="Address" Type="nvarchar" MaxLength="100" />
+    <Property Name="City" Type="nvarchar" MaxLength="50" />
+    <Property Name="ZipPostalCode" Type="nvarchar" MaxLength="20" />
+    <Property Name="CountryID" Type="int" />
+    <Property Name="State" Type="int" />
+    <Property Name="UserName" Type="nvarchar" MaxLength="100" />
+    <Property Name="PasswordHash" Type="nvarchar" MaxLength="100" />
+    <Property Name="Salt" Type="uniqueidentifier" />
+    <Property Name="PwdResetKey" Type="uniqueidentifier" />
+    <Property Name="PwdKeyCreatedTime" Type="datetime" />
+    <Property Name="Status" Type="int" />
+    <Property Name="RegDate" Type="datetime" />
+    <Property Name="UserType" Type="char" MaxLength="1" />
+    <Property Name="HeardFrom" Type="int" />
+    <Property Name="PartnerEmail" Type="nvarchar" MaxLength="75" />
+    <Property Name="HandlerID" Type="int" />
+    <Property Name="otp" Type="int" />
+    <Property Name="SubscriptionId" Type="nvarchar" MaxLength="100" />
+    <Property Name="SubscriptionStatus" Type="int" />
+  </EntityType>
+  <Association Name="FK_tbl_answer_tbl_question">
+    <End Role="tbl_question" Type="Self.tbl_question" Multiplicity="0..1" />
+    <End Role="tbl_answer" Type="Self.tbl_answer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_question">
+        <PropertyRef Name="QuestionID" />
+      </Principal>
+      <Dependent Role="tbl_answer">
+        <PropertyRef Name="QuestionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_answer_tbl_task">
+    <End Role="tbl_task" Type="Self.tbl_task" Multiplicity="0..1" />
+    <End Role="tbl_answer" Type="Self.tbl_answer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_answer">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_blogs_tbl_blogcategory">
+    <End Role="tbl_blogcategory" Type="Self.tbl_blogcategory" Multiplicity="0..1" />
+    <End Role="tbl_blogs" Type="Self.tbl_blogs" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_blogcategory">
+        <PropertyRef Name="CategoryID" />
+      </Principal>
+      <Dependent Role="tbl_blogs">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_CancelAnswer_tbl_CancelReason">
+    <End Role="tbl_CancelReason" Type="Self.tbl_CancelReason" Multiplicity="0..1" />
+    <End Role="tbl_CancelAnswer" Type="Self.tbl_CancelAnswer" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_CancelReason">
+        <PropertyRef Name="CancelID" />
+      </Principal>
+      <Dependent Role="tbl_CancelAnswer">
+        <PropertyRef Name="CancelID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_CancelReason_tbl_CancelCat">
+    <End Role="tbl_CancelCat" Type="Self.tbl_CancelCat" Multiplicity="0..1" />
+    <End Role="tbl_CancelReason" Type="Self.tbl_CancelReason" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_CancelCat">
+        <PropertyRef Name="CancelCatID" />
+      </Principal>
+      <Dependent Role="tbl_CancelReason">
+        <PropertyRef Name="CancelCatID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_faq_faq-category">
+    <End Role="tbl_faq-category" Type="Self.tbl_faq-category" Multiplicity="0..1" />
+    <End Role="tbl_faq" Type="Self.tbl_faq" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_faq-category">
+        <PropertyRef Name="Faq_Cat_id" />
+      </Principal>
+      <Dependent Role="tbl_faq">
+        <PropertyRef Name="Faq_categoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_log_tbl_task">
+    <End Role="tbl_task" Type="Self.tbl_task" Multiplicity="0..1" />
+    <End Role="tbl_log" Type="Self.tbl_log" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_log">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_minitask_tbl_task">
+    <End Role="tbl_task" Type="Self.tbl_task" Multiplicity="0..1" />
+    <End Role="tbl_minitask" Type="Self.tbl_minitask" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_minitask">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_options_tbl_question">
+    <End Role="tbl_question" Type="Self.tbl_question" Multiplicity="0..1" />
+    <End Role="tbl_options" Type="Self.tbl_options" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_question">
+        <PropertyRef Name="QuestionID" />
+      </Principal>
+      <Dependent Role="tbl_options">
+        <PropertyRef Name="QuestionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_optiontype_tbl_options">
+    <End Role="tbl_options" Type="Self.tbl_options" Multiplicity="0..1" />
+    <End Role="tbl_optiontype" Type="Self.tbl_optiontype" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_options">
+        <PropertyRef Name="OptionID" />
+      </Principal>
+      <Dependent Role="tbl_optiontype">
+        <PropertyRef Name="OptionID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_recommendations_tbl_task">
+    <End Role="tbl_task" Type="Self.tbl_task" Multiplicity="0..1" />
+    <End Role="tbl_recommendations" Type="Self.tbl_recommendations" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_recommendations">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_state_tbl_country">
+    <End Role="tbl_country" Type="Self.tbl_country" Multiplicity="0..1" />
+    <End Role="tbl_state" Type="Self.tbl_state" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_country">
+        <PropertyRef Name="CountryID" />
+      </Principal>
+      <Dependent Role="tbl_state">
+        <PropertyRef Name="CountryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_subcategory_tbl_category">
+    <End Role="tbl_category" Type="Self.tbl_category" Multiplicity="0..1" />
+    <End Role="tbl_subcategory" Type="Self.tbl_subcategory" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_category">
+        <PropertyRef Name="CategoryID" />
+      </Principal>
+      <Dependent Role="tbl_subcategory">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_survey_tbl_surveyQue">
+    <End Role="tbl_surveyQue" Type="Self.tbl_surveyQue" Multiplicity="0..1" />
+    <End Role="tbl_survey" Type="Self.tbl_survey" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_surveyQue">
+        <PropertyRef Name="SurveyQueID" />
+      </Principal>
+      <Dependent Role="tbl_survey">
+        <PropertyRef Name="SurveyQueID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_task_tbl_category">
+    <End Role="tbl_category" Type="Self.tbl_category" Multiplicity="0..1" />
+    <End Role="tbl_task" Type="Self.tbl_task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_category">
+        <PropertyRef Name="CategoryID" />
+      </Principal>
+      <Dependent Role="tbl_task">
+        <PropertyRef Name="CategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_task_tbl_subcategory">
+    <End Role="tbl_subcategory" Type="Self.tbl_subcategory" Multiplicity="0..1" />
+    <End Role="tbl_task" Type="Self.tbl_task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_subcategory">
+        <PropertyRef Name="SubCategoryID" />
+      </Principal>
+      <Dependent Role="tbl_task">
+        <PropertyRef Name="SubCategoryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_taskattachment_tbl_task">
+    <End Role="tbl_task" Type="Self.tbl_task" Multiplicity="0..1" />
+    <End Role="tbl_taskattachment" Type="Self.tbl_taskattachment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_task">
+        <PropertyRef Name="TaskID" />
+      </Principal>
+      <Dependent Role="tbl_taskattachment">
+        <PropertyRef Name="TaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_taskattachment_tbl_user">
+    <End Role="tbl_user" Type="Self.tbl_user" Multiplicity="0..1" />
+    <End Role="tbl_taskattachment" Type="Self.tbl_taskattachment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_user">
+        <PropertyRef Name="UserID" />
+      </Principal>
+      <Dependent Role="tbl_taskattachment">
+        <PropertyRef Name="UserID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_user_tbl_country">
+    <End Role="tbl_country" Type="Self.tbl_country" Multiplicity="0..1" />
+    <End Role="tbl_user" Type="Self.tbl_user" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_country">
+        <PropertyRef Name="CountryID" />
+      </Principal>
+      <Dependent Role="tbl_user">
+        <PropertyRef Name="CountryID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_tbl_user_tbl_state">
+    <End Role="tbl_state" Type="Self.tbl_state" Multiplicity="0..1" />
+    <End Role="tbl_user" Type="Self.tbl_user" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="tbl_state">
+        <PropertyRef Name="StateID" />
+      </Principal>
+      <Dependent Role="tbl_user">
+        <PropertyRef Name="State" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="db_jugglejoyModelStoreContainer">
+    <EntitySet Name="tbl_admin" EntityType="Self.tbl_admin" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_answer" EntityType="Self.tbl_answer" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_banner" EntityType="Self.tbl_banner" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_blogcategory" EntityType="Self.tbl_blogcategory" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_blogs" EntityType="Self.tbl_blogs" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_blogviews" EntityType="Self.tbl_blogviews" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_CancelAnswer" EntityType="Self.tbl_CancelAnswer" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_CancelCat" EntityType="Self.tbl_CancelCat" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_CancelReason" EntityType="Self.tbl_CancelReason" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_category" EntityType="Self.tbl_category" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_chat" EntityType="Self.tbl_chat" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_chatfile" EntityType="Self.tbl_chatfile" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_cms" EntityType="Self.tbl_cms" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_contact" EntityType="Self.tbl_contact" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_country" EntityType="Self.tbl_country" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_faq" EntityType="Self.tbl_faq" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_faq-category" EntityType="Self.tbl_faq-category" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_gifts" EntityType="Self.tbl_gifts" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_log" EntityType="Self.tbl_log" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_minitask" EntityType="Self.tbl_minitask" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_note" EntityType="Self.tbl_note" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_notification" EntityType="Self.tbl_notification" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_options" EntityType="Self.tbl_options" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_optiontype" EntityType="Self.tbl_optiontype" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_price" EntityType="Self.tbl_price" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_question" EntityType="Self.tbl_question" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_recommendations" EntityType="Self.tbl_recommendations" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_state" EntityType="Self.tbl_state" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_subcategory" EntityType="Self.tbl_subcategory" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_subscriber" EntityType="Self.tbl_subscriber" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_subscription" EntityType="Self.tbl_subscription" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_survey" EntityType="Self.tbl_survey" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_surveyQue" EntityType="Self.tbl_surveyQue" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_task" EntityType="Self.tbl_task" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_taskattachment" EntityType="Self.tbl_taskattachment" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_tempgifts" EntityType="Self.tbl_tempgifts" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="tbl_user" EntityType="Self.tbl_user" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_tbl_answer_tbl_question" Association="Self.FK_tbl_answer_tbl_question">
+      <End Role="tbl_question" EntitySet="tbl_question" />
+      <End Role="tbl_answer" EntitySet="tbl_answer" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_answer_tbl_task" Association="Self.FK_tbl_answer_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_answer" EntitySet="tbl_answer" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_blogs_tbl_blogcategory" Association="Self.FK_tbl_blogs_tbl_blogcategory">
+      <End Role="tbl_blogcategory" EntitySet="tbl_blogcategory" />
+      <End Role="tbl_blogs" EntitySet="tbl_blogs" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_CancelAnswer_tbl_CancelReason" Association="Self.FK_tbl_CancelAnswer_tbl_CancelReason">
+      <End Role="tbl_CancelReason" EntitySet="tbl_CancelReason" />
+      <End Role="tbl_CancelAnswer" EntitySet="tbl_CancelAnswer" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_CancelReason_tbl_CancelCat" Association="Self.FK_tbl_CancelReason_tbl_CancelCat">
+      <End Role="tbl_CancelCat" EntitySet="tbl_CancelCat" />
+      <End Role="tbl_CancelReason" EntitySet="tbl_CancelReason" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_faq_faq-category" Association="Self.FK_tbl_faq_faq-category">
+      <End Role="tbl_faq-category" EntitySet="tbl_faq-category" />
+      <End Role="tbl_faq" EntitySet="tbl_faq" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_log_tbl_task" Association="Self.FK_tbl_log_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_log" EntitySet="tbl_log" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_minitask_tbl_task" Association="Self.FK_tbl_minitask_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_minitask" EntitySet="tbl_minitask" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_options_tbl_question" Association="Self.FK_tbl_options_tbl_question">
+      <End Role="tbl_question" EntitySet="tbl_question" />
+      <End Role="tbl_options" EntitySet="tbl_options" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_optiontype_tbl_options" Association="Self.FK_tbl_optiontype_tbl_options">
+      <End Role="tbl_options" EntitySet="tbl_options" />
+      <End Role="tbl_optiontype" EntitySet="tbl_optiontype" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_recommendations_tbl_task" Association="Self.FK_tbl_recommendations_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_recommendations" EntitySet="tbl_recommendations" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_state_tbl_country" Association="Self.FK_tbl_state_tbl_country">
+      <End Role="tbl_country" EntitySet="tbl_country" />
+      <End Role="tbl_state" EntitySet="tbl_state" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_subcategory_tbl_category" Association="Self.FK_tbl_subcategory_tbl_category">
+      <End Role="tbl_category" EntitySet="tbl_category" />
+      <End Role="tbl_subcategory" EntitySet="tbl_subcategory" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_survey_tbl_surveyQue" Association="Self.FK_tbl_survey_tbl_surveyQue">
+      <End Role="tbl_surveyQue" EntitySet="tbl_surveyQue" />
+      <End Role="tbl_survey" EntitySet="tbl_survey" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_task_tbl_category" Association="Self.FK_tbl_task_tbl_category">
+      <End Role="tbl_category" EntitySet="tbl_category" />
+      <End Role="tbl_task" EntitySet="tbl_task" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_task_tbl_subcategory" Association="Self.FK_tbl_task_tbl_subcategory">
+      <End Role="tbl_subcategory" EntitySet="tbl_subcategory" />
+      <End Role="tbl_task" EntitySet="tbl_task" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_taskattachment_tbl_task" Association="Self.FK_tbl_taskattachment_tbl_task">
+      <End Role="tbl_task" EntitySet="tbl_task" />
+      <End Role="tbl_taskattachment" EntitySet="tbl_taskattachment" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_taskattachment_tbl_user" Association="Self.FK_tbl_taskattachment_tbl_user">
+      <End Role="tbl_user" EntitySet="tbl_user" />
+      <End Role="tbl_taskattachment" EntitySet="tbl_taskattachment" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_user_tbl_country" Association="Self.FK_tbl_user_tbl_country">
+      <End Role="tbl_country" EntitySet="tbl_country" />
+      <End Role="tbl_user" EntitySet="tbl_user" />
+    </AssociationSet>
+    <AssociationSet Name="FK_tbl_user_tbl_state" Association="Self.FK_tbl_user_tbl_state">
+      <End Role="tbl_state" EntitySet="tbl_state" />
+      <End Role="tbl_user" EntitySet="tbl_user" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

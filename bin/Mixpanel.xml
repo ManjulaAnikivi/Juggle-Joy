@@ -1,0 +1,572 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Mixpanel</name>
+    </assembly>
+    <members>
+        <member name="T:Mixpanel.MixpanelEntity">
+            <summary>
+            Base type for tracking events and profile updates.
+            </summary>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mixpanel.MixpanelEntity"/> class.
+            </summary>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.GetEndpointName">
+            <summary>
+            Gets the name of the endpoint.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.CopyTo(System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Copies instance to a dictionary.
+            </summary>
+            <param name="values">The values.</param>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
+            </summary>
+            <param name="obj">The <see cref="T:System.Object"/> to compare with this instance.</param>
+            <returns>
+              <c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.op_Equality(Mixpanel.MixpanelEntity,Mixpanel.MixpanelEntity)">
+            <summary>
+            Implementation of the equality operator.
+            </summary>
+            <param name="a">A.</param>
+            <param name="b">The b.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.op_Inequality(Mixpanel.MixpanelEntity,Mixpanel.MixpanelEntity)">
+            <summary>
+            Implementation of the inequality operator.
+            </summary>
+            <param name="a">A.</param>
+            <param name="b">The b.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.CompareTo(System.Object)">
+            <summary>
+            Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
+            </summary>
+            <param name="obj">An object to compare with this instance.</param>
+            <returns>
+            A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="obj" /> in the sort order. Zero This instance occurs in the same position in the sort order as <paramref name="obj" />. Greater than zero This instance follows <paramref name="obj" /> in the sort order.
+            </returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelEntity.CompareTo(Mixpanel.MixpanelEntity)">
+            <summary>
+            Compares the current object with another object of the same type.
+            </summary>
+            <param name="other">An object to compare with this object.</param>
+            <returns>
+            A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
+            </returns>
+        </member>
+        <member name="P:Mixpanel.MixpanelEntity.Id">
+            <summary>
+            Gets or sets the identifier.
+            </summary>
+            <value>
+            The identifier.
+            </value>
+        </member>
+        <member name="P:Mixpanel.MixpanelEntity.EndpointName">
+            <summary>
+            Gets the name of the endpoint.
+            </summary>
+            <value>
+            The name of the endpoint.
+            </value>
+        </member>
+        <member name="P:Mixpanel.MixpanelEntity.FileName">
+            <summary>
+            Gets or sets the name of the file.
+            </summary>
+            <value>
+            The name of the file.
+            </value>
+        </member>
+        <member name="T:Mixpanel.ProfileUpdate">
+            <summary>
+            People analytics updates describe a fact you've learned about one of your customers. For example, when a customer enters their first name or their birthday into your sign-in form, or signs up for a new level of service, you may send a profile update to record what you've learned.
+            Profile updates are recorded at endpoint http://api.mixpanel.com/engage/.
+            Source: https://mixpanel.com/help/reference/http#people-analytics-updates
+            </summary>
+        </member>
+        <member name="M:Mixpanel.ProfileUpdate.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mixpanel.ProfileUpdate"/> class.
+            </summary>
+        </member>
+        <member name="M:Mixpanel.ProfileUpdate.#ctor(System.String,System.String,Mixpanel.ProfileUpdateOperation)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mixpanel.ProfileUpdate"/> class.
+            </summary>
+            <param name="token">The token.</param>
+            <param name="distinctId">The distinct id.</param>
+            <param name="operation">The operation.</param>
+            <exception cref="T:System.ArgumentException">
+            String cannot be null or empty.;token
+            or
+            String cannot be null or empty.;distinctId
+            </exception>
+        </member>
+        <member name="M:Mixpanel.ProfileUpdate.GetEndpointName">
+            <summary>
+            Gets the name of the endpoint.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.ProfileUpdate.GetOperationName(Mixpanel.ProfileUpdateOperation)">
+            <summary>
+            Gets the name of the operation.
+            Source: https://mixpanel.com/help/reference/http#people-analytics-updates
+            </summary>
+            <param name="operation">The operation.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.ProfileUpdate.CopyTo(System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Copies values of current instance to a dictionary.
+            </summary>
+            <param name="values">The values.</param>
+        </member>
+        <member name="P:Mixpanel.ProfileUpdate.Token">
+            <summary>
+            Gets or sets the Mixpanel token associated with your project.
+            You can find your Mixpanel token in the project settings dialog in the Mixpanel app.
+            </summary>
+            <value>
+            The token.
+            </value>
+        </member>
+        <member name="P:Mixpanel.ProfileUpdate.DistinctId">
+            <summary>
+            Gets or sets a string that identifies the profile you would like to update.
+            Updates with the same $distinct_id refer to the same profile.
+            If this $distinct_id matches a distinct_id you use in your events, those events will show up in the activity feed associated with the profile you've updated.
+            </summary>
+            <value>
+            The distinct id.
+            </value>
+        </member>
+        <member name="P:Mixpanel.ProfileUpdate.IP">
+            <summary>
+            Gets or sets the $ip associated with a given profile.
+            If $ip isn't provided, Mixpanel will use the IP address of the request. 
+            Mixpanel uses IP to guess at the geographic location of users. 
+            If $ip is absent or set to "0", Mixpanel will ignore IP information.
+            </summary>
+            <value>
+            The ip.
+            </value>
+        </member>
+        <member name="P:Mixpanel.ProfileUpdate.Time">
+            <summary>
+            Gets or sets milliseconds since midnight, January 1st, UTC.
+            Updates are applied in $time order, so setting this value can lead to unexpected results unless care is taken.
+            If $time is not included in a request, Mixpanel will use the time the update arrives at the Mixpanel server.
+            </summary>
+            <value>
+            The time.
+            </value>
+        </member>
+        <member name="P:Mixpanel.ProfileUpdate.IgnoreTime">
+            <summary>
+            If the $ignore_time property is present and true in your update request, Mixpanel will not automatically update the "Last Seen" property of the profile.
+            Otherwise, Mixpanel will add a "Last Seen" property associated with the current time for all $set, $append, and $add operations.
+            </summary>
+            <value>
+              <c>true</c> if [ignore time]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Mixpanel.ProfileUpdate.Operation">
+            <summary>
+            Gets or sets the desired operation.
+            In addition to the attributes common to all updates, every update should also have a key and value associated with a particular update operation.
+            Every call to the profile update API should have a single associated operation - you can't do two operations at once.
+            Each operation has its own key name and format for appropriate values. 
+            </summary>
+            <value>
+            The name of the operation.
+            </value>
+        </member>
+        <member name="P:Mixpanel.ProfileUpdate.OperationValues">
+            <summary>
+            Gets or sets the value of the operation.
+            In addition to the attributes common to all updates, every update should also have a key and value associated with a particular update operation.
+            Every call to the profile update API should have a single associated operation - you can't do two operations at once. 
+            Each operation has its own key name and format for appropriate values. 
+            </summary>
+            <value>
+            The operation.
+            </value>
+        </member>
+        <member name="P:Mixpanel.ProfileUpdate.UnsetValueList">
+            <summary>
+            Gets or sets the operation value list. 
+            Can be used for operations requiring a list and not a dictionary such as Unset.
+            </summary>
+            <value>
+            The operation value list.
+            </value>
+        </member>
+        <member name="T:Mixpanel.ProfileUpdateOperation">
+            <summary>
+            Mixpanel People analytics supports the following operations on profiles
+            Source: https://mixpanel.com/help/reference/http#people-analytics-updates
+            </summary>
+        </member>
+        <member name="F:Mixpanel.ProfileUpdateOperation.Set">
+            <summary>
+            Takes a JSON object containing names and values of profile properties. If the profile does not exist, it creates it with these properties. If it does exist, it sets the properties to these values, overwriting existing values.
+            </summary>
+        </member>
+        <member name="F:Mixpanel.ProfileUpdateOperation.SetOnce">
+            <summary>
+            Works just like "$set", except it will not overwrite existing property values. This is useful for properties like "First login date".
+            </summary>
+        </member>
+        <member name="F:Mixpanel.ProfileUpdateOperation.Add">
+            <summary>
+            Takes a JSON object containing keys and numerical values. When processed, the property values are added to the existing values of the properties on the profile. 
+            If the property is not present on the profile, the value will be added to 0. It is possible to decrement by calling "$add" with negative values. This is useful for maintaining the values of properties like "Number of Logins" or "Files Uploaded".
+            </summary>
+        </member>
+        <member name="F:Mixpanel.ProfileUpdateOperation.Append">
+            <summary>
+            Takes a JSON object containing keys and values, and appends each to a list associated with the corresponding property name. $appending to a property that doesn't exist will result in assigning a list with one element to that property.
+            </summary>
+        </member>
+        <member name="F:Mixpanel.ProfileUpdateOperation.Union">
+            <summary>
+            Takes a JSON object containing keys and list values. The list values in the request are merged with the existing list on the user profile, ignoring duplicate list values.
+            </summary>
+        </member>
+        <member name="F:Mixpanel.ProfileUpdateOperation.Unset">
+            <summary>
+            Takes a JSON list of string property names, and permanently removes the properties and their values from a profile.
+            </summary>
+        </member>
+        <member name="F:Mixpanel.ProfileUpdateOperation.Delete">
+            <summary>
+            Permanently delete the profile from Mixpanel, along with all of its properties. The value is ignored - the profile is determined by the $distinct_id from the request itself.
+            </summary>
+        </member>
+        <member name="T:Mixpanel.TrackingEvent">
+            <summary>
+            Events describe things that happen in your application, usually as the result of user interaction; 
+            for example, when a customer reads an article, uploads content, or signs up for your service, you can send an event to record the incident. 
+            Events are tracked at endpoint http://api.mixpanel.com/track/
+            Source: https://mixpanel.com/help/reference/http#tracking-events
+            </summary>
+        </member>
+        <member name="M:Mixpanel.TrackingEvent.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mixpanel.TrackingEvent"/> class.
+            </summary>
+        </member>
+        <member name="M:Mixpanel.TrackingEvent.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mixpanel.TrackingEvent"/> class.
+            </summary>
+            <param name="eventName">Name of the event.</param>
+        </member>
+        <member name="M:Mixpanel.TrackingEvent.#ctor(System.String,Mixpanel.TrackingEventProperties)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mixpanel.TrackingEvent"/> class.
+            </summary>
+            <param name="eventName">Name of the event.</param>
+            <param name="properties">The properties.</param>
+        </member>
+        <member name="M:Mixpanel.TrackingEvent.GetEndpointName">
+            <summary>
+            Gets the name of the endpoint.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.TrackingEvent.CopyTo(System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Copies values of current instance to a dictionary.
+            </summary>
+            <param name="values">The values.</param>
+        </member>
+        <member name="P:Mixpanel.TrackingEvent.EventName">
+            <summary>
+            Gets or sets the name of the event.
+            </summary>
+            <value>
+            The name of the event.
+            </value>
+        </member>
+        <member name="P:Mixpanel.TrackingEvent.Properties">
+            <summary>
+            Gets or sets the properties.
+            </summary>
+            <value>
+            The properties.
+            </value>
+        </member>
+        <member name="T:Mixpanel.TrackingEventProperties">
+            <summary>
+            Represent tracking event properties.
+            </summary>
+        </member>
+        <member name="M:Mixpanel.TrackingEventProperties.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mixpanel.TrackingEventProperties"/> class.
+            </summary>
+        </member>
+        <member name="M:Mixpanel.TrackingEventProperties.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Mixpanel.TrackingEventProperties"/> class.
+            </summary>
+            <param name="token">The token.</param>
+            <exception cref="T:System.ArgumentException">String cannot be null or empty.;token</exception>
+        </member>
+        <member name="M:Mixpanel.TrackingEventProperties.GetEndpointName">
+            <summary>
+            Gets the name of the endpoint.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.TrackingEventProperties.CopyTo(System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Copies values of current instance to a dictionary.
+            </summary>
+            <param name="values">The values.</param>
+        </member>
+        <member name="P:Mixpanel.TrackingEventProperties.All">
+            <summary>
+            Gets all values.
+            </summary>
+            <value>
+            The values.
+            </value>
+        </member>
+        <member name="P:Mixpanel.TrackingEventProperties.Token">
+            <summary>
+            Gets or sets the Mixpanel token associated with your project.
+            You can find your Mixpanel token in the project settings dialog in the Mixpanel app.
+            Events without a valid token will be ignored.
+            </summary>
+            <value>
+            The token.
+            </value>
+        </member>
+        <member name="P:Mixpanel.TrackingEventProperties.DistinctId">
+            <summary>
+            Gets or sets the value of distinct_id will be treated as a string, and used to uniquely identify a user associated with your event.
+            If you provide a distinct_id property with your events, you can track a given user through funnels and distinguish unique users for retention analyses.
+            You should always send the same distinct_id when an event is triggered by the same user.
+            </summary>
+            <value>
+            The distinct id.
+            </value>
+        </member>
+        <member name="P:Mixpanel.TrackingEventProperties.Time">
+            <summary>
+            Gets or sets the time an event occurred. 
+            If present, the value should be a unix timestamp ( seconds since midnight, January 1st, 1970, GMT). 
+            If this property is not included in your request, Mixpanel will use the time of the event arrives at the server.
+            </summary>
+            <value>
+            The time.
+            </value>
+        </member>
+        <member name="P:Mixpanel.TrackingEventProperties.IP">
+            <summary>
+            Gets or sets an ip address string (e.g. "127.0.0.1") associated with the event.
+            This is used for adding geolocation data to events, and should only be required if you are making requests from your backend.
+            Requests received directly from the client will use the IP from the request.
+            </summary>
+            <value>
+            The ip.
+            </value>
+        </member>
+        <member name="P:Mixpanel.TrackingEventProperties.Tag">
+            <summary>
+            Gets or sets a string. This value will appear in Mixpanel's streams report.
+            </summary>
+            <value>
+            The tag.
+            </value>
+        </member>
+        <member name="M:Mixpanel.Utilities.ToBase64(System.String)">
+            <summary>
+            Converts a regular string to a base64 string.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.Utilities.FromBase64(System.String)">
+            <summary>
+            Converts a base64 string to a regular string.
+            </summary>
+            <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.Utilities.UrlEncode(System.String)">
+            <summary>
+            Encodes a url string without a reference to the System.Web assembly. 
+            </summary>
+            <param name="text">The input text.</param>
+            <returns>An encoded string.</returns>
+        </member>
+        <member name="M:Mixpanel.Utilities.UrlDecode(System.String)">
+            <summary>
+            Decodes a url string without a reference to the System.Web assembly. 
+            </summary>
+            <param name="text">The input text.</param>
+            <returns>A decoded string.</returns>
+        </member>
+        <member name="M:Mixpanel.Utilities.ToDateTime(System.Int64)">
+            <summary>
+            Converts a unix based number of seconds into a .NET DateTime value (UTC).
+            </summary>
+            <param name="unixDateTicks">The number of seconds since January 1st, 1970.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.Utilities.ToEpochTime(System.DateTime)">
+            <summary>
+            Converts a .NET DateTime into a unix "Epoch Time" based number of seconds.
+            </summary>
+            <param name="date">The date.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.Utilities.ToBoolean(System.Object,System.Boolean)">
+            <summary>
+            /// Converts an object to a boolean.
+            </summary>
+            <param name="value">The value.</param>
+            <param name="defaultValue">The default value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.Utilities.ToBoolean(System.String,System.Boolean)">
+            <summary>
+            Converts a string to a boolean.
+            </summary>
+            <param name="text">The text.</param>
+            <param name="defaultValue">The default value.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Mixpanel.Utilities.DefaultEncoding">
+            <summary>
+            Gets the default encoding used for byte conversions.
+            </summary>
+            <value>
+            The default encoding.
+            </value>
+        </member>
+        <member name="T:Mixpanel.MixpanelClient">
+            <summary>
+            Client class for the Mixpanel API.
+            </summary>
+        </member>
+        <member name="M:Mixpanel.MixpanelClient.GetCurrentClient">
+            <summary>
+            Gets the current Mixpanel client instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelClient.Track(Mixpanel.MixpanelEntity)">
+            <summary>
+            Tracks the specified element (event or profile update).
+            More info: https://mixpanel.com/help/reference/http#tracking-via-http
+            </summary>
+            <param name="element">The element.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">element</exception>
+        </member>
+        <member name="M:Mixpanel.MixpanelClient.CreateAlias(System.String,System.String,System.String)">
+            <summary>
+            Creates an alias (newId) on an original id.
+            More info: https://mixpanel.com/help/reference/http#distinct-id-alias
+            </summary>
+            <param name="token">The token.</param>
+            <param name="originalId">The original identifier.</param>
+            <param name="newId">The new identifier.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">token</exception>
+        </member>
+        <member name="M:Mixpanel.MixpanelClient.ConvertToMixpanelDate(System.DateTime)">
+            <summary>
+            Properties in updates can be any of the data types valid in JSON: strings, numbers, boolean, null, arrays or objects.
+            In addition, Mixpanel will interpret strings of a particular format as dates.
+            This format is: YYYY-MM-DDThh:mm:ss
+            Source: https://mixpanel.com/help/reference/http#people-analytics-updates
+            </summary>
+            <param name="dateTime">The date time.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelClient.ConvertToDateTime(System.Int64)">
+            <summary>
+            Converts a unix based number of seconds into a .NET DateTime value (UTC).
+            </summary>
+            <param name="unixDateTicks">The number of seconds since January 1st, 1970.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelClient.ToEpochTime(System.DateTime)">
+            <summary>
+            Converts a .NET DateTime into a unix "Epoch Time" based number of seconds.
+            </summary>
+            <param name="date">The date.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelClient.TrySendLocalElements">
+            <summary>
+            Tries to send locally stored elements if any and if there's a network connection.
+            This method is called automatically when a new instance of a MixpanelClient is created.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Mixpanel.MixpanelClient.SaveElement(Mixpanel.MixpanelEntity)">
+            <summary>
+            Saves element locally. Event will be sent on next call of "TrySendLocalElements".
+            </summary>
+            <param name="element">The element.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Mixpanel.MixpanelClient.UserAgent">
+            <summary>
+            Gets or sets the user agent.
+            </summary>
+            <value>
+            The user agent.
+            </value>
+        </member>
+        <member name="P:Mixpanel.MixpanelClient.IsGeolocationEnabled">
+            <summary>
+            Gets or sets a value indicating whether geolocation is enabled.
+            Default is true.
+            </summary>
+            <value>
+            <c>true</c> if geolocation is enabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Mixpanel.MixpanelClient.IsVerboseEnabled">
+            <summary>
+            Gets or sets a value indicating whether verbose mode is enabled. 
+            False by default.
+            </summary>
+            <value>
+            <c>true</c> if verbose is enabled; otherwise, <c>false</c>.
+            </value>
+        </member>
+    </members>
+</doc>

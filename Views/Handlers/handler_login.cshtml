@@ -1,0 +1,149 @@
+﻿@model juggle_joy.Models.HandlerLoginValidation
+@{
+	Layout = null;
+	ViewBag.Title = "Handler Login";
+
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login - @MvcApplication.project_name</title>
+
+	@Html.Partial("css")
+	<style>
+		#text {
+			display: none;
+			color: #e5756f;
+		}
+
+		span.show_hide_password {
+			bottom: 18px !important;
+		}
+	</style>
+</head>
+<body class="body-login-page">
+	@Html.Partial("header")
+	<div class="main login-page">
+		<section class="banner_section forms_section">
+			<div class="container-fluid half-fluid banner_left">
+				<div class="container-none">
+					<div class="row">
+						<div class="col-12 col-md-6 banner_image">
+							<div class="left-half"
+								 style="background: url('/Assets/images/login/login-banner-1.png') no-repeat center center / cover;">
+							</div>
+						</div>
+						<div class="col-12 col-md-6 banner_content forms_max_width">
+							<div class="banner_items">
+								<span class="logo-small" style="background: url(/Assets/images/logo-100x100.png) no-repeat center center / contain;"></span>
+								<h1>Handler Login</h1>
+								<h4 class="font-caveat"><span id="greeting"></span>, and Welcome!</h4>
+								<div class="page-form">
+									<p id="lbl_msg" class="login-box-msg text-danger" style="font-size:16px !important">@ViewBag.msg</p>
+									@using (Html.BeginForm("handler_login", "Handlers", FormMethod.Post, new { id = "myform" }))
+									{
+										<form action="#" id="login_form" name="login_form">
+											<fieldset>
+												<div class="form_field">
+													<label for="EmailID">User Name</label>
+													@Html.TextBoxFor(x => x.UserName, new { @Value = ViewBag.EmailID, placeholder = "User Name" })
+													@Html.ValidationMessageFor(x => x.UserName, "", new { @class = "text-danger" })
+												</div>
+												<div class="form_field password_field">
+													<div class="form_label_btn_wrapper">
+														<label for="PasswordHash">Password</label> <a href="/handler-forgot-password" class="form_label_btn_btn">
+															Forgot
+															Password?
+														</a>
+													</div>
+													@Html.PasswordFor(x => x.PasswordHash, new { @Value = ViewBag.password, placeholder = "Password" })
+
+													@Html.ValidationMessageFor(x => x.PasswordHash, "", new { @class = "text-danger" })
+													<span class="show_hide_password fs">
+														<i class="fa-solid fa-eye"></i>
+														<i class="fa-solid fa-eye-slash"></i>
+													</span>
+													<span id="text">WARNING! Caps lock is ON.</span>
+												</div>
+												<div class="form_checkbox" id="form_checkbox">
+													<input type="hidden" name="RetUrl" value='@ViewBag.RetUrl' />
+													<input type="checkbox" id="remember_me" name="remember_me">
+													<label for="remember_me">Remember me</label>
+												</div>
+												<div class="form_submit">
+													<input type="submit" value="Login"
+														   class="primary-btn text-decoration-none">
+												</div>
+											</fieldset>
+										</form>
+
+									}
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+	@Html.Partial("footer")
+</body>
+</html>
+@Html.Partial("js")
+<script src="~/Assets/js/bootstrap.bundle.min.js"></script>
+<script>
+
+	if ('@ViewBag.remember_me' == 'on') {
+		debugger
+		$('#remember_me').prop("checked", true);
+	}
+
+    if ('@ViewBag.msg' != "") {
+        $("#lbl_msg").fadeOut(5000);
+    }
+    else {
+        $("#lbl_msg").fadeOut();
+    }
+
+    // Get the input field
+    var input = document.getElementById("PasswordHash");
+
+    // Get the warning text
+    var text = document.getElementById("text");
+
+    // When the user presses any key on the keyboard, run the function
+    input.addEventListener("keyup", function (event) {
+
+        // If "caps lock" is pressed, display the warning text
+        if (event.getModifierState("CapsLock")) {
+            text.style.display = "block";
+        } else {
+            text.style.display = "none"
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        debugger
+        var today = new Date();
+        var cHour = today.getHours();
+
+        if (cHour >= 0 && cHour < 12) {
+            $('#greeting').text("Good Morning");
+        }
+        else if (cHour >= 12 && cHour < 18) {
+            $('#greeting').text("Good Afternoon");
+        }
+        else if (cHour >= 18 && cHour <= 23) {
+            $('#greeting').text("Good Evening");
+
+        }
+
+    });
+</script>

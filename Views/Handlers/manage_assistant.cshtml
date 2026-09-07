@@ -1,0 +1,239 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_user>
+@using juggle_joy.Models
+@{
+	Layout = null;
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    <link rel="stylesheet" href="~/Assets/css/dashboard.css">
+    @Html.Partial("assistantHandler_css")
+    <style>
+        .btns {
+            min-width: 120px;
+            height: 40px;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--white-color);
+        }
+
+        .admin-page-table-content .admin-page-table-content-main .admin-page-table-content-container .admin-tasks-table {
+            width: 770px !important;
+        }
+
+        .admin-tasks-table li a {
+            padding: 20px 20px !important;
+            gap: 19px !important;
+        }
+
+        /*@@media only screen and (max-width: 767px) {
+
+            .admin-page-table-content .admin-page-table-content-main .admin-page-table-content-container .admin-tasks-table {
+                width: 1200px !important;
+            }
+        }*/
+    </style>
+</head>
+
+<body class="body-my-profile-page">
+	@Html.Partial("handlerheader")
+
+	<main class="main my-profile-page">
+		<div class="dashboard-background">
+
+			<section class="my-profile">
+				<div class="my-profile-main">
+					<div class="container">
+						<div class="content-wrapper">
+							<div class="row">
+								@Html.Partial("handlersidebar")
+                                <div class="col-xl-9 col-lg-9 col-md-12 col-12 main-content">
+                                    <h2>
+                                        Manage Assistants
+                                    </h2>
+                                    <p id="lbl_msg" style="color: rgb(220 53 69);margin-bottom:10px">@ViewBag.msg</p>
+                                    <p id="lbl_msg1" style="color: rgb(220 53 69);margin-bottom:10px">@ViewBag.assistantinuse</p>
+                                    @using (Html.BeginForm("delete_assistant", "Handlers", FormMethod.Post, new { @id = "profile_form", @name = "profile_form" }))
+                                    {
+
+                                        if (Model.Count() > 0)
+                                        {
+                                            <fieldset>
+                                                @*<table class="table">
+                        <thead>
+                            <tr>
+                                <th style="background-color: #00c1ab" scope="col">Assistant Name</th>
+                                <th style="background-color: #00c1ab" scope="col">EmailID</th>
+                                <th style="background-color: #00c1ab" scope="col">User Name</th>
+                                <th style="background-color: #00c1ab" scope="col">Edit</th>
+                                <th style="background-color: #00c1ab;cursor:pointer" scope="col"><input type="checkbox" id="chkall" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var assistant = ctx.tbl_user.Where(x => x.UserID == item.UserID && x.Status == (int)UserStatus.Active).FirstOrDefault();
+                                <tr>
+                                    <th>@assistant.FirstName @assistant.LastName</th>
+                                    <td>@assistant.EmailID</td>
+                                    <td>@assistant.UserName</td>
+                                    <td><a href="/add-assistants/@assistant.UserID"><i class="fa fa-edit"></i></a></td>
+                                    <td><input style="cursor:pointer" type="checkbox" name="IdsToDelete" value='@assistant.UserID' /></td>
+                                </tr>
+
+                            }
+                        </tbody>
+                        <tr>
+                            <td align="right" colspan="9" style="padding-right:12px;">
+                                <input type="submit" id="btndelete" value="Delete" class="btn btn-danger btns" />
+                            </td>
+                        </tr>
+                    </table>*@
+
+                                                <main class="main admin-handler-dashboard-page">
+                                                    <section class="admin-handler-dashboard-section">
+                                                        <div class="admin-handler-dashboard-main">
+                                                            <div class="container-fluid" style="padding:0px 0px !important">
+                                                                <div class="grid admin-page-grid">
+
+                                                                    <div class="admin-page-table-content background-panel-color">
+                                                                        <div class="admin-page-table-content-main">
+                                                                            <div class="admin-page-table-content-container">
+
+                                                                                <ul class="admin-tasks-table">
+
+                                                                                    <li class="table-row table-heading">
+                                                                                        <div class="table-heading-wrapper" style="padding:20px 20px !important;gap:24px !important">
+                                                                                            <div class="table-task-sla">Assistant Name</div>
+                                                                                            <div class="table-task-summary">Email ID</div>
+                                                                                            <div class="table-task-sla">User Name</div>
+                                                                                            <div class="table-task-id">Edit </div>
+                                                                                            <div class="table-task-id"><input type="checkbox" id="chkall" /></div>
+                                                                                        </div>
+                                                                                    </li>
+                                                                                    @foreach (var item in Model)
+                                                                                    {
+                                                                                        var tbl_user = ctx.tbl_user.ToList();
+                                                                                        var assistant = tbl_user.Where(x => x.UserID == item.UserID && x.Status == (int)UserStatus.Active).FirstOrDefault();
+                                                                                        var assistants = ctx.tbl_user.Where(x => x.UserID == assistant.UserID && x.UserType == "A" && x.Status == (int)UserStatus.Active).ToList();
+                                                                                        foreach (var items in assistants)
+                                                                                        {
+                                                                                            <li class="table-row">
+                                                                                                <a href="#">
+                                                                                                    <div class="table-task-sla">@items.FirstName</div>
+                                                                                                    <div class="table-task-summary">
+                                                                                                        @items.EmailID
+                                                                                                    </div>
+                                                                                                    <div class="table-task-sla">@items.UserName</div>
+                                                                                                    <div class="table-task-id">
+                                                                                                        <i class="fa fa-edit" onclick="Edit(@items.UserID)"></i>
+                                                                                                    </div>
+                                                                                                    <div class="table-task-id">
+                                                                                                        <input style="cursor:pointer" type="checkbox" name="IdsToDelete" value='@items.UserID' />
+                                                                                                    </div>
+                                                                                                </a>
+                                                                                            </li>
+                                                                                        }
+                                                                                    }
+
+                                                                                    <div class="" style="text-align:end;padding:10px 20px">
+                                                                                        <input type="submit" id="btndelete" value="Delete" class="btn btn-danger btns" />
+                                                                                    </div>
+                                                                                </ul>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+
+                                                </main>
+
+                                            </fieldset>
+                                        }
+                                        else
+                                        {
+                                            <label>No Records Found</label>
+                                        }
+                                    }
+
+                                </div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+		</div>
+	</main>
+
+	@Html.Partial("handlerfooter")
+
+	@Html.Partial("js")
+
+<script>
+
+		if ('@ViewBag.msg' == null) {
+			$("#lbl_msg").fadeOut();
+		}
+		else {
+			$("#lbl_msg").fadeOut(5000);
+
+        }
+        if ('@ViewBag.assistantinuse' == null) {
+	        $("#lbl_msg1").fadeOut();
+        }
+         else {
+	        $("#lbl_msg1").fadeOut(10000);
+
+        }
+
+		$("#ink_mngassistant").addClass("active");
+		$(document).ready(function (e) {
+			$('#btndelete').click(function () {
+				if ($("input[name='IdsToDelete']:checked").length == 0) {
+					alert("Please select record to delete.");
+					return false;
+				}
+				else {
+					var count = $("input[name='IdsToDelete']:checked").length;
+					return confirm("Are you sure want to delete " + count + " record(s).");
+				}
+			});
+		});
+		$("#chkall").change(function () {
+			$("input[name='IdsToDelete']").prop('checked', $(this).prop("checked"));
+		});
+		$("input[name='IdsToDelete']").change(function () {
+			if (false == $(this).prop("checked")) {
+				$("#chkall").prop('checked', false);
+			}
+			if ($("input[name='IdsToDelete']:checked").length == $("input[name='IdsToDelete']").length) {
+				$("#chkall").prop('checked', true);
+			}
+		});
+
+
+		function Edit(userid) {
+			window.location.href = "/add-assistants/" + userid
+		}
+</script>
+
+	<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+
+
+</body>
+
+</html>

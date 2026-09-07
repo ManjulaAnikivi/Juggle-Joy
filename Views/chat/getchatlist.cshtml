@@ -1,0 +1,249 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_chat>
+@using juggle_joy.Models;
+@using System.Text.RegularExpressions;
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    HttpCookie aCookie = Request.Cookies["Name"];
+    int? fromid = 0;
+    int? assistantid = 0;
+    if (aCookie != null)
+    {
+        fromid = Convert.ToInt32(aCookie.Value);
+    }
+    if (Session["UserID"] != null)
+    {
+        fromid = Convert.ToInt32(Session["UserID"]);
+    }
+    if (Session["HandlerID"] != null)
+    {
+        fromid = Convert.ToInt32(Session["HandlerID"]);
+    }
+    if (Session["AssistantID"] != null)
+    {
+        fromid = Convert.ToInt32(Session["AssistantID"]);
+
+    }
+    int taskid = Convert.ToInt32(ViewBag.taskid);
+
+}
+<div class="msgBox">
+    @if (Model.Count() > 0)
+    {
+        <div class="message-view-box" style="max-height: 50vh !important; height: fit-content;">
+            <div class="message-view-wrapper">
+                @foreach (var items in Model)
+                {
+                    var filename = ctx.tbl_chatfile.Where(x => x.ChatId == items.ChatID).FirstOrDefault();
+                    string ext = "";
+                    if (filename != null)
+                    {
+                        ext = Path.GetExtension(filename.FileName);
+                    }
+                    if (items.FromId == fromid)
+                    {
+                        //color = "background:#d1cec6f2 !important;";
+
+                        var user = ctx.tbl_user.Where(x => x.UserID == items.FromId).FirstOrDefault();
+                        var lastname = "";
+                        if (user.LastName != null)
+                        {
+                            lastname = user.LastName.Substring(0, 1);
+                        }
+                        var username = user.FirstName.Substring(0, 1) + lastname;
+                        username = username.ToUpper();
+
+                        <div class="message-bubble message-bubble-send">
+                            <div class="message-bubble-wrapper">
+                                <div class="send-message-wrapper">
+                                    <p class="send-message chat-message">
+                                        @if (ext.ToLower() == ".pdf" && filename != null)
+                                        {
+                                            <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/pdficon.png"> &nbsp;<i class="fa fa-download"></i></a>
+
+                                        }
+                                        else if (ext.ToLower() == ".doc" || ext.ToLower() == ".docx" && filename != null)
+                                        {
+                                            <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/wordicon.png"> &nbsp;<i class="fa fa-download"></i></a>
+
+                                        }
+                                        else if (filename != null)
+                                        {
+                                            <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/fileicon.png"> &nbsp;<i class="fa fa-download"></i></a>
+
+                                        }
+                                        @if (items.ChatText != "")
+                                        {
+                                            <span>@Html.Raw(items.ChatText)</span>
+
+                                        }
+                                        else if (filename != null)
+                                        {
+                                            <span>@filename.FileName</span>
+                                        }
+                                    </p>
+                                    <span class="send-time chat-time">@GlobalMethods.Convert12HrsTime(items.ChatDate)</span>
+                                </div>
+                                <a class="send-avatar message-avatar">
+                                    <span class="send-avatar-text" style="text-transform: uppercase;">@username</span>
+                                </a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        var user = ctx.tbl_user.Where(x => x.UserID == items.FromId).FirstOrDefault();
+                        var lastname = "";
+                        if (user.LastName != null)
+                        {
+                            lastname = user.LastName.Substring(0, 1);
+                        }
+                        var username = user.FirstName.Substring(0, 1) + lastname;
+                        username = username.ToUpper();
+                        <div class="message-bubble message-bubble-receive">
+                            <div class="message-bubble-wrapper">
+                                <a class="receive-avatar message-avatar">
+                                    <span class="receive-avatar-text" style="text-transform: uppercase;">@username</span>
+                                </a>
+                                <div class="receive-message-wrapper">
+                                    <p class="receive-message chat-message">
+                                        @if (ext.ToLower() == ".pdf" && filename != null)
+                                        {
+                                            <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/pdficon.png"> &nbsp;<i class="fa fa-download"></i></a>
+                                        }
+                                        else if (ext.ToLower() == ".doc" || ext.ToLower() == ".docx" && filename != null)
+                                        {
+                                            <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/wordicon.png"> &nbsp;<i class="fa fa-download"></i></a>
+                                        }
+                                        else if (filename != null)
+                                        {
+                                            <a href="~/Assets/chatfiles/@filename.FileName" target="_blank" download><img style="border-radius:15px;" height="50" width="50" src="~/Assets/images/fileicon.png"> &nbsp;<i class="fa fa-download"></i></a>
+                                        }
+                                        @if (items.ChatText != "")
+                                        {
+                                            <span>@Html.Raw(items.ChatText)</span>
+
+                                        }
+                                        else if (filename != null)
+                                        {
+                                            <span>@filename.FileName</span>
+                                        }
+                                    </p>
+                                    <span class="receive-time chat-time">@GlobalMethods.Convert12HrsTime(items.ChatDate)</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>
+<form style="margin-bottom: 0px;" action="#" name="task_details_message"
+      id="task_details_message" class="task_details_message"
+      enctype="multipart/form-data">
+    <div class="type-message-main">
+        <div class="type-message-container">
+            <input type="text" id="message" class="type_message" placeholder="Type Message...">
+            <div class="file-input-wrapper">
+                <i class="fa-solid fa-paperclip"></i>
+                <input type="file" name="file_attachment" id="FileInput" class="file_attachment">
+            </div>
+            <button id="sendButton" type="submit" class="message-submit">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</form>
+<script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+<script src="/signalr/hubs" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+
+
+    $(document).ready(function () {
+       scrollToBottom();
+    });
+        // Scroll chatbox to bottom only when necessary
+    function scrollToBottom() {
+        debugger
+            var container = $('div'),
+                scrollTo = $('#sendButton');
+            container.animate({
+                scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+            });
+        }
+
+        // Focus on the message input initially
+        $('#message').focus();
+
+        // Handle hover to change sendButton cursor
+        $(document).on('mouseover', '#sendButton', function () {
+            if ($("#message").val() == "" && $("#FileInput").val() == "") {
+                $('#sendButton').css("cursor", "not-allowed");
+            } else {
+                $('#sendButton').css("cursor", "pointer");
+            }
+        });
+
+       
+
+        // SignalR Hub connection setup
+        var objHub = $.connection.myHub;
+    objHub.client.NewMassage = function () {
+        debugger
+            
+        
+        //$('#chatcount').css("display", "none");
+
+        $(".msgBox").html('');
+        $(".msgBox").load("/chat/chatlist", { taskid: @taskid, fromid: @fromid }, function () {
+            $('.active-tab .notification-count').css("display", "none");
+            scrollToBottom();
+        });
+
+        };
+
+
+
+        // Start the SignalR connection
+        $.connection.hub.start().done(function () {
+            // Sending message on Enter key press (without Shift)
+            $('#message').on('keydown', function (e) {
+                if (e.keyCode == 13 && !e.shiftKey) {
+                    e.preventDefault();
+                    if ($.trim($(this).val()) !== "") {
+                        $('#sendButton').trigger('click');
+                    }
+                }
+            });
+
+             // Sending message when sendButton is clicked
+            $('#sendButton').click(function (e) {
+                e.preventDefault();
+                 debugger
+                 if ($("#message").val() !== "" || $("#FileInput").val() !== "") {
+                     objHub.server.sendMessage($('#message').val(), @taskid, @fromid)
+                         .done(function () {
+                             $('#message').val(''); // Clear message input after sending
+                             //loadChatMessages(); // Reload chat messages dynamically
+                             //$('Div').scrollTop(0);
+                            
+                         })
+                         .fail(function () {
+                             console.log('Failed to send message.');
+                         });
+                 } else {
+                     $('#sendButton').css("cursor", "not-allowed");
+                 }
+            });
+
+
+        });
+
+        // Auto-focus on the message input field after sending a message
+        $('#message').focus();
+
+</script>
+

@@ -1,0 +1,73 @@
+﻿@model juggle_joy.Models.tbl_user
+@using juggle_joy.Models;
+@{
+	ViewBag.Title = "User Details | " + MvcApplication.project_name;
+	Layout = null;
+
+
+	db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+	var country = ctx.tbl_country.Where(x => x.CountryID == Model.CountryID).FirstOrDefault();
+	var state = ctx.tbl_state.Where(x => x.StateID == Model.State).FirstOrDefault();
+
+}
+
+<div class="row font_size">
+	<div class="panel-body">
+		<ul class="list-group border-bottom">
+			<li class="list-group-item">
+				<span> <label class="bold">Name:</label></span>
+				<span style="float: right;">@Model.FirstName @Model.LastName</span>
+			</li>
+			<li class="list-group-item">
+				<span> <label class="bold">Email Adress:</label></span>
+				<span style="float: right;">@Model.EmailID</span>
+			</li>
+			@if (Model.Status == (int)UserStatus.Active || Model.Status == (int)UserStatus.Blocked)
+			{
+				<li class="list-group-item">
+					<span> <label class="bold">Phone Number:</label></span>
+					<span style="float: right;">@Model.PhoneNo</span>
+				</li>
+				<li class="list-group-item">
+					<span> <label class="bold">Adress:</label></span>
+					<span style="float: right;">@Model.Address</span>
+				</li>
+				<li class="list-group-item">
+					<span> <label class="bold">City:</label></span>
+					<span style="float: right;">@Model.City</span>
+				</li>
+				<li class="list-group-item">
+					<span> <label class="bold">Zip Postal Code:</label></span>
+					<span style="float: right;">@Model.ZipPostalCode</span>
+				</li>
+				if (country != null)
+				{
+					<li class="list-group-item">
+						<span> <label class="bold">Country:</label></span>
+						<span style="float: right;">@country.Country</span>
+					</li>
+				}
+
+				if (state != null)
+				{
+					<li class="list-group-item">
+						<span> <label class="bold">State:</label></span>
+						<span style="float: right;">@state.State</span>
+					</li>
+				}
+
+			}
+
+			<li class="list-group-item">
+				<span> <label class="bold">Registered Date:</label></span>
+				<span style="float: right;">@GlobalMethods.ConvertToDate(Model.RegDate)</span>
+			</li>
+			@*<li class="list-group-item">
+					<span> <label class="bold"> Address:</label></span><br />
+					@Model.Address
+				</li>*@
+		</ul>
+	</div>
+</div>
+
+

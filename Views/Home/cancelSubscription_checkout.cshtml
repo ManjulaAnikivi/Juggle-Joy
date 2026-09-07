@@ -1,0 +1,223 @@
+﻿
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    int userid = Convert.ToInt32(Session["UserID"]);
+
+    var price = ctx.tbl_price.FirstOrDefault();
+
+    var subscription = ctx.tbl_subscription.Where(x => x.UserID == userid).FirstOrDefault();
+
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@MvcApplication.project_name</title>
+    @Html.Partial("dashboard_css")
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<body class="body-my-profile-page">
+    @Html.Partial("dashboard-header")
+
+    <main class="main my-profile-page">
+        <div class="dashboard-background" id="list">
+
+            <section class="my-profile">
+                <div class="my-profile-main">
+                    <div class="container">
+                        <div class="content-wrapper">
+                            <div class="row">
+
+
+
+                                @Html.Partial("sidebar")
+
+                               
+                                <div class="col-xl-9 col-lg-9 col-md-12 col-12 main-content" style=" background: #f5f3f0; padding: 20px; border-radius: 5px;">
+                                    @*<div class="col-xl-6 col-lg-6 col-md-6 col-12 content-wrapper">*@
+                                    <div style="margin: auto; background: white; max-width: 487px !important; padding: 26px;">
+                                        <div id="preloaded">
+                                            <img src="~/Assets/spinner.gif" height="100" width="100" style="display: block; margin-left: auto; margin-right: auto;" />
+                                        </div>
+
+                                        <div class="content wow fadeInLeft">
+                                            <form id="payment-form">
+                                                <div id="payment-message" class="hidden"></div>
+                                                <div id="link-authentication-element">
+                                                    <!--Stripe.js injects the Link Authentication Element-->
+                                                </div>
+                                                <div id="payment-element">
+                                                    <!--Stripe.js injects the Payment Element-->
+                                                </div>
+                                                <br />
+
+
+                                                <div class="form_submit">
+                                                    <button id="submit" class="primary-btn" style=" margin: auto; display:none;">
+                                                        <div class="spinner hidden" id="spinner"></div>
+                                                        <span id="button-text"><i class="fa fa-credit-card"></i> Pay now</span>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        @*<img src="~/Assets/images/gift-subscription.png" alt="gift-subscription" class="wow fadeInRight">*@
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+
+    </main>
+
+    @Html.Partial("dashboard-footer")
+
+    @Html.Partial("js")
+
+
+
+</body>
+
+</html>
+<script>
+    $("#subscription").addClass("active");
+</script>
+<script>
+
+
+
+    var AP = '@subscription.SubscriptionFee';
+
+</script>
+<script type="text/javascript">
+
+    initialize();
+// This is your test publishable API key.
+const stripe = Stripe('@GlobalMethods.StripePublishableKey');
+let elements;
+checkStatus();
+document
+    .querySelector("#payment-form")
+    .addEventListener("submit", handleSubmit);
+
+let emailAddress = '';
+// Fetches a payment intent and captures the client secret
+    async function initialize() {
+        const items = [{ id: '@userid' }, { id: AP }];
+        const response = await fetch("/home/Create_cancelsubscription", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+    });
+    const { clientSecret } = await response.json();
+
+    const appearance = {
+        theme: 'stripe',
+    };
+    elements = stripe.elements({ appearance, clientSecret });
+    const linkAuthenticationElement = elements.create("linkAuthentication");
+    linkAuthenticationElement.mount("#link-authentication-element");
+    linkAuthenticationElement.on('change', (event) => {
+        emailAddress = event.value.email;
+    });
+    const paymentElementOptions = {
+        layout: "tabs",
+    };
+    const paymentElement = elements.create("payment", paymentElementOptions);
+        paymentElement.mount("#payment-element");
+        document.getElementById("preloaded").style.display = "none";
+        document.getElementById("submit").style.display = "block";
+        
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+            // Make sure to change this to your payment completion page
+            //return_url: "http://jugglejoy.uptindia.com/home/success_cancelsubscription",
+            return_url: "http://localhost:60600/home/success_cancelsubscription",
+            //return_url: "http://jugglejoy.com/home/success_cancelsubscription",
+            receipt_email: emailAddress,
+        },
+    });
+
+    // This point will only be reached if there is an immediate error when
+    // confirming the payment. Otherwise, your customer will be redirected to
+    // your `return_url`. For some payment methods like iDEAL, your customer will
+    // be redirected to an intermediate site first to authorize the payment, then
+    // redirected to the `return_url`.
+    if (error.type === "card_error" || error.type === "validation_error") {
+        showMessage(error.message);
+    } else {
+      /*  alert(error.message);*/
+        showMessage("An unexpected error occurred.");
+    }
+    setLoading(false);
+}
+
+// Fetches the payment intent status after payment submission
+async function checkStatus() {
+    const clientSecret = new URLSearchParams(window.location.search).get(
+        "payment_intent_client_secret"
+    );
+    if (!clientSecret) {
+        return;
+    }
+    const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+    switch (paymentIntent.status) {
+        case "succeeded":
+            showMessage("Payment succeeded!");
+            break;
+        case "processing":
+            showMessage("Your payment is processing.");
+            break;
+        case "requires_payment_method":
+            showMessage("Your payment was not successful, please try again.");
+            break;
+        default:
+            showMessage("Something went wrong.");
+            break;
+    }
+}
+
+// ------- UI helpers -------
+function showMessage(messageText) {
+    const messageContainer = document.querySelector("#payment-message");
+
+    messageContainer.classList.remove("hidden");
+    messageContainer.textContent = messageText;
+
+    setTimeout(function () {
+        messageContainer.classList.add("hidden");
+        messageContainer.textContent = "";
+    }, 4000);
+}
+
+// Show a spinner on payment submission
+function setLoading(isLoading) {
+    if (isLoading) {
+        // Disable the button and show a spinner
+        document.querySelector("#submit").disabled = true;
+        document.querySelector("#spinner").classList.remove("hidden");
+        document.querySelector("#button-text").classList.add("hidden");
+    } else {
+        document.querySelector("#submit").disabled = false;
+        document.querySelector("#spinner").classList.add("hidden");
+        document.querySelector("#button-text").classList.remove("hidden");
+    }
+}
+</script>

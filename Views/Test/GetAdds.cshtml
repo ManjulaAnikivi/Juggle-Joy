@@ -1,0 +1,44 @@
+﻿
+@{
+    Layout = null;
+}
+
+@{
+    ViewBag.Title = "Postcode Lookup";
+}
+
+<h2>Postcode Lookup</h2>
+
+<div>
+    <input type="text" id="postcodeInput" placeholder="Enter Postcode" />
+    <button id="fetchButton">Fetch Address</button>
+</div>
+
+<!-- JavaScript for Fetching Address by Postcode -->
+<script>
+    async function getAddressByPostcode(postcode) {
+        debugger
+        const url = `/Test/address?postcode=${postcode}`;
+
+            try {
+                const response = await fetch(url);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);  // You can now manipulate the data as needed
+                } else {
+                    console.error("Failed to fetch addresses");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        // Attach event listener to button click
+    document.getElementById("fetchButton").addEventListener("click", function () {
+        debugger
+            const postcode = document.getElementById("postcodeInput").value;
+            getAddressByPostcode(postcode);
+        });
+    </script>
+

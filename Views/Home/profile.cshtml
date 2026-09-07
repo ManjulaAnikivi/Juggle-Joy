@@ -1,0 +1,212 @@
+﻿@model juggle_joy.Models.UpdateUProfileValidation
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile-@MvcApplication.project_name</title>
+    @Html.Partial("dashboard_css")
+    @*<script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>*@
+    <style>
+
+        .State {
+            appearance: none;
+            background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDE2IDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik04IDlDNy43MTg3NSA5IDcuNDY4NzUgOC45MDYyNSA3LjI4MTI1IDguNzE4NzVMMS4yODEyNSAyLjcxODc1QzAuODc1IDIuMzQzNzUgMC44NzUgMS42ODc1IDEuMjgxMjUgMS4zMTI1QzEuNjU2MjUgMC45MDYyNSAyLjMxMjUgMC45MDYyNSAyLjY4NzUgMS4zMTI1TDggNi41OTM3NUwxMy4yODEyIDEuMzEyNUMxMy42NTYyIDAuOTA2MjUgMTQuMzEyNSAwLjkwNjI1IDE0LjY4NzUgMS4zMTI1QzE1LjA5MzggMS42ODc1IDE1LjA5MzggMi4zNDM3NSAxNC42ODc1IDIuNzE4NzVMOC42ODc1IDguNzE4NzVDOC41IDguOTA2MjUgOC4yNSA5IDggOVoiIGZpbGw9IiMwMEMxQUIiLz4KPC9zdmc+Cg==);
+            background-repeat: no-repeat !important;
+            background-position: 95% center !important;
+            background-size: auto !important;
+            border: 1px solid var(--another-color);
+            border-radius: 10px;
+            height: 50px;
+            padding: 10px 20px;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body class="body-my-profile-page">
+    @Html.Partial("dashboard-header")
+
+    <main class="main my-profile-page">
+        <div class="dashboard-background">
+
+            <section class="my-profile">
+                <div class="my-profile-main">
+                    <div class="container">
+                        <div class="content-wrapper">
+                            <div class="row">
+                                @Html.Partial("sidebar")
+
+                                <div class="col-xl-9 col-lg-9 col-md-12 col-12 main-content">
+
+                                    <h2>
+                                        My Profile
+                                    </h2>
+                                    <p id="lbl_msg" style="color: #00c1ab">@ViewBag.msg</p>
+                                    @using (Html.BeginForm("profile", "Home", FormMethod.Post, new { @id = "profile_form", @name = "profile_form" }))
+                                    {
+                                        @Html.HiddenFor(x => x.UserID)
+                                        <fieldset>
+                                            <div class="half-fields">
+                                                <div class="form_field">
+                                                    <label for="FullName">Your Name*</label>
+                                                    @Html.TextBoxFor(x => x.FullName, "", new { @placeholder = "Anna Williams" })
+                                                    @Html.ValidationMessageFor(x => x.FullName, "", new { @class = "text-danger" })
+
+                                                </div>
+                                                <div class="form_field">
+                                                    <label for="EmailID">Email Address</label>
+                                                    @Html.TextBoxFor(x => x.EmailID, "", new { placeholder = "annawilliams@gmail.com", @readonly = "readonly", @style = "opacity:0.6" })
+                                                    @Html.ValidationMessageFor(x => x.EmailID, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+
+                                            <div class="half-fields">
+                                                <div class="form_field">
+                                                    <label for="PhoneNo">Mobile No*</label>
+                                                    @Html.TextBoxFor(x => x.PhoneNo, "", new { @placeholder = "+12 34567 89000", @pattern = "[0-9]{3}-[0-9]{2}-[0-9]{3}]" })
+                                                    @Html.ValidationMessageFor(x => x.PhoneNo, "", new { @class = "text-danger" })
+
+                                                </div>
+                                                <div class="form_field">
+                                                    <label for="PhoneNo">Post code*</label>
+                                                    @Html.TextBoxFor(x => x.ZipPostalCode, "", new { @placeholder = "123456" })
+                                                    @Html.ValidationMessageFor(x => x.ZipPostalCode, "", new { @class = "text-danger" })
+
+                                                </div>
+                                            </div>
+
+                                            <div class="half-fields">
+                                                <div class="form_field">
+                                                    <label for="profile_hear_about">
+                                                        How did you hear about
+                                                        us?*
+                                                    </label>
+
+                                                    @Html.DropDownListFor(x => x.HeardFrom, new List<SelectListItem>
+                                                    { new SelectListItem { Text = "Word of mouth", Value = "1" },
+                                                      new SelectListItem { Text = "Facebook", Value = "2" },
+                                                      new SelectListItem { Text = "Instagram", Value = "3" },
+                                                      new SelectListItem { Text = "LinkedIn", Value = "4" },
+                                                      new SelectListItem { Text = "Search Engines", Value = "5" },
+                                                      new SelectListItem { Text = "Blog or Publication", Value = "6" },
+                                                      new SelectListItem { Text = "Other", Value = "7" },
+                                                     }, "Select Option", new { @class = "select_field" })
+                                                    @Html.ValidationMessageFor(x => x.HeardFrom, "", new { @class = "text-danger" })
+                                                </div>
+
+                                                <div class="form_field field_question_mark">
+                                                    <label for="Partner_EmailID">
+                                                        Partner’s email
+                                                        address*
+                                                    </label>
+                                                    @Html.TextBoxFor(x => x.Partner_EmailID, "", new { @placeholder = "Partner’s email address" })
+                                                    @Html.ValidationMessageFor(x => x.Partner_EmailID, "", new { @class = "text-danger" })
+
+                                                    @*<span class="question_mark">
+                                                            <i class="fa-solid fa-question"></i>
+                                                        </span>*@
+                                                </div>
+                                            </div>
+
+                                            <div class="half-fields">
+                                                <div class="form_field">
+                                                    <label for="Address">Address*</label>
+                                                    @Html.TextBoxFor(x => x.Address, new { @placeholder = "Address" })
+                                                    @Html.ValidationMessageFor(x => x.Address, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="form_field">
+                                                    <label for="City">City*</label>
+                                                    @Html.TextBoxFor(x => x.City, "", new { @placeholder = "City" })
+                                                    @Html.ValidationMessageFor(x => x.City, "", new { @class = "text-danger" })
+
+                                                </div>
+                                            </div>
+
+                                            <div class="half-fields">
+
+                                                <div class="form_field">
+                                                    <label for="CountryID">Country*</label>
+                                                    @Html.DropDownListFor(x => x.CountryID, null, "Select Country", new { @class = "State", @placeholder = "Country" })
+                                                    @Html.ValidationMessageFor(x => x.CountryID, "", new { @class = "text-danger" })
+
+                                                </div>
+
+                                                <div class="form_field">
+                                                    <label for="StateID">State*</label>
+                                                    @Html.DropDownListFor(x => x.StateID, null, "Select State", new { @class = "State", @placeholder = "State" })
+                                                    @Html.ValidationMessageFor(x => x.StateID, "", new { @class = "text-danger" })
+                                                </div>
+
+                                            </div>
+
+                                            <div class="form_submit">
+                                                <input type="submit" value="Save">
+                                                <button type="button" class="cancel-btn">Cancel</button>
+                                            </div>
+                                        </fieldset>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    @Html.Partial("dashboard-footer")
+
+    @Html.Partial("js")
+
+    <script>
+
+		if ('@ViewBag.msg' == null) {
+			$("#lbl_msg").fadeOut();
+		}
+		else {
+			$("#lbl_msg").fadeOut(5000);
+
+		}
+
+		$("#profile").addClass("active");
+		$(".cancel-btn").on("click", function () {
+			window.location.href = "/my-profile";
+		})
+
+        $("#CountryID").change(function () {
+            var countryid = $(this).val();
+            var subcat = '<option value="">Select State</option>';
+            $('#StateID').html(subcat);
+            $.ajax({
+                type: "post",
+                url: "/Home/GetStateList",
+                data: { id: countryid },
+                datatype: "json",
+                traditional: true,
+                success: function (data) {
+                    var subcat = '<option value="">Select State</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        subcat = subcat + '<option value=' + data[i].Value + '>' + data[i].Text + '</option>';
+                    }
+                    $('#StateID').html('');
+                    $('#StateID').html(subcat);
+                }
+            });
+        });
+    </script>
+
+    <script src="~/Assets/js/jquery.custom.selectbox.min.js"></script>
+
+
+</body>
+
+</html>
+
+

@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Address Autocomplete and Details";
+}
+
+<h2>Address Autocomplete</h2>
+
+<!-- Input field for entering the address -->
+<input type="text" id="addressInput" placeholder="Start typing an address..." />
+
+<!-- Div to display the autocomplete results -->
+<div id="autocompleteResults"></div>
+
+<!-- Div to display full address details -->
+<div id="fullAddressDetails"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Handle input event on the address field
+        $('#addressInput').on('keyup', function () {
+            var query = $(this).val();
+
+            // Only make the request if the user has typed at least 3 characters
+            if (query.length > 2) {
+                $.ajax({
+                    url: '/Address/GetAddressSuggestions',  // Controller action to get suggestions
+                    type: 'GET',
+                    data: { query: query },  // Send the address query as a parameter
+                    success: function (response) {
+                        if (response.success) {
+                            // Parse and display the suggestions
+                            var suggestions = JSON.parse(response.data).results;
+                            $('#autocompleteResults').empty();  // Clear previous results
+
+                            suggestions.forEach(function (suggestion) {
+                                // Store addressId in a data attribute for later use
+                                $('#autocompleteResults').append(
+                                    '<div class="suggestion" data-id="' + suggestion.addressId + '">' + suggestion.text + '</div>'
+                                );
+                            });
+
+                            // Handle click event on a suggestion to fetch full details
+                            $('.suggestion').on('click', function () {
+                                var addressId = $(this).data('id');
+
+                                // Call function to get full address details
+                                getAddressDetails(addressId);
+                            });
+                        } else {
+                            $('#autocompleteResults').text(response.message);
+                        }
+                    },
+                    error: function () {
+                        $('#autocompleteResults').text('Error fetching addresses.');
+                    }
+                });
+            } else {
+                $('#autocompleteResults').empty();  // Clear the results if input length is less than 3
+            }
+        });
+
+        // Function to get full address details by addressId
+        function getAddressDetails(addressId) {
+            $.ajax({
+                url: '/Address/GetAddressDetails',  // Controller action to get address details
+                type: 'GET',
+                data: { addressId: addressId },  // Send the addressId as a parameter
+                success: function (response) {
+                    if (response.success) {
+                        var details = JSON.parse(response.data);
+
+                        // Display the full address details
+                        $('#fullAddressDetails').html('<pre>' + JSON.stringify(details, null, 2) + '</pre>');
+                    } else {
+                        $('#fullAddressDetails').text(response.message);
+                    }
+                },
+                error: function () {
+                    $('#fullAddressDetails').text('Error fetching address details.');
+                }
+            });
+        }
+    });
+</script>

@@ -1,0 +1,291 @@
+﻿
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var tblprice = ctx.tbl_price.FirstOrDefault();
+    var userid = Convert.ToInt32(Session["UserID"]);
+    int giftid = Convert.ToInt32(ViewBag.giftid);
+    var giftval = ctx.tbl_tempgifts.Where(x => x.TempGiftID == giftid).FirstOrDefault();
+    var duration = "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift subscription - @MvcApplication.project_name</title>
+    @Html.Partial("css")
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body class="body-gift-subscription-page background-banner-video">
+    @Html.Partial("header")
+    <div class="main gift-subscription-page home-page">
+        <section class="choose-gift-value">
+            <div class="choose-gift-value-main">
+                <div class="container">
+                    <div class="row">
+                        <!-- flex-column-reverse flex-md-row -->
+                        <div class="col-xl-5 col-lg-5 col-md-5 col-12  content-wrapper">
+                            <div class="content wow fadeInLeft">
+                                <form action="" name="gift_subscription_form" id="gift_subscription_form">
+                                    <p class="content-heading">Selected Gift Value</p>
+                                    <div class="subscription-plan">
+                                        @{
+                                            switch (giftval.Duration)
+                                            {
+                                                case 1:
+                                                    duration = "One Month";
+                                                    break;
+                                                case 3:
+                                                    duration = "Three Months";
+                                                    break;
+                                                case 6:
+                                                    duration = "Six Month";
+                                                    break;
+                                                case 12:
+                                                    duration = "Twelve Months";
+                                                    break;
+
+                                            }
+                                        }
+                                        <p>@duration - Subscription</p>
+                                        <div class="subscription-plan-box-container">
+                                            <div class="subscription-plan-box" id="month1">
+                                                <span class="subscription-discount font-caveat" id="D5">@giftval.DiscountPercent% OFF</span>
+                                                <span class="subscription-price-striked" id="D5AP">£@giftval.ActualPrice</span>
+                                                <span class="subscription-price" id="D5DP">£@giftval.DiscountedPrice</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p id="lbl_subscription" style="color: #e5756f; font-size: 18px "></p>
+                                    <p class="content-heading mt-4 pt-1">Choose Delivery Method</p>
+                                    <fieldset>
+                                        <div class="form_checkbox">
+                                            @if (giftval.MailReceiver != null)
+                                            {
+                                                <input type="checkbox" id="subscription_email_to_recipient" checked disabled
+                                                       name="subscription_email" value="subscription_email_to_recipient">
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" id="subscription_email_to_recipient" disabled
+                                                       name="subscription_email" value="subscription_email_to_recipient">
+                                            }
+
+                                            <label for="subscription_email_to_recipient">Email to Recipient</label>
+                                        </div>
+                                        <div class="form_checkbox">
+                                            @if (giftval.MailSender != null)
+                                            {
+                                                <input type="checkbox" id="subscription_email_to_you" checked disabled
+                                                       name="subscription_email" value="subscription_email_to_you">
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" id="subscription_email_to_you" disabled
+                                                       name="subscription_email" value="subscription_email_to_you">
+                                            }
+
+
+                                            <label for="subscription_email_to_you">Email to You</label>
+                                        </div>
+
+                                        <div class="form_field">
+                                            <input type="text" id="subscription_recipient_name" readonly value="@giftval.RecepientName"
+                                                   name="subscription_recipient_name" placeholder="Recipient name">
+                                        </div>
+                                        <div class="form_field">
+                                            <input type="text" id="subscription_recipient_email" readonly value="@giftval.RecepientEmail"
+                                                   name="subscription_recipient_email"
+                                                   placeholder="Recipient email address">
+                                        </div>
+                                        <div class="form_field">
+                                            <input type="text" id="subscription_buyer_name"
+                                                   name="subscription_buyer_name" readonly value="@giftval.SenderName"
+                                                   placeholder="Your name (leave blank for secret gift)">
+
+                                        </div>
+                                        <div class="form_field">
+                                            <input type="text" id="subscription_buyer_email"
+                                                   name="subscription_buyer_email" readonly value="@giftval.SenderEmail"
+                                                   placeholder="Your email ">
+                                        </div>
+                                        <div class="form_field">
+                                            <textarea id="subscription_gift_message" name="subscription_gift_message" readonly
+                                                      placeholder="Personalised Gift Message&#10;(optional, max 200 characters)">@giftval.Message</textarea>
+                                        </div>
+                                        @*<div class="form_submit">
+            <input type="submit" value="Send" class="primary-btn">
+        </div>*@
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-12 content-wrapper">
+                            <div id="preloaded">
+                                <img src="~/Assets/spinner.gif" height="100" width="100" style="display: block; margin-left: auto; margin-right: auto;" />
+                            </div>
+                            <div class="content wow fadeInLeft">
+                                <form id="payment-form">
+                                    <div id="payment-message" class="hidden"></div>
+                                    <div id="link-authentication-element">
+                                        <!--Stripe.js injects the Link Authentication Element-->
+                                    </div>
+                                    <div id="payment-element">
+                                        <!--Stripe.js injects the Payment Element-->
+                                    </div>
+                                    <br />
+
+                                    <div class="form_submit_submit">
+                                        <button id="submit" class="primary-btn" style="display: none;">
+                                            <div class="spinner hidden" id="spinner"></div>
+                                            <span id="button-text"><i class="fa fa-credit-card"></i> Pay now</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            @*<img src="~/Assets/images/gift-subscription.png" alt="gift-subscription" class="wow fadeInRight">*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+
+    @Html.Partial("footer")
+</body>
+</html>
+@Html.Partial("js")
+<script>
+ 
+
+    var giftid='@giftval.TempGiftID'
+    var AP = '@giftval.ActualPrice';
+    var DP = '@giftval.DiscountedPrice';
+    var discountcode = '@giftval.GiftCode';
+
+</script>
+<script type="text/javascript">
+
+    initialize();
+// This is your test publishable API key.
+const stripe = Stripe('@GlobalMethods.StripePublishableKey');
+let elements;
+checkStatus();
+document
+    .querySelector("#payment-form")
+    .addEventListener("submit", handleSubmit);
+
+let emailAddress = '';
+// Fetches a payment intent and captures the client secret
+    async function initialize() {
+        const items = [{ id: giftid }, { id: DP }, { id: AP }, { id: discountcode }];
+        const response = await fetch("/home/gift_Create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+    });
+    const { clientSecret } = await response.json();
+
+    const appearance = {
+        theme: 'stripe',
+    };
+    elements = stripe.elements({ appearance, clientSecret });
+    const linkAuthenticationElement = elements.create("linkAuthentication");
+    linkAuthenticationElement.mount("#link-authentication-element");
+    linkAuthenticationElement.on('change', (event) => {
+        emailAddress = event.value.email;
+    });
+    const paymentElementOptions = {
+        layout: "tabs",
+    };
+    const paymentElement = elements.create("payment", paymentElementOptions);
+        paymentElement.mount("#payment-element");
+        document.getElementById("preloaded").style.display = "none";
+    document.getElementById("submit").style.display = "block";
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+            // Make sure to change this to your payment completion page
+            //return_url: "http://jugglejoy.uptindia.com/home/gift_success",
+            return_url: "http://localhost:60600/home/gift_success",
+            //return_url: "http://jugglejoy.com/home/gift_success",
+            receipt_email: emailAddress,
+        },
+    });
+
+    // This point will only be reached if there is an immediate error when
+    // confirming the payment. Otherwise, your customer will be redirected to
+    // your `return_url`. For some payment methods like iDEAL, your customer will
+    // be redirected to an intermediate site first to authorize the payment, then
+    // redirected to the `return_url`.
+    if (error.type === "card_error" || error.type === "validation_error") {
+        showMessage(error.message);
+    } else {
+      /*  alert(error.message);*/
+        showMessage("An unexpected error occurred.");
+    }
+    setLoading(false);
+}
+
+// Fetches the payment intent status after payment submission
+async function checkStatus() {
+    const clientSecret = new URLSearchParams(window.location.search).get(
+        "payment_intent_client_secret"
+    );
+    if (!clientSecret) {
+        return;
+    }
+    const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+    switch (paymentIntent.status) {
+        case "succeeded":
+            showMessage("Payment succeeded!");
+            break;
+        case "processing":
+            showMessage("Your payment is processing.");
+            break;
+        case "requires_payment_method":
+            showMessage("Your payment was not successful, please try again.");
+            break;
+        default:
+            showMessage("Something went wrong.");
+            break;
+    }
+}
+
+// ------- UI helpers -------
+function showMessage(messageText) {
+    const messageContainer = document.querySelector("#payment-message");
+
+    messageContainer.classList.remove("hidden");
+    messageContainer.textContent = messageText;
+
+    setTimeout(function () {
+        messageContainer.classList.add("hidden");
+        messageContainer.textContent = "";
+    }, 4000);
+}
+
+// Show a spinner on payment submission
+function setLoading(isLoading) {
+    if (isLoading) {
+        // Disable the button and show a spinner
+        document.querySelector("#submit").disabled = true;
+        document.querySelector("#spinner").classList.remove("hidden");
+        document.querySelector("#button-text").classList.add("hidden");
+    } else {
+        document.querySelector("#submit").disabled = false;
+        document.querySelector("#spinner").classList.add("hidden");
+        document.querySelector("#button-text").classList.remove("hidden");
+    }
+}
+</script>

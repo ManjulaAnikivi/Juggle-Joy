@@ -1,0 +1,182 @@
+﻿
+@model IEnumerable<juggle_joy.Models.tbl_banner>
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+}
+<style type="text/css">
+	input[type=checkbox] {
+		margin: 7px 8.5px 0px;
+		line-height: normal;
+	}
+	body {
+		overflow: unset !important;
+	}
+</style>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<style>
+	#sortable {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		width: 60%;
+	}
+
+		#sortable li {
+			margin: 0 3px 3px 3px;
+			padding: 0.4em;
+			padding-left: 1.5em;
+			font-size: 1.4em;
+			height: 18px;
+		}
+
+			#sortable li span {
+				position: absolute;
+				margin-left: -1.3em;
+			}
+</style>
+
+	@if (Model.Count() > 0)
+	{
+		using (Html.BeginForm("delete_banner_list", "banner", FormMethod.Post))
+		{
+
+			<div class="table-responsive">
+				<table id="tblBannerList" class="table table-hover table-striped" style="border:1px solid lightgrey;font-size: 14px;">
+					<thead>
+						<tr>
+							<th style="background-position: center left;">Banner Text</th>
+							<th style="background-image:none;">Edit</th>
+							<th style="background-image:none;text-align:center" align="center"><input type="checkbox" id="chkall" onclick="checkall(this)" /></th>
+						</tr>
+					</thead>
+					<tbody id="sortable">
+						@foreach (var item in Model)
+						{
+							<tr id="@item.BannerId" class="ui-state-default">
+								<td>@item.BannerText</td>
+								<td><a href="/admin/add-banner/@item.BannerId" class="btn btn-primary btn-sm" style="background-color:#1caf9a;color:white;border-color:lightgray">Edit</a></td>
+								<td align="center"><input type="checkbox" name="IdsToDelete" value='@item.BannerId' onclick="check()" style="margin-left: 8px;" /></td>
+							</tr>
+						}
+					</tbody>
+					<tr>
+						<td align="right" colspan="3" style="padding-right:25px;">
+							<input type="submit" id="btndelete" value="Delete" class="btn btn-danger" />
+						</td>
+					</tr>
+
+				</table>
+			</div>
+		}
+	}
+	else
+	{
+		<table width="90%" border="0" cellpadding="3" cellspacing="3">
+			<tr>
+				<td>
+					<div style="color: Red;margin-left:-9px" align="left">
+						No records found
+					</div>
+				</td>
+			</tr>
+		</table>
+	}
+<script language="javascript" type="text/javascript" defer>
+    $(document).ready(function (e) {
+        // Side Menu link active script
+
+        $('#btndelete').click(function () {
+            if ($("input[name='IdsToDelete']:checked").length == 0) {
+                alert("Please select record to delete.");
+                return false;
+            }
+            else {
+                var count = $("input[name='IdsToDelete']:checked").length;
+                return confirm("Are you sure want to delete " + count + " record(s).");
+            }
+        });
+
+    });
+
+    function checkall(obj) {
+        var xmain = obj.checked;
+        if (xmain) {
+            var x = document.getElementsByName('IdsToDelete');
+            if (x.length == null) {
+                document.getElementsByName('IdsToDelete').checked = true;
+            }
+            else {
+                for (i = 0; i < x.length; i++) {
+                    x[i].checked = true;
+                }
+            }
+        }
+        else {
+            var x = document.getElementsByName('IdsToDelete');
+            if (x.length == null) {
+                document.getElementsByName('IdsToDelete').checked = false;
+            }
+            else {
+                for (i = 0; i < x.length; i++) {
+                    x[i].checked = false;
+                }
+            }
+        }
+    }
+</script>
+<script type="text/javascript" defer>
+    $(document).ready(function (e) {
+        $('#tblBannerList').DataTable({
+            "aoColumns": [{ "bSearchable": true }, { "bSearchable": false }, { "bSearchable": false }],
+            "searching": true,
+            "paging": true,
+            "ordering": false,
+            "info": false,
+            "autoWidth": true,
+            "lengthChange": true,
+            "iDisplayLength": 10
+        });
+        $('#lnk_equip').addClass("active");
+        $('#manage_equip').addClass("active");
+    });
+
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+
+@*<script>
+    var bnrlist = "";
+
+    $('tbody#sortable').sortable({
+
+        update: function (event, ui) {
+            $("tbody#sortable tr").each(function () {
+                bnrlist = bnrlist + "," + $(this).attr("id");
+            })
+            $.ajax
+                ({
+                    type: "post",
+                    url: "/admin/banner/update_banner_preference",
+                    data: { bnrlist: bnrlist },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data == true) {
+
+                        }
+                        else {
+
+                        }
+                    }
+                });
+        }
+    });
+</script>*@
+
+
+

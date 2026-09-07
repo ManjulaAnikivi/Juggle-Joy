@@ -1,0 +1,48 @@
+﻿
+@{
+    //ViewBag.Title = "Our services";
+    Layout = null;
+}
+@using juggle_joy.Models
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    var terms = ctx.tbl_cms.Where(x => x.CmsID == 4).FirstOrDefault();
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Choices - @MvcApplication.project_name</title>
+    @Html.Partial("css")
+
+</head>
+<body class="body-our-services-page">
+    @Html.Partial("header")
+    <div class="main our-services-page">
+
+        <section class="our-services banner">
+
+
+            <div class="container" style=" margin-top: 30px; margin-bottom: 40px;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 class="text-center mb-4" style="color: #00C1AB;text-align:center">Your Privacy Choices</h2>
+                        <div style="margin: 10px 10px 10px 20px;margin-bottom:20px; font-size: 12px; color: #757575">
+                            @Html.Raw(terms.CmsText)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+
+    </div>
+
+    @Html.Partial("footer")
+</body>
+</html>
+@Html.Partial("js")

@@ -1,0 +1,223 @@
+﻿@using juggle_joy.Models
+@{
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+   
+    int assistantID = Convert.ToInt32(Session["AssistantID"]);
+    var notifications = ctx.tbl_notification.Where(x => x.ReadStatus == "0" && x.ToID == assistantID).OrderByDescending(x => x.NotificationID).ToList().Take(5);
+    var notify_count = ctx.tbl_notification.Where(x => x.ReadStatus == "0" && x.ToID == assistantID).OrderByDescending(x => x.NotificationID).ToList();
+    //var notifications = notificationsa.GroupBy(x => x.Url).Take(5).ToList();
+    //var groupedCustomerList = ctx.tbl_notification
+    //.GroupBy(x => x.Url)
+    //.Select(grp => grp.ToList())
+    //.ToList().Take(5);
+}
+<style>
+    .msgNotification {
+        color: white;
+        font-size: 16px !important;
+        display: block;
+        background: rgb(0, 193, 171);
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        border: 1px solid var(--secondary-color);
+        border-radius: 10px;
+        padding: 14px 20px;
+        margin: auto;
+        max-width: 466px;
+    }
+</style>
+<header class="secondary-header admin-header">
+    <div class="header-main">
+        <div class="container-fluid">
+            <div class="header-wrapper">
+                <div class="logo">
+                    <a href="/assistant-dashboard">
+                        <img src="~/Assets/images/logo.png" alt="Jugglejoy-logo">
+                    </a>
+                </div>
+
+                <div class="admin-header-wrapper">
+                    <div class="header-search-box">
+                        <div class="header-search-box-container">
+
+                            <form action="/Assistants/tasks_list" method="get">
+                                <div class="header-search-box-wrapper">
+                                    <input type="text" name="keywords" placeholder="Search keyword here...">
+                                    <button class="admin-header-search-btn" type="submit">
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                    </button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+
+                    <div class="search-box-mobile-btn">
+                        <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                    <div class="chat" style=" width: 36px !important;">
+
+                    </div>
+                    <div class="admin-header-notification">
+
+                        @*<div class="admin-header-notification-wrapper">
+                @if (notifications.Count() > 0)
+                {
+                    <span class="notification-count">
+
+                        @notify_count.Count()
+                    </span>
+                }
+
+                <button class="header-notification-btn"><i class="fa-solid fa-bell"></i></button>
+            </div>
+
+            <div class="admin-header-notification-notifications">
+                <ul>
+
+                    @foreach (var notification in notifications)
+                    {
+                        <li><a href="#" onclick="ReadStatus(@notification.NotificationID, '@notification.Url')">@notification.Notification</a></li>
+                    }
+
+                </ul>
+            </div>*@
+
+                    </div>
+
+                    @if (Session["AssistantID"] != null)
+                    {
+                        <div class="avatar-main">
+                            <div class="avatar-logo">
+                                <a href="javascript:void(0)">
+                                    <!-- <img src="~/Assets/images/logo-100x100.png" alt="logo"> -->
+                                    <span>@Session["AssistantFirstName"]@Session["AssistantLastName"]</span>
+                                </a>
+
+                                <div class="submenu">
+                                    <!-- <div class="popup-cross-btn">
+                        <button><i class="fa-solid fa-circle-xmark"></i></button>
+                    </div> -->
+                                    <ul>
+                                        <li><a href="/assistant-dashboard">Dashboard</a></li>
+                                        <li><a href="/assistant-profile">Update Profile</a></li>
+                                        @*<li><a href="/assistant-change-password">Change Password</a></li>*@
+                                        <li><a href="/Assistants/assistant_logout">Logout</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+        <p class="msgNotification" id="lbl_assistantNotification" style="display:none">
+            <i class="fa fa-check-circle-o" style="color: white;"></i> You have received new notification
+            <span id='pop-off' style=" position: relative; left: 32%; cursor: pointer "> <i class='fa-solid fa-circle-xmark' style="color:white;"></i></span>
+        </p>
+    </div>
+</header>
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        //submenu open/close
+        $(".avatar-logo a").click(function () {
+            $(".submenu").toggleClass("submenu-visible");
+        });
+        // $(".submenu .popup-cross-btn button").click(function () {
+        //     $(".submenu").removeClass("submenu-visible");
+        // });
+        $(document).click(function (event) {
+            if (!$(event.target).closest(".submenu,.avatar-logo a").length) {
+                $("body").find(".submenu").removeClass("submenu-visible");
+            }
+        });
+
+    });
+
+    function ReadStatus(id, Url) {
+        debugger
+        var Url = Url;
+        $.ajax({
+            type: "post",
+            url: "/Handlers/notification/",
+            data: { id: id },
+            datatype: "json",
+            //traditional: true,
+            success: function (data) {
+                if (data.success) {
+                    window.location.href = Url;
+                }
+                else if (data.error) {
+                    //window.location.href = Request.url;
+                }
+            },
+        });
+        return true;
+    }
+
+</script>
+
+
+
+<script>
+    $(".admin-header-notification").load("/Assistants/ast_notifications", function () { });
+    $(".chat").load("/Assistants/chatnotification", function () { });
+
+    $("#pop-off").on("click", function () {
+        debugger
+        $("#lbl_assistantNotification").css("display", "none");
+    })
+</script>
+<script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+<script src="/signalr/hubs"></script>
+
+
+<script>
+    
+
+
+    jQuery.noConflict();
+    // JavaScript to connect to SignalR Hub and handle notifications
+    jQuery(document).ready(function ($) {
+        $(function () {
+            debugger
+            var notificationHub = $.connection.myHub;
+            if (typeof notificationHub.client != 'undefined') {
+                // Assign function to OrderCreatedNotification
+                notificationHub.client.SendNotification = function (message,name,id) {
+                    //alert(message);
+                    //alert(name);
+                    if (name == "assistant" && id=='@assistantID') {
+                        $(".admin-header-notification").load("/Assistants/ast_notifications", function () { });
+
+                        $(".chat").load("/Assistants/chatnotification", function () { });
+
+                        $("#lbl_assistantNotification").css("display", "block");
+                        
+                        setTimeout(function () {
+                            $("#lbl_assistantNotification").fadeOut(5000);
+                        }, 5000);
+                    }
+                   
+                };
+            } else {
+                console.error('notificationHub.client is not defined');
+            }
+
+            $.connection.hub.start().done(function () {
+                console.log("SignalR connected");
+            }).fail(function () {
+                console.error("SignalR connection failed");
+            });
+        });
+    });
+</script>

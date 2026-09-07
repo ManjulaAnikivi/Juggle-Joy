@@ -1,0 +1,233 @@
+﻿@model IEnumerable<juggle_joy.Models.tbl_faq>
+@using juggle_joy.Models
+@{
+    ViewBag.Title = "List of FAQ  | " + MvcApplication.project_name;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+
+    var groupByFaq = from Faq in Model group Faq by Faq.Faq_categoryID into newGroup orderby newGroup.Key select newGroup;
+
+    int i = 1;
+
+}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<style>
+    /*.collapsible ::before {
+        content: '+';
+        color: black;
+        position: absolute;
+        top: 50%;
+        right: -5px;
+        font-size: 30px;
+        transform: translateY(-50%);
+    }*/
+    .collapsible {
+        background-color: #fff;
+        color: #1d2127;
+        cursor: pointer;
+        padding: 12px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        margin-top: 5px;
+    }
+
+    /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+    /*.active, .collapsible:hover {
+            background-color: #ccc;
+        }*/
+    /* Style the collapsible content. Note: hidden by default */
+    .content {
+        padding: 8px 18px;
+        display: none;
+        overflow: hidden;
+        background-color: #F5F5F5;
+    }
+
+    .sortable {
+        list-style-type: none;
+    }
+
+        .sortable li {
+            border: 1px dotted #808080c4;
+            border-radius: 4px;
+            margin: 5px 0px;
+        }
+
+    .collapsible .que::before {
+        content: "\f107";
+        font: normal normal normal 14px / 1 FontAwesome;
+        font-size: 25px !important;
+    }
+
+    .collapsible.active .que::before {
+        content: "\f106";
+        font: normal normal normal 14px / 1 FontAwesome;
+        font-size: 25px !important;
+    }
+</style>
+<ul class="breadcrumb">
+    <li><a href="~/admin/account/dashboard">Home</a></li>
+    <li class="active">List of FAQ</li>
+</ul>
+<div class="page-title">
+    <h2><span class="fa fa-question-circle"></span> List of FAQ</h2>
+</div>
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            @using (Html.BeginForm("delete_faq", "cms", FormMethod.Post))
+            {
+                <div class="panel panel-default">
+                    <div id="lblmsg1" style="color:#5a9406; padding-left:14px;">@ViewBag.msgforfaq @ViewBag.msgforfaqlist @ViewBag.msgforfaqlists</div>
+                    @*<div id="lblmsg2" style="color:#e80c4d; padding:0px 0px">@ViewBag.msgforfaqlist</div>
+                        <p id="lbl_msg" class="panel-title msg" style="padding-left:0px !important">@ViewBag.msgforfaqlists</p>*@
+                    @if (Model.Count() > 0)
+                    {
+                        <div class="panel-body table-responsive">
+
+                            @foreach (var item in groupByFaq)
+                            {
+                                var Category = ctx.tbl_faq_category.Where(x => x.Faq_Cat_id == item.Key).FirstOrDefault();
+                                <label style="font-weight: 700; font-size: 15px; margin-top: 15px; color: #428bca">@i)  @Category.Category</label>
+                                <ul class="sortable" style="padding: 0px;">
+                                    @foreach (var items in item.OrderBy(x => x.SortPreference))
+                                    {
+                                        <li id="@items.FaqID" class="sections">
+                                            <button type="button" class="collapsible"> <b class="que" style="font-style: italic;">  @items.FaqQuestion</b> <a style="position: absolute;right: 60px;" href="/admin/add-faq/@items.FaqID"><i class="fa fa-edit"></i></a> <input type="checkbox" name="IdsToDelete" value='@items.FaqID' id='@items.FaqID' style="position: absolute;right: 36px;" /> </button>
+                                            <div class="content">
+                                                <p>@Html.Raw(items.FaqAnswer)</p>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                                i++;
+                            }
+                        </div>
+                        <input type="submit" id="btndelete" value="Delete" class="btn btn-danger" style="position: relative;float:right; margin:10px;" />
+                    }
+                    else
+                    {
+                        <label style="margin:10px;padding-left:15px">No Records Found</label>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<script src="~/admin_assets/js/faq.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#lnk_manage_faq,#manage_faqlist').addClass("active");
+    });
+    $(document).ready(function () {
+        $("#lbl_msg").fadeOut(3000);
+    });
+    $(document).ready(function () {
+        $("#lblmsg1").fadeOut(3000);
+    });
+    $(document).ready(function () {
+        $("#lblmsg2").fadeOut(3000);
+    });
+    function faqdetails(id) {
+        id = "/admin/cms/faq_details/" + id;
+        $('html, body').css({
+            'overflow': 'auto',
+            'height': '100%'
+        });
+        $("#myModal").css("display", "block")
+        $("#Loader").css("display", "block");
+        $("#modal-body").load(id, null, function (responseTxt, statusTxt, xhr) {
+            if (statusTxt == "success") {
+                $("#Loader").hide();
+                $("#modal-body").show();
+                $("#myModal").css("overflow-y", "scroll");
+                $("#myModal").slideDown(500);
+            }
+        });
+    }
+    $('#mclose1').click(function () {
+        $("#myModal").css("display", "none")
+    });
+    $(document).ready(function (e) {
+        $('#btndelete').click(function () {
+            if ($("input[name='IdsToDelete']:checked").length == 0) {
+                alert("Please select record to delete.");
+                return false;
+            }
+            else {
+                var count = $("input[name='IdsToDelete']:checked").length;
+                return confirm("Are you sure want to delete " + count + " record(s).");
+            }
+        });
+    });
+    $("#chkall").change(function () {
+        $("input[name='IdsToDelete']").prop('checked', $(this).prop("checked"));
+    });
+    $("input[name='IdsToDelete']").change(function () {
+        if (false == $(this).prop("checked")) {
+            $("#chkall").prop('checked', false);
+        }
+        if ($("input[name='IdsToDelete']:checked").length == $("input[name='IdsToDelete']").length) {
+            $("#chkall").prop('checked', true);
+        }
+    });
+
+    $('#tblfaqlist').DataTable({
+        "paging": true,
+        "searching": true,
+        "lengthChange": true,
+        "iDisplayLength": 10,
+        "info": true,
+        "autoWidth": true,
+        "stateSave": true,
+        "ordering": false,
+
+    });
+</script>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+
+    $('.sortable').sortable({
+        update: function (event, ui) {
+            var faqlist = "";
+            $("ul.sortable li.sections").each(function () {
+                var position = $("ul.sortable li.sections").index(this);
+                var section = $(this).attr("id");
+                faqlist = faqlist + "," + $(this).attr("id");
+            })
+            //faqlist.trim(',');
+            //alert(faqlist);
+            $.ajax
+                ({
+                    type: "post",
+                    url: "/admin/cms/update_preference",
+                    data: { faqlist: faqlist },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data == true) {
+
+                        }
+                        else {
+
+                        }
+                    }
+                });
+        }
+    });
+
+</script>

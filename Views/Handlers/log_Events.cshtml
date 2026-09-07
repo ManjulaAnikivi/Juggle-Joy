@@ -1,0 +1,51 @@
+﻿
+
+@model List<IGrouping<DateTime, juggle_joy.Models.tbl_log>>
+@using System.Data.Entity;
+@using juggle_joy.Models
+@{
+    Layout = null;
+    db_jugglejoyEntities ctx = new db_jugglejoyEntities();
+    int? id = Convert.ToInt32(ViewBag.taskid);
+    //fetching tbl_log based on date
+    var tblLog = ctx.tbl_log.Where(x => x.TaskID == id).GroupBy(x => DbFunctions.TruncateTime(x.LogDate)).ToList();
+
+}
+<div class="task-events-container">
+
+    @if (tblLog.Count() > 0)
+    {
+        <div class="task-events-wrapper">
+            @foreach (var item in tblLog)
+            {
+
+                <div class="task-events-date">
+                    @*<span>@item.Key.Value.DayOfWeek, @item.Key.Value.ToShortDateString()</span>*@
+                    <span> @item.Key.Value.ToString("ddd, dd MMM yy")</span>
+                </div>
+
+                <div class="task-events-content-wrapper">
+                    @foreach (var items in item)
+                    {
+
+                        <div class="task-events-content">
+                            <span class="task-events-time">@items.LogDate.Value.ToString("h:mm tt")</span>
+                            <span class="task-events-progress"></span>
+                            <span class="task-events-title">
+                                @items.LogStatus
+                            </span>
+                        </div>
+
+                    }
+
+                </div>
+
+            }
+        </div>
+    }
+    else
+    {
+        <span style="color: #b6b2a6; font-size: 14px; font-weight: 500; ">No Task Events</span>
+    }
+
+</div>
