@@ -28,8 +28,10 @@ namespace juggle_joy.Models
         /// <summary>
         /// Amruta test keys
         /// </summary>
-        public static string StripePublishableKey = "pk_test_51Oold2SILT1h5QjbUgNVCFc5gxGO4wUsLM11OF81BtgjLrsF0r8EL7vR82MfsHBMa5HVhpccUWCOP7uyX1gFC9Ij003LVbjbxM";
-        public static string StripeSecretKey = "sk_test_51Oold2SILT1h5QjbcTcA5eR30Lp3AVslBeph4CBpEm0OrlXSVZP6SaX6LJXuBYAxR6HPgJrQ1DTWuXAZ1ucRu84m00Ii561zQA";
+        //public static string StripePublishableKey = "pk_test_51Oold2SILT1h5QjbUgNVCFc5gxGO4wUsLM11OF81BtgjLrsF0r8EL7vR82MfsHBMa5HVhpccUWCOP7uyX1gFC9Ij003LVbjbxM";
+        //public static string StripeSecretKey = "sk_test_51Oold2SILT1h5QjbcTcA5eR30Lp3AVslBeph4CBpEm0OrlXSVZP6SaX6LJXuBYAxR6HPgJrQ1DTWuXAZ1ucRu84m00Ii561zQA";
+        public static string StripePublishableKey = "";
+        public static string StripeSecretKey = "";
 
         ////---Client's Stripe Live API key------//
         //public static string StripePublishableKey = "pk_live_51PH57NDli2Ue5yQvTaZMnSxmygaK1FVux7kLrYO9mGHl1zHMDjLEG7DJWGb3yTuzHeBP4FMx193Vab6e3wADqgDV00xFfGYx3v";
@@ -45,8 +47,10 @@ namespace juggle_joy.Models
         //public static string Google_reCAPTCHA_SecretKey = "6LdcvQsqAAAAAMgI_ooTUUijlN_KssyVQ1vye3dC";
 
         //for client jugglejoy
-        public static string Google_reCAPTCHA_SiteKey = "6Ld9jBYqAAAAAIpYhqpf3fA9V8Dvl0jsJ-Va2W3d";
-        public static string Google_reCAPTCHA_SecretKey = "6Ld9jBYqAAAAAOJ_nIsJwhs4Dwic9DdNS7irKv0P";
+        //public static string Google_reCAPTCHA_SiteKey = "6Ld9jBYqAAAAAIpYhqpf3fA9V8Dvl0jsJ-Va2W3d";
+        //public static string Google_reCAPTCHA_SecretKey = "6Ld9jBYqAAAAAOJ_nIsJwhs4Dwic9DdNS7irKv0P";
+         public static string Google_reCAPTCHA_SiteKey = "";
+        public static string Google_reCAPTCHA_SecretKey = "";
 
         public static async Task<bool> IsCaptchaValid(string response, string action, string UserHostAddress)
         {
